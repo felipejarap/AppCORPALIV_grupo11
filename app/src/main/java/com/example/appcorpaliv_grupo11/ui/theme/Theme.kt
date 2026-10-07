@@ -11,33 +11,33 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
+// Mantenemos este bloque por defecto por si el sistema entra en modo oscuro
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
     tertiary = Pink80
 )
 
+// =================================================================
+// PALETA CORPORATIVA DE ALBA LAB (Mapeada con tus nuevos colores)
+// =================================================================
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = VerdeOlivaPrincipal,           // Títulos principales y barras
+    onPrimary = BlancoPuro,
+    primaryContainer = VerdeClaroContenedor, // Bloques destacados (como la misión)
+    onPrimaryContainer = GrisTextoOscuro,
+    secondary = NaranjaEnfasis,              // Subtítulos y botones de acción
+    onSecondary = BlancoPuro,
+    background = CremaFondo,                 // Fondo general limpio y accesible
+    surface = BlancoPuro,                    // Fondo de las tarjetas individuales
+    onSurface = GrisTextoOscuro
 )
 
 @Composable
 fun AppCORPALIV_grupo11Theme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    // CAMBIO CLAVE: Apagamos el color dinámico para obligar a usar la paleta de la fundación
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
