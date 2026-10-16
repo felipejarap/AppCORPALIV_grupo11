@@ -8,4 +8,7 @@ sealed class Screen(val route: String) {
     data object Registro : Screen("registro")
 
     data object Resumen : Screen("resumen")
+
+    // Nueva ruta agregada para la Guía 12 (Animaciones y Estados)
+    data object Guia12 : Screen("guia_12")
 }

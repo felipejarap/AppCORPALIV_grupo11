@@ -44,6 +44,17 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core")
     implementation("androidx.compose.material:material-icons-extended")
 
+    // DataStore Preferences para persistencia local
+    implementation("androidx.datastore:datastore-preferences:1.1.0")
+
+    // Lifecycle & ViewModel para Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0-rc02")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+
+    // Core de Jetpack Compose & Material 3 (animaciones vienen incluidas)
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.animation:animation")
+
     // Core y BOM de Compose
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

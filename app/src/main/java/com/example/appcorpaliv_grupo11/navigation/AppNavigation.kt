@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Star // Icono para la Guía 12
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -26,6 +27,7 @@ import com.example.appcorpaliv_grupo11.ui.screens.ProfileScreen
 import com.example.appcorpaliv_grupo11.ui.screens.SettingsScreen
 import com.example.appcorpaliv_grupo11.ui.screens.RegistroScreen
 import com.example.appcorpaliv_grupo11.ui.screens.ResumenScreen
+import com.example.appcorpaliv_grupo11.ui.screens.PantallaPrincipal // <-- Pantalla de la Guía 12
 import com.example.appcorpaliv_grupo11.viewmodel.UsuarioViewModel
 import com.example.appcorpaliv_grupo11.viewmodel.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -40,13 +42,14 @@ fun AppNavigation() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // ¡AQUÍ ESTÁ EL TRUCO! Si currentRoute es null al iniciar, permitimos mostrar el navbar de todas formas
+    // Incluimos Screen.Guia12.route en el navbar para acceder fácilmente
     val mostrarNavbar = currentRoute == null || currentRoute in listOf(
         Screen.Home.route,
         Screen.Profile.route,
         Screen.Settings.route,
         Screen.Registro.route,
-        Screen.Resumen.route
+        Screen.Resumen.route,
+        Screen.Guia12.route // <-- Agregado aquí
     )
 
     // Colector de eventos del formulario (Guía 11)
@@ -139,6 +142,19 @@ fun AppNavigation() {
                             }
                         }
                     )
+                    // Botón extra en el Navbar para probar rápidamente la Guía 12
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.Star, contentDescription = "Guía 12") },
+                        label = { Text("Animación") },
+                        selected = currentRoute == Screen.Guia12.route,
+                        onClick = {
+                            navController.navigate(Screen.Guia12.route) {
+                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -154,14 +170,18 @@ fun AppNavigation() {
             composable(route = Screen.Resumen.route) {
                 ResumenScreen(viewModel = usuarioViewModel)
             }
-            composable(Screen.Home.route) {
+            composable(route = Screen.Home.route) {
                 HomeScreen(navController = navController, viewModel = mainViewModel)
             }
-            composable(Screen.Profile.route) {
+            composable(route = Screen.Profile.route) {
                 ProfileScreen(navController = navController, viewModel = mainViewModel)
             }
-            composable(Screen.Settings.route) {
+            composable(route = Screen.Settings.route) {
                 SettingsScreen(navController = navController, viewModel = mainViewModel)
+            }
+            // Ruta agregada para la Guía 12
+            composable(route = Screen.Guia12.route) {
+                PantallaPrincipal()
             }
         }
     }
