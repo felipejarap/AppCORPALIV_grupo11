@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.appcorpaliv_grupo11.viewmodel.EstadoViewModel
+import com.example.appcorpaliv_grupo11.viewModel.EstadoViewModel
 
 @Composable
 fun PantallaPrincipal(

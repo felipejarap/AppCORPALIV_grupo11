@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.appcorpaliv_grupo11.navigation.Screen
-import com.example.appcorpaliv_grupo11.viewmodel.MainViewModel
+import com.example.appcorpaliv_grupo11.viewModel.MainViewModel
 
 @Composable
 fun SettingsScreen(

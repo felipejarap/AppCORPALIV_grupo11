@@ -1,16 +1,13 @@
 package com.example.appcorpaliv_grupo11.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.example.appcorpaliv_grupo11.viewmodel.UsuarioViewModel
+import com.example.appcorpaliv_grupo11.viewModel.UsuarioViewModel
 
 @Composable
 fun RegistroScreen(viewModel: UsuarioViewModel) {

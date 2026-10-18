@@ -11,4 +11,6 @@ sealed class Screen(val route: String) {
 
     // Nueva ruta agregada para la Guía 12 (Animaciones y Estados)
     data object Guia12 : Screen("guia_12")
+
+    data object Contacto : Screen("contacto")
 }

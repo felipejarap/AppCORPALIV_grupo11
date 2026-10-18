@@ -6,7 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.appcorpaliv_grupo11.ui.theme.AppCORPALIV_grupo11Theme
 import com.example.appcorpaliv_grupo11.ui.utils.obtenerWindowSizeClass
-import com.example.appcorpaliv_grupo11.viewmodel.MainViewModel
+import com.example.appcorpaliv_grupo11.viewModel.MainViewModel
 
 @Composable
 fun HomeScreenMain(viewModel: MainViewModel) {

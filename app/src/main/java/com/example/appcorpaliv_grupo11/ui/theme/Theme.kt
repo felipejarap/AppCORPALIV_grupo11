@@ -5,38 +5,36 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
-// Mantenemos este bloque por defecto por si el sistema entra en modo oscuro
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = CorpalivYellow,
+    secondary = CorpalivBlue,
+    tertiary = CorpalivCoral,
+    background = Color(0xFF121212)
 )
 
-// =================================================================
-// PALETA CORPORATIVA DE ALBA LAB (Mapeada con tus nuevos colores)
-// =================================================================
 private val LightColorScheme = lightColorScheme(
-    primary = VerdeOlivaPrincipal,           // Títulos principales y barras
-    onPrimary = BlancoPuro,
-    primaryContainer = VerdeClaroContenedor, // Bloques destacados (como la misión)
-    onPrimaryContainer = GrisTextoOscuro,
-    secondary = NaranjaEnfasis,              // Subtítulos y botones de acción
-    onSecondary = BlancoPuro,
-    background = CremaFondo,                 // Fondo general limpio y accesible
-    surface = BlancoPuro,                    // Fondo de las tarjetas individuales
-    onSurface = GrisTextoOscuro
+    primary = CorpalivYellow,         // Color principal (ej. Headers, elementos destacados)
+    secondary = CorpalivBlue,       // Color secundario (ej. Íconos, acentos)
+    tertiary = CorpalivCoral,       // Color de acción (ej. Botones principales "ENVIAR")
+    background = CorpalivBackground, // Fondo general de la app
+    surface = Color.White
 )
 
 @Composable
 fun AppCORPALIV_grupo11Theme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // CAMBIO CLAVE: Apagamos el color dinámico para obligar a usar la paleta de la fundación
+    // Dynamic color está disponible en Android 12+ (lo desactivamos por defecto para forzar los colores corporativos)
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
@@ -45,9 +43,17 @@ fun AppCORPALIV_grupo11Theme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
+    }
+
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = colorScheme.primary.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+        }
     }
 
     MaterialTheme(

@@ -12,7 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.appcorpaliv_grupo11.R
 import com.example.appcorpaliv_grupo11.navigation.Screen
-import com.example.appcorpaliv_grupo11.viewmodel.MainViewModel
+import com.example.appcorpaliv_grupo11.viewModel.MainViewModel
 
 @Composable
 fun HomeScreenCompacta(viewModel: MainViewModel) {
@@ -24,7 +24,7 @@ fun HomeScreenCompacta(viewModel: MainViewModel) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.logo_corpaliv),
+            painter = painterResource(id = R.drawable.logo_alba_lab),
             contentDescription = "Logo Corpaliv Alba Lab",
             modifier = Modifier
                 .fillMaxWidth()

@@ -11,7 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.appcorpaliv_grupo11.viewmodel.UsuarioViewModel
+import com.example.appcorpaliv_grupo11.viewModel.UsuarioViewModel
 
 @Composable
 fun ResumenScreen(viewModel: UsuarioViewModel) {
