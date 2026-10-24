@@ -4,18 +4,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.appcorpaliv_grupo11.model.ContactoEntity
+import com.example.appcorpaliv_grupo11.repository.ContactoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
-/**
- * ViewModel encargado de gestionar la lógica de negocios, los estados de los campos
- * y la validación del formulario de contacto para Corpaliv / Alba Lab.
- */
-class ContactoViewModel : ViewModel() {
+class ContactoViewModel(private val repository: ContactoRepository) : ViewModel() {
 
-    // --- ESTADOS DE LOS CAMPOS DE TEXTO ---
-    // Almacenan el texto ingresado por el usuario en cada campo de forma reactiva.
+    // --- ESTADOS DEL FORMULARIO (CAMPOS DE TEXTO) ---
     var nombre by mutableStateOf("")
         private set
 
@@ -28,66 +29,97 @@ class ContactoViewModel : ViewModel() {
     var mensaje by mutableStateOf("")
         private set
 
-    // --- ESTADOS DE FLUJO (UI STATE Y VALIDACIONES) ---
-    // Controla si el formulario ya fue enviado exitosamente para mostrar la pantalla de confirmación.
+    // --- ESTADOS DE FLUJO (UI STATE Y ERRORES) ---
     private val _isSubmitted = MutableStateFlow(false)
     val isSubmitted: StateFlow<Boolean> = _isSubmitted.asStateFlow()
 
-    // Almacena el mensaje de error actual en caso de que la validación falle.
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
-    // --- FUNCIONES DE ACTUALIZACIÓN DE CAMPOS ---
-    /** Actualiza el nombre ingresado y limpia cualquier error previo. */
+    // --- LEER (READ) ---
+    // Flow de Room convertido en StateFlow observable por la UI en tiempo real
+    val listaContactos: StateFlow<List<ContactoEntity>> = repository.listaContactos
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    // --- ACTUALIZADORES DE CAMPOS ---
     fun onNombreChanged(nuevoNombre: String) {
         nombre = nuevoNombre
         _errorMessage.value = null
     }
 
-    /** Actualiza el correo electrónico y limpia el mensaje de error. */
     fun onEmailChanged(nuevoEmail: String) {
         email = nuevoEmail
         _errorMessage.value = null
     }
 
-    /** Actualiza el asunto del mensaje. */
     fun onAsuntoChanged(nuevoAsunto: String) {
         asunto = nuevoAsunto
         _errorMessage.value = null
     }
 
-    /** Actualiza el contenido principal del mensaje. */
     fun onMensajeChanged(nuevoMensaje: String) {
         mensaje = nuevoMensaje
         _errorMessage.value = null
     }
 
-    // --- LÓGICA DE VALIDACIÓN Y ENVÍO ---
-    /**
-     * Valida que los campos obligatorios (*) estén llenos y que el correo tenga un formato válido.
-     * Si todo es correcto, marca el formulario como enviado.
-     */
-    fun enviarFormulario(onSuccess: () -> Unit) {
+    // --- CREAR (CREATE) CON VALIDACIÓN ---
+    fun enviarFormulario(onSuccess: () -> Unit = {}) {
         if (nombre.isBlank() || email.isBlank() || mensaje.isBlank()) {
             _errorMessage.value = "Por favor completa los campos obligatorios (*)."
             return
         }
 
-        // Comprueba si el correo cumple con el estándar de email válido
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             _errorMessage.value = "Por favor ingresa un correo electrónico válido."
             return
         }
 
         _errorMessage.value = null
-        _isSubmitted.value = true
-        onSuccess()
+
+        viewModelScope.launch {
+            try {
+                val nuevoContacto = ContactoEntity(
+                    nombre = nombre,
+                    email = email,
+                    asunto = asunto,
+                    mensaje = mensaje
+                )
+                repository.guardarContacto(nuevoContacto)
+                _isSubmitted.value = true
+                onSuccess()
+            } catch (e: Exception) {
+                _errorMessage.value = "Error al guardar localmente: ${e.message}"
+            }
+        }
     }
 
-    /**
-     * Restablece todos los campos y estados del formulario a sus valores iniciales
-     * para permitir el envío de un nuevo mensaje.
-     */
+    // --- ACTUALIZAR (UPDATE) ---
+    fun actualizarContacto(contacto: ContactoEntity) {
+        viewModelScope.launch {
+            try {
+                repository.actualizarContacto(contacto)
+            } catch (e: Exception) {
+                _errorMessage.value = "Error al actualizar: ${e.message}"
+            }
+        }
+    }
+
+    // --- ELIMINAR (DELETE) ---
+    fun eliminarContacto(contacto: ContactoEntity) {
+        viewModelScope.launch {
+            try {
+                repository.eliminarContacto(contacto)
+            } catch (e: Exception) {
+                _errorMessage.value = "Error al eliminar: ${e.message}"
+            }
+        }
+    }
+
+    // --- REINICIAR FORMULARIO ---
     fun reiniciarFormulario() {
         nombre = ""
         email = ""

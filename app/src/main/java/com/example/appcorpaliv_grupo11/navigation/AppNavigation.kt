@@ -23,9 +23,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -33,6 +36,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.appcorpaliv_grupo11.R
+import com.example.appcorpaliv_grupo11.data.AppDatabase
+import com.example.appcorpaliv_grupo11.repository.ContactoRepository
 import com.example.appcorpaliv_grupo11.ui.screens.HomeScreen
 import com.example.appcorpaliv_grupo11.ui.screens.PantallaPrincipal
 import com.example.appcorpaliv_grupo11.ui.screens.ProfileScreen
@@ -40,6 +45,8 @@ import com.example.appcorpaliv_grupo11.ui.screens.RegistroScreen
 import com.example.appcorpaliv_grupo11.ui.screens.ResumenScreen
 import com.example.appcorpaliv_grupo11.ui.screens.SettingsScreen
 import com.example.appcorpaliv_grupo11.ui.screens.contacto.ContactoScreenMain
+import com.example.appcorpaliv_grupo11.ui.screens.listaContactos.ListaContactosMain
+import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 import com.example.appcorpaliv_grupo11.viewModel.MainViewModel
 import com.example.appcorpaliv_grupo11.viewModel.UsuarioViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -68,7 +75,8 @@ fun AppNavigation() {
         Screen.Registro.route,
         Screen.Resumen.route,
         Screen.Guia12.route,
-        Screen.Contacto.route
+        Screen.Contacto.route,
+        Screen.ListaContactos.route
     )
 
     // Colectores de eventos de navegación
@@ -114,7 +122,8 @@ fun AppNavigation() {
         Triple(Screen.Profile.route, "Perfil", Icons.Default.Person),
         Triple(Screen.Settings.route, "Ajustes", Icons.Default.Settings),
         Triple(Screen.Guia12.route, "Animación", Icons.Default.Star),
-        Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email)
+        Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email),
+        Triple(Screen.ListaContactos.route, "Mensajes", Icons.AutoMirrored.Filled.List)
     )
 
     Scaffold(
@@ -177,7 +186,6 @@ fun AppNavigation() {
             // Menú lateral colapsable para pantallas Medianas y Extendidas (Tablets / Horizontal)
             if (mostrarNavbar && !isCompact) {
 
-                // NUEVA FUNCIONALIDAD: Animación de ancho basada en Spring (efecto muelle suave)
                 val menuWidth by animateDpAsState(
                     targetValue = if (isMenuExpanded) 240.dp else 64.dp,
                     animationSpec = spring(
@@ -189,7 +197,7 @@ fun AppNavigation() {
 
                 Surface(
                     modifier = Modifier
-                        .width(menuWidth) // Aplicamos el ancho animado
+                        .width(menuWidth)
                         .fillMaxHeight(),
                     color = MaterialTheme.colorScheme.background,
                     tonalElevation = 1.dp
@@ -209,8 +217,6 @@ fun AppNavigation() {
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = if (isMenuExpanded) Arrangement.SpaceBetween else Arrangement.Center
                         ) {
-                            // NUEVA FUNCIONALIDAD: AnimatedVisibility para que el logo y el texto aparezcan con fundido
-                            // y eviten deformaciones o saltos bruscos mientras el menú se expande.
                             AnimatedVisibility(
                                 visible = isMenuExpanded,
                                 enter = fadeIn(animationSpec = tween(200)),
@@ -245,8 +251,6 @@ fun AppNavigation() {
                             }
                         }
 
-                        // NUEVA FUNCIONALIDAD: AnimatedVisibility para las opciones del menú lateral.
-                        // Se ocultan instantáneamente al cerrar y aparecen con fundido al abrirse.
                         AnimatedVisibility(
                             visible = isMenuExpanded,
                             enter = fadeIn(animationSpec = tween(250)),
@@ -277,7 +281,6 @@ fun AppNavigation() {
                 }
             }
 
-            // Contenedor principal de las pantallas con animación moderna de Zoom y Fade
             NavHost(
                 navController = navController,
                 startDestination = Screen.Home.route,
@@ -325,16 +328,42 @@ fun AppNavigation() {
                     PantallaPrincipal()
                 }
                 composable(route = Screen.Contacto.route) {
-                    ContactoScreenMain()
+                    val context = LocalContext.current
+                    val database = AppDatabase.getDatabase(context)
+                    val repository = ContactoRepository(database.contactoDao())
+
+                    val contactoViewModel: ContactoViewModel = viewModel(
+                        factory = object : ViewModelProvider.Factory {
+                            @Suppress("UNCHECKED_CAST")
+                            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                                return ContactoViewModel(repository) as T
+                            }
+                        }
+                    )
+
+                    ContactoScreenMain(viewModel = contactoViewModel)
+                }
+                composable(route = Screen.ListaContactos.route) {
+                    val context = LocalContext.current
+                    val database = AppDatabase.getDatabase(context)
+                    val repository = ContactoRepository(database.contactoDao())
+
+                    val contactoViewModel: ContactoViewModel = viewModel(
+                        factory = object : ViewModelProvider.Factory {
+                            @Suppress("UNCHECKED_CAST")
+                            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                                return ContactoViewModel(repository) as T
+                            }
+                        }
+                    )
+
+                    ListaContactosMain(viewModel = contactoViewModel)
                 }
             }
         }
     }
 }
 
-/**
- * Función helper para comprobar si la pantalla es compacta (< 600dp).
- */
 @Composable
 private fun esPantallaCompacta(): Boolean {
     val configuration = LocalConfiguration.current
