@@ -26,4 +26,8 @@ interface ContactoDao {
 
     @Delete
     suspend fun eliminarContacto(contacto: ContactoEntity)
+
+    // OPTATIVO: Obtener contactos filtrados directamente desde Room por estado
+    @Query("SELECT * FROM contactos WHERE estado = :estado ORDER BY id DESC")
+    fun obtenerPorEstado(estado: String): Flow<List<ContactoEntity>>
 }

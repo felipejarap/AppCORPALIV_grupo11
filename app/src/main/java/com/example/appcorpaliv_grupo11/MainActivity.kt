@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -22,10 +23,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AppCORPALIV_grupo11Theme {
+            // rememberSaveable mantiene el estado de isDarkTheme activo incluso tras rotar la pantalla
+            var isDarkTheme by rememberSaveable { mutableStateOf(false) }
+
+            AppCORPALIV_grupo11Theme(darkTheme = isDarkTheme) {
                 val context = LocalContext.current
 
-                // Estado que almacena si hay conexión (se inicia validando)
+                // Estado que almacena si hay conexión a internet
                 var hasInternet by remember { mutableStateOf(isInternetAvailable(context)) }
 
                 Surface(
@@ -33,13 +37,15 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     if (hasInternet) {
-                        // Si hay internet, cargamos la navegación normal de la app
-                        AppNavigation()
+                        // Si hay internet, cargamos la navegación pasando el control de tema
+                        AppNavigation(
+                            isDarkTheme = isDarkTheme,
+                            onToggleTheme = { isDarkTheme = !isDarkTheme }
+                        )
                     } else {
-                        // Si NO hay internet, bloqueamos la app mostrando esta pantalla
+                        // Si NO hay internet, mostramos la pantalla de bloqueo
                         NoInternetScreen(
                             onRetry = {
-                                // Vuelve a comprobar el estado de la red al presionar el botón
                                 hasInternet = isInternetAvailable(context)
                             }
                         )

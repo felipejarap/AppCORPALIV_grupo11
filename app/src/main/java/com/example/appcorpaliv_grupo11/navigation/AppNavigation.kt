@@ -10,9 +10,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
@@ -38,14 +42,16 @@ import androidx.navigation.compose.rememberNavController
 import com.example.appcorpaliv_grupo11.R
 import com.example.appcorpaliv_grupo11.data.AppDatabase
 import com.example.appcorpaliv_grupo11.repository.ContactoRepository
-import com.example.appcorpaliv_grupo11.ui.screens.HomeScreen
+import com.example.appcorpaliv_grupo11.ui.screens.home.HomeScreen
 import com.example.appcorpaliv_grupo11.ui.screens.PantallaPrincipal
 import com.example.appcorpaliv_grupo11.ui.screens.ProfileScreen
 import com.example.appcorpaliv_grupo11.ui.screens.RegistroScreen
 import com.example.appcorpaliv_grupo11.ui.screens.ResumenScreen
 import com.example.appcorpaliv_grupo11.ui.screens.SettingsScreen
-import com.example.appcorpaliv_grupo11.ui.screens.contacto.ContactoScreenMain
-import com.example.appcorpaliv_grupo11.ui.screens.listaContactos.ListaContactosMain
+import com.example.appcorpaliv_grupo11.ui.screens.auth.LoginScreen
+import com.example.appcorpaliv_grupo11.ui.screens.contacto.ContactoScreen
+import com.example.appcorpaliv_grupo11.ui.screens.listaContactos.ListaContactosScreen
+import com.example.appcorpaliv_grupo11.viewModel.AuthViewModel
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 import com.example.appcorpaliv_grupo11.viewModel.MainViewModel
 import com.example.appcorpaliv_grupo11.viewModel.UsuarioViewModel
@@ -54,21 +60,22 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavigation() {
+fun AppNavigation(
+    isDarkTheme: Boolean = false,
+    onToggleTheme: () -> Unit = {}
+) {
     val navController = rememberNavController()
-
-    // Detecta si es pantalla compacta (< 600dp)
     val isCompact = esPantallaCompacta()
 
-    // Estado del Drawer (menú hamburguesa) para celulares
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
-    // El menú inicia cerrado en modo tablet / horizontal
     var isMenuExpanded by remember { mutableStateOf(false) }
 
     val usuarioViewModel: UsuarioViewModel = viewModel()
     val mainViewModel: MainViewModel = viewModel()
+    val authViewModel: AuthViewModel = viewModel()
+
+    val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -81,10 +88,22 @@ fun AppNavigation() {
         Screen.Resumen.route,
         Screen.Guia12.route,
         Screen.Contacto.route,
-        Screen.ListaContactos.route
+        Screen.ListaContactos.route,
+        Screen.Login.route
     )
 
-    // Colectores de eventos de navegación
+    val navegarA: (String) -> Unit = { route ->
+        if (currentRoute != route) {
+            navController.navigate(route) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = route != Screen.Home.route
+                }
+                launchSingleTop = true
+                restoreState = route != Screen.Home.route
+            }
+        }
+    }
+
     LaunchedEffect(Unit) {
         usuarioViewModel.navigationEvents.collectLatest { event ->
             when (event) {
@@ -121,23 +140,33 @@ fun AppNavigation() {
         }
     }
 
-    // Lista completa de opciones para el menú hamburguesa y el menú lateral expandido
-    val menuItems = listOf(
+    val baseMenuItems = listOf(
         Triple(Screen.Home.route, "Home", Icons.Default.Home),
         Triple(Screen.Registro.route, "Registro", Icons.AutoMirrored.Filled.List),
         Triple(Screen.Profile.route, "Perfil", Icons.Default.Person),
         Triple(Screen.Settings.route, "Ajustes", Icons.Default.Settings),
         Triple(Screen.Guia12.route, "Animación", Icons.Default.Star),
-        Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email),
-        Triple(Screen.ListaContactos.route, "Mensajes", Icons.AutoMirrored.Filled.List)
+        Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email)
     )
 
-    // Opciones esenciales exclusivas para la barra inferior (BottomBar)
-    val essentialMenuItems = listOf(
-        Triple(Screen.Home.route, "Home", Icons.Default.Home),
-        Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email),
-        Triple(Screen.ListaContactos.route, "Mensajes", Icons.AutoMirrored.Filled.List)
-    )
+    val menuItems = if (isLoggedIn) {
+        baseMenuItems + Triple(Screen.ListaContactos.route, "Mensajes", Icons.AutoMirrored.Filled.List)
+    } else {
+        baseMenuItems + Triple(Screen.Login.route, "Acceso Funcionarios", Icons.Default.Lock)
+    }
+
+    val essentialMenuItems = if (isLoggedIn) {
+        listOf(
+            Triple(Screen.Home.route, "Home", Icons.Default.Home),
+            Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email),
+            Triple(Screen.ListaContactos.route, "Mensajes", Icons.AutoMirrored.Filled.List)
+        )
+    } else {
+        listOf(
+            Triple(Screen.Home.route, "Home", Icons.Default.Home),
+            Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email)
+        )
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -180,10 +209,30 @@ fun AppNavigation() {
                                 selected = currentRoute == route,
                                 onClick = {
                                     scope.launch { drawerState.close() }
-                                    navController.navigate(route) {
-                                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                        launchSingleTop = true
-                                        restoreState = true
+                                    navegarA(route)
+                                },
+                                modifier = Modifier.padding(vertical = 2.dp),
+                                shape = MaterialTheme.shapes.medium
+                            )
+                        }
+
+                        if (isLoggedIn) {
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                            NavigationDrawerItem(
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                                        contentDescription = "Cerrar Sesión",
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                },
+                                label = { Text("Cerrar Sesión", color = MaterialTheme.colorScheme.error) },
+                                selected = false,
+                                onClick = {
+                                    scope.launch { drawerState.close() }
+                                    authViewModel.cerrarSesion()
+                                    navController.navigate(Screen.Home.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
                                     }
                                 },
                                 modifier = Modifier.padding(vertical = 2.dp),
@@ -196,7 +245,6 @@ fun AppNavigation() {
         }
     ) {
         Scaffold(
-            // TopAppBar para celulares (Compacta) con botón de Menú Hamburguesa
             topBar = {
                 if (mostrarNavbar && isCompact) {
                     TopAppBar(
@@ -228,13 +276,21 @@ fun AppNavigation() {
                                 )
                             }
                         },
+                        actions = {
+                            IconButton(onClick = onToggleTheme) {
+                                Icon(
+                                    imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                                    contentDescription = "Cambiar tema",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        },
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = MaterialTheme.colorScheme.background
                         )
                     )
                 }
             },
-            // NavigationBar inferior únicamente con los 3 botones esenciales
             bottomBar = {
                 if (mostrarNavbar && isCompact) {
                     NavigationBar {
@@ -243,13 +299,7 @@ fun AppNavigation() {
                                 icon = { Icon(icon, contentDescription = label) },
                                 label = { Text(label) },
                                 selected = currentRoute == route,
-                                onClick = {
-                                    navController.navigate(route) {
-                                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                }
+                                onClick = { navegarA(route) }
                             )
                         }
                     }
@@ -261,9 +311,7 @@ fun AppNavigation() {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                // Menú lateral colapsable para pantallas Medianas y Extendidas (Tablets / Horizontal)
                 if (mostrarNavbar && !isCompact) {
-
                     val menuWidth by animateDpAsState(
                         targetValue = if (isMenuExpanded) 240.dp else 64.dp,
                         animationSpec = spring(
@@ -288,6 +336,7 @@ fun AppNavigation() {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
+                            // Cabecera del Menú Lateral
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -329,6 +378,18 @@ fun AppNavigation() {
                                 }
                             }
 
+                            // Botón de Modo Oscuro/Claro (siempre accesible en pantallas no compactas)
+                            IconButton(
+                                onClick = onToggleTheme,
+                                modifier = Modifier.padding(vertical = 2.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                                    contentDescription = "Cambiar tema",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+
                             AnimatedVisibility(
                                 visible = isMenuExpanded,
                                 enter = fadeIn(animationSpec = tween(250)),
@@ -342,11 +403,28 @@ fun AppNavigation() {
                                             icon = { Icon(icon, contentDescription = label) },
                                             label = { Text(label) },
                                             selected = currentRoute == route,
+                                            onClick = { navegarA(route) },
+                                            modifier = Modifier.padding(horizontal = 4.dp),
+                                            shape = MaterialTheme.shapes.medium
+                                        )
+                                    }
+
+                                    if (isLoggedIn) {
+                                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                                        NavigationDrawerItem(
+                                            icon = {
+                                                Icon(
+                                                    imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                                                    contentDescription = "Cerrar Sesión",
+                                                    tint = MaterialTheme.colorScheme.error
+                                                )
+                                            },
+                                            label = { Text("Cerrar Sesión", color = MaterialTheme.colorScheme.error) },
+                                            selected = false,
                                             onClick = {
-                                                navController.navigate(route) {
-                                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                                    launchSingleTop = true
-                                                    restoreState = true
+                                                authViewModel.cerrarSesion()
+                                                navController.navigate(Screen.Home.route) {
+                                                    popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
                                                 }
                                             },
                                             modifier = Modifier.padding(horizontal = 4.dp),
@@ -419,23 +497,44 @@ fun AppNavigation() {
                             }
                         )
 
-                        ContactoScreenMain(viewModel = contactoViewModel)
+                        ContactoScreen(viewModel = contactoViewModel)
                     }
-                    composable(route = Screen.ListaContactos.route) {
-                        val context = LocalContext.current
-                        val database = AppDatabase.getDatabase(context)
-                        val repository = ContactoRepository(database.contactoDao())
-
-                        val contactoViewModel: ContactoViewModel = viewModel(
-                            factory = object : ViewModelProvider.Factory {
-                                @Suppress("UNCHECKED_CAST")
-                                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                                    return ContactoViewModel(repository) as T
+                    composable(route = Screen.Login.route) {
+                        LoginScreen(
+                            authViewModel = authViewModel,
+                            onLoginSuccess = {
+                                navController.navigate(Screen.ListaContactos.route) {
+                                    popUpTo(Screen.Home.route)
                                 }
                             }
                         )
+                    }
+                    composable(route = Screen.ListaContactos.route) {
+                        if (isLoggedIn) {
+                            val context = LocalContext.current
+                            val database = AppDatabase.getDatabase(context)
+                            val repository = ContactoRepository(database.contactoDao())
 
-                        ListaContactosMain(viewModel = contactoViewModel)
+                            val contactoViewModel: ContactoViewModel = viewModel(
+                                factory = object : ViewModelProvider.Factory {
+                                    @Suppress("UNCHECKED_CAST")
+                                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                                        return ContactoViewModel(repository) as T
+                                    }
+                                }
+                            )
+
+                            ListaContactosScreen(viewModel = contactoViewModel)
+                        } else {
+                            LoginScreen(
+                                authViewModel = authViewModel,
+                                onLoginSuccess = {
+                                    navController.navigate(Screen.ListaContactos.route) {
+                                        popUpTo(Screen.Home.route)
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
             }

@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.appcorpaliv_grupo11.model.ContactoEntity
 
-@Database(entities = [ContactoEntity::class], version = 1, exportSchema = false)
+@Database(entities = [ContactoEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun contactoDao(): ContactoDao
 

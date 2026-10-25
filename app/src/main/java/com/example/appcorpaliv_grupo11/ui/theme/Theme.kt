@@ -10,31 +10,48 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = CorpalivYellow,
-    secondary = CorpalivBlue,
-    tertiary = CorpalivCoral,
-    background = Color(0xFF121212)
+    primary = DarkPrimary,
+    onPrimary = DarkOnPrimary,
+    secondary = DarkSecondary,
+    onSecondary = DarkOnSecondary,
+    tertiary = DarkTertiary,
+    onTertiary = DarkOnTertiary,
+    background = DarkBackground,
+    onBackground = DarkOnBackground,
+    surface = DarkSurface,
+    onSurface = DarkOnSurface,
+    surfaceVariant = DarkSurfaceVariant,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    error = DarkError,
+    onError = DarkOnError
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = CorpalivYellow,         // Color principal (ej. Headers, elementos destacados)
-    secondary = CorpalivBlue,       // Color secundario (ej. Íconos, acentos)
-    tertiary = CorpalivCoral,       // Color de acción (ej. Botones principales "ENVIAR")
-    background = CorpalivBackground, // Fondo general de la app
-    surface = Color.White
+    primary = PrimaryAzulCorpaliv,
+    onPrimary = OnPrimaryWhite,
+    secondary = SecondaryTeal,
+    onSecondary = OnSecondaryWhite,
+    tertiary = TertiaryAmbar,
+    onTertiary = OnTertiaryWhite,
+    background = SurfaceGrisClaro,
+    onBackground = OnSurfaceGrisOscuro,
+    surface = SurfaceGrisClaro,
+    onSurface = OnSurfaceGrisOscuro,
+    surfaceVariant = SurfaceVariantClaro,
+    onSurfaceVariant = OnSurfaceVariantClaro,
+    error = ErrorCarmesi,
+    onError = OnErrorWhite
 )
 
 @Composable
 fun AppCORPALIV_grupo11Theme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color está disponible en Android 12+ (lo desactivamos por defecto para forzar los colores corporativos)
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
@@ -51,8 +68,8 @@ fun AppCORPALIV_grupo11Theme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            window.statusBarColor = colorScheme.background.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 

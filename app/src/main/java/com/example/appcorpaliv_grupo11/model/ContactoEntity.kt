@@ -10,5 +10,6 @@ data class ContactoEntity(
     val nombre: String,
     val email: String,
     val asunto: String,
-    val mensaje: String
+    val mensaje: String,
+    val estado: String = "Pendiente"
 )

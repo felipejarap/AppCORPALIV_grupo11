@@ -29,6 +29,10 @@ class ContactoViewModel(private val repository: ContactoRepository) : ViewModel(
     var mensaje by mutableStateOf("")
         private set
 
+    // --- ESTADO DEL FILTRO DE LISTA ---
+    var filtroActual by mutableStateOf("Todos")
+        private set
+
     // --- ESTADOS DE FLUJO (UI STATE Y ERRORES) ---
     private val _isSubmitted = MutableStateFlow(false)
     val isSubmitted: StateFlow<Boolean> = _isSubmitted.asStateFlow()
@@ -66,6 +70,11 @@ class ContactoViewModel(private val repository: ContactoRepository) : ViewModel(
         _errorMessage.value = null
     }
 
+    // --- CAMBIAR FILTRO DE LA LISTA ---
+    fun cambiarFiltro(nuevoFiltro: String) {
+        filtroActual = nuevoFiltro
+    }
+
     // --- CREAR (CREATE) CON VALIDACIÓN ---
     fun enviarFormulario(onSuccess: () -> Unit = {}) {
         if (nombre.isBlank() || email.isBlank() || mensaje.isBlank()) {
@@ -87,6 +96,7 @@ class ContactoViewModel(private val repository: ContactoRepository) : ViewModel(
                     email = email,
                     asunto = asunto,
                     mensaje = mensaje
+                    // 'estado' tomará automáticamente "Pendiente" por defecto en la Data Class
                 )
                 repository.guardarContacto(nuevoContacto)
                 _isSubmitted.value = true
@@ -106,6 +116,11 @@ class ContactoViewModel(private val repository: ContactoRepository) : ViewModel(
                 _errorMessage.value = "Error al actualizar: ${e.message}"
             }
         }
+    }
+
+    // --- CAMBIAR ESTADO RÁPIDO (Pendiente -> Contestado / Rechazado) ---
+    fun cambiarEstadoContacto(contacto: ContactoEntity, nuevoEstado: String) {
+        actualizarContacto(contacto.copy(estado = nuevoEstado))
     }
 
     // --- ELIMINAR (DELETE) ---
