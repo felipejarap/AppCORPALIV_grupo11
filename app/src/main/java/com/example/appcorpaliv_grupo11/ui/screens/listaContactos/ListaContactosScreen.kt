@@ -6,10 +6,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 
-/**
- * Pantalla principal de Gestión de Mensajes.
- * Decide qué diseño mostrar según el tamaño de la pantalla.
- */
 @Composable
 fun ListaContactosScreen(
     windowSizeClass: WindowWidthSizeClass = obtenerWindowWidthSizeClass(),
@@ -18,7 +14,7 @@ fun ListaContactosScreen(
     when (windowSizeClass) {
         WindowWidthSizeClass.Compact -> ListaContactosCompacta(viewModel)
         WindowWidthSizeClass.Medium -> ListaContactosMediana(viewModel)
-        WindowWidthSizeClass.Expanded -> ListaContactosMediana(viewModel)
+        WindowWidthSizeClass.Expanded -> ListaContactosExpandida(viewModel)
         else -> ListaContactosCompacta(viewModel)
     }
 }

@@ -8,7 +8,7 @@ import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 
 /**
  * Pantalla principal de Contacto.
- * Decide qué diseño mostrar según el tamaño de la pantalla.
+ * Selecciona el diseño adecuado (Compacto, Mediano o Expandido) según el tamaño del dispositivo.
  */
 @Composable
 fun ContactoScreen(

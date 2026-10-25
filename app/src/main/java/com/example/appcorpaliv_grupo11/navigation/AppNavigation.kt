@@ -8,19 +8,18 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -43,18 +42,13 @@ import com.example.appcorpaliv_grupo11.R
 import com.example.appcorpaliv_grupo11.data.AppDatabase
 import com.example.appcorpaliv_grupo11.repository.ContactoRepository
 import com.example.appcorpaliv_grupo11.ui.screens.home.HomeScreen
-import com.example.appcorpaliv_grupo11.ui.screens.PantallaPrincipal
-import com.example.appcorpaliv_grupo11.ui.screens.ProfileScreen
-import com.example.appcorpaliv_grupo11.ui.screens.RegistroScreen
-import com.example.appcorpaliv_grupo11.ui.screens.ResumenScreen
-import com.example.appcorpaliv_grupo11.ui.screens.SettingsScreen
 import com.example.appcorpaliv_grupo11.ui.screens.auth.LoginScreen
 import com.example.appcorpaliv_grupo11.ui.screens.contacto.ContactoScreen
+import com.example.appcorpaliv_grupo11.ui.screens.leyInclusion.LeyInclusionScreen
 import com.example.appcorpaliv_grupo11.ui.screens.listaContactos.ListaContactosScreen
 import com.example.appcorpaliv_grupo11.viewModel.AuthViewModel
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 import com.example.appcorpaliv_grupo11.viewModel.MainViewModel
-import com.example.appcorpaliv_grupo11.viewModel.UsuarioViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -71,7 +65,6 @@ fun AppNavigation(
     val scope = rememberCoroutineScope()
     var isMenuExpanded by remember { mutableStateOf(false) }
 
-    val usuarioViewModel: UsuarioViewModel = viewModel()
     val mainViewModel: MainViewModel = viewModel()
     val authViewModel: AuthViewModel = viewModel()
 
@@ -80,18 +73,16 @@ fun AppNavigation(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    // Rutas permitidas con Navbar
     val mostrarNavbar = currentRoute == null || currentRoute in listOf(
         Screen.Home.route,
-        Screen.Profile.route,
-        Screen.Settings.route,
-        Screen.Registro.route,
-        Screen.Resumen.route,
-        Screen.Guia12.route,
+        Screen.LeyInclusion.route,
         Screen.Contacto.route,
         Screen.ListaContactos.route,
         Screen.Login.route
     )
 
+    // Navegación limpia
     val navegarA: (String) -> Unit = { route ->
         if (currentRoute != route) {
             navController.navigate(route) {
@@ -100,24 +91,6 @@ fun AppNavigation(
                 }
                 launchSingleTop = true
                 restoreState = route != Screen.Home.route
-            }
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        usuarioViewModel.navigationEvents.collectLatest { event ->
-            when (event) {
-                is NavigationEvent.NavigateTo -> {
-                    navController.navigate(event.route.route) {
-                        event.popupToRoute?.let { popup ->
-                            popUpTo(popup.route) { inclusive = event.inclusive }
-                        }
-                        launchSingleTop = event.singleTop
-                        restoreState = true
-                    }
-                }
-                is NavigationEvent.PopBackStack -> navController.popBackStack()
-                is NavigationEvent.NavigateUp -> navController.navigateUp()
             }
         }
     }
@@ -140,12 +113,10 @@ fun AppNavigation(
         }
     }
 
+    // Elementos del menú lateral
     val baseMenuItems = listOf(
         Triple(Screen.Home.route, "Home", Icons.Default.Home),
-        Triple(Screen.Registro.route, "Registro", Icons.AutoMirrored.Filled.List),
-        Triple(Screen.Profile.route, "Perfil", Icons.Default.Person),
-        Triple(Screen.Settings.route, "Ajustes", Icons.Default.Settings),
-        Triple(Screen.Guia12.route, "Animación", Icons.Default.Star),
+        Triple(Screen.LeyInclusion.route, "Ley Inclusión", Icons.Default.Gavel),
         Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email)
     )
 
@@ -155,15 +126,18 @@ fun AppNavigation(
         baseMenuItems + Triple(Screen.Login.route, "Acceso Funcionarios", Icons.Default.Lock)
     }
 
+    // Elementos de la barra inferior (BottomBar)
     val essentialMenuItems = if (isLoggedIn) {
         listOf(
             Triple(Screen.Home.route, "Home", Icons.Default.Home),
+            Triple(Screen.LeyInclusion.route, "Ley Inclusión", Icons.Default.Gavel),
             Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email),
             Triple(Screen.ListaContactos.route, "Mensajes", Icons.AutoMirrored.Filled.List)
         )
     } else {
         listOf(
             Triple(Screen.Home.route, "Home", Icons.Default.Home),
+            Triple(Screen.LeyInclusion.route, "Ley Inclusión", Icons.Default.Gavel),
             Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email)
         )
     }
@@ -180,18 +154,25 @@ fun AppNavigation(
                             .padding(16.dp)
                             .verticalScroll(rememberScrollState())
                     ) {
+                        // Cabecera del Menú Desplegable (Aquí sí va el Logotipo de la marca)
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(bottom = 16.dp)
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.logo_alba_lab),
-                                contentDescription = "Logo Alba Lab",
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                                    .height(40.dp)
-                                    .wrapContentWidth()
-                            )
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = MaterialTheme.colorScheme.surface,
+                                tonalElevation = 1.dp
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.logo_alba_lab),
+                                    contentDescription = "Logo Alba Lab",
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .height(38.dp)
+                                        .padding(horizontal = 6.dp, vertical = 3.dp)
+                                )
+                            }
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(
                                 text = "Alba Lab",
@@ -258,23 +239,12 @@ fun AppNavigation(
                             }
                         },
                         title = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.logo_alba_lab),
-                                    contentDescription = "Logo Alba Lab",
-                                    contentScale = ContentScale.Fit,
-                                    modifier = Modifier
-                                        .height(36.dp)
-                                        .wrapContentWidth()
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
-                                Text(
-                                    text = "Alba Lab",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
+                            Text(
+                                text = "Alba Lab",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
                         },
                         actions = {
                             IconButton(onClick = onToggleTheme) {
@@ -336,7 +306,6 @@ fun AppNavigation(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            // Cabecera del Menú Lateral
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -350,14 +319,20 @@ fun AppNavigation(
                                     exit = fadeOut(animationSpec = tween(100))
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Image(
-                                            painter = painterResource(id = R.drawable.logo_alba_lab),
-                                            contentDescription = "Logo Alba Lab",
-                                            contentScale = ContentScale.Fit,
-                                            modifier = Modifier
-                                                .height(36.dp)
-                                                .wrapContentWidth()
-                                        )
+                                        Surface(
+                                            shape = RoundedCornerShape(8.dp),
+                                            color = MaterialTheme.colorScheme.surface,
+                                            tonalElevation = 1.dp
+                                        ) {
+                                            Image(
+                                                painter = painterResource(id = R.drawable.logo_alba_lab),
+                                                contentDescription = "Logo Alba Lab",
+                                                contentScale = ContentScale.Fit,
+                                                modifier = Modifier
+                                                    .height(32.dp)
+                                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                                            )
+                                        }
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
                                             text = "Alba Lab",
@@ -378,7 +353,6 @@ fun AppNavigation(
                                 }
                             }
 
-                            // Botón de Modo Oscuro/Claro (siempre accesible en pantallas no compactas)
                             IconButton(
                                 onClick = onToggleTheme,
                                 modifier = Modifier.padding(vertical = 2.dp)
@@ -465,23 +439,13 @@ fun AppNavigation(
                         )
                     }
                 ) {
-                    composable(route = Screen.Registro.route) {
-                        RegistroScreen(viewModel = usuarioViewModel)
-                    }
-                    composable(route = Screen.Resumen.route) {
-                        ResumenScreen(viewModel = usuarioViewModel)
-                    }
                     composable(route = Screen.Home.route) {
                         HomeScreen(navController = navController, viewModel = mainViewModel)
                     }
-                    composable(route = Screen.Profile.route) {
-                        ProfileScreen(navController = navController, viewModel = mainViewModel)
-                    }
-                    composable(route = Screen.Settings.route) {
-                        SettingsScreen(navController = navController, viewModel = mainViewModel)
-                    }
-                    composable(route = Screen.Guia12.route) {
-                        PantallaPrincipal()
+                    composable(route = Screen.LeyInclusion.route) {
+                        LeyInclusionScreen(
+                            onContactarClick = { navegarA(Screen.Contacto.route) }
+                        )
                     }
                     composable(route = Screen.Contacto.route) {
                         val context = LocalContext.current
