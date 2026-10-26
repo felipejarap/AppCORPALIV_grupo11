@@ -47,6 +47,7 @@ import com.example.appcorpaliv_grupo11.ui.screens.auth.LoginScreen
 import com.example.appcorpaliv_grupo11.ui.screens.contacto.ContactoScreen
 import com.example.appcorpaliv_grupo11.ui.screens.leyInclusion.LeyInclusionScreen
 import com.example.appcorpaliv_grupo11.ui.screens.listaContactos.ListaContactosScreen
+import com.example.appcorpaliv_grupo11.ui.screens.queHacemos.QueHacemosScreen
 import com.example.appcorpaliv_grupo11.ui.screens.quienesSomos.QuienesSomosScreen
 import com.example.appcorpaliv_grupo11.viewModel.AuthViewModel
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
@@ -80,6 +81,7 @@ fun AppNavigation(
         Screen.Home.route,
         Screen.LeyInclusion.route,
         Screen.QuienesSomos.route,
+        Screen.QueHacemos.route,
         Screen.Contacto.route,
         Screen.ListaContactos.route,
         Screen.Login.route
@@ -121,6 +123,7 @@ fun AppNavigation(
         Triple(Screen.Home.route, "Home", Icons.Default.Home),
         Triple(Screen.LeyInclusion.route, "Ley Inclusión", Icons.Default.Gavel),
         Triple(Screen.QuienesSomos.route, "Quiénes Somos", Icons.Default.Info),
+        Triple(Screen.QueHacemos.route, "Que hacemos", Icons.Default.Info),
         Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email)
     )
 
@@ -136,6 +139,7 @@ fun AppNavigation(
             Triple(Screen.Home.route, "Home", Icons.Default.Home),
             Triple(Screen.LeyInclusion.route, "Ley Inclusión", Icons.Default.Gavel),
             Triple(Screen.QuienesSomos.route, "Quiénes Somos", Icons.Default.Info),
+            Triple(Screen.QueHacemos.route, "Que hacemos", Icons.Default.Info),
             Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email),
             Triple(Screen.ListaContactos.route, "Mensajes", Icons.AutoMirrored.Filled.List)
         )
@@ -454,6 +458,11 @@ fun AppNavigation(
                     }
                     composable(route = Screen.QuienesSomos.route){
                         QuienesSomosScreen(
+                            onContactoClick = { navegarA(Screen.Contacto.route) }
+                        )
+                    }
+                    composable(route = Screen.QueHacemos.route){
+                        QueHacemosScreen(
                             onContactoClick = { navegarA(Screen.Contacto.route) }
                         )
                     }
