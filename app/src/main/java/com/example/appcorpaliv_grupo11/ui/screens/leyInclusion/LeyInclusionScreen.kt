@@ -22,7 +22,7 @@ fun LeyInclusionScreen(
 }
 
 @Composable
-private fun obtenerWindowWidthSizeClass(): WindowWidthSizeClass {
+fun obtenerWindowWidthSizeClass(): WindowWidthSizeClass {
     val configuration = LocalConfiguration.current
     return when {
         configuration.screenWidthDp < 600 -> WindowWidthSizeClass.Compact

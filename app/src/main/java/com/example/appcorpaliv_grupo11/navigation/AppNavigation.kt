@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
@@ -46,6 +47,7 @@ import com.example.appcorpaliv_grupo11.ui.screens.auth.LoginScreen
 import com.example.appcorpaliv_grupo11.ui.screens.contacto.ContactoScreen
 import com.example.appcorpaliv_grupo11.ui.screens.leyInclusion.LeyInclusionScreen
 import com.example.appcorpaliv_grupo11.ui.screens.listaContactos.ListaContactosScreen
+import com.example.appcorpaliv_grupo11.ui.screens.quienesSomos.QuienesSomosScreen
 import com.example.appcorpaliv_grupo11.viewModel.AuthViewModel
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 import com.example.appcorpaliv_grupo11.viewModel.MainViewModel
@@ -77,6 +79,7 @@ fun AppNavigation(
     val mostrarNavbar = currentRoute == null || currentRoute in listOf(
         Screen.Home.route,
         Screen.LeyInclusion.route,
+        Screen.QuienesSomos.route,
         Screen.Contacto.route,
         Screen.ListaContactos.route,
         Screen.Login.route
@@ -117,6 +120,7 @@ fun AppNavigation(
     val baseMenuItems = listOf(
         Triple(Screen.Home.route, "Home", Icons.Default.Home),
         Triple(Screen.LeyInclusion.route, "Ley Inclusión", Icons.Default.Gavel),
+        Triple(Screen.QuienesSomos.route, "Quiénes Somos", Icons.Default.Info),
         Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email)
     )
 
@@ -131,6 +135,7 @@ fun AppNavigation(
         listOf(
             Triple(Screen.Home.route, "Home", Icons.Default.Home),
             Triple(Screen.LeyInclusion.route, "Ley Inclusión", Icons.Default.Gavel),
+            Triple(Screen.QuienesSomos.route, "Quiénes Somos", Icons.Default.Info),
             Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email),
             Triple(Screen.ListaContactos.route, "Mensajes", Icons.AutoMirrored.Filled.List)
         )
@@ -445,6 +450,11 @@ fun AppNavigation(
                     composable(route = Screen.LeyInclusion.route) {
                         LeyInclusionScreen(
                             onContactarClick = { navegarA(Screen.Contacto.route) }
+                        )
+                    }
+                    composable(route = Screen.QuienesSomos.route){
+                        QuienesSomosScreen(
+                            onContactoClick = { navegarA(Screen.Contacto.route) }
                         )
                     }
                     composable(route = Screen.Contacto.route) {
