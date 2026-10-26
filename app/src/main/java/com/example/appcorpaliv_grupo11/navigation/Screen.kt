@@ -22,6 +22,10 @@ sealed class Screen(val route: String) {
     /** Pantalla informativa sobre la Ley de Inclusión Laboral y Social. */
     data object LeyInclusion : Screen(route = "ley_inclusion")
 
+    data object QuienesSomos : Screen("quienes_somos")
+
     /** Pantalla de autenticación/login para funcionarios y administradores. */
     data object Login : Screen(route = "login")
+
+
 }
