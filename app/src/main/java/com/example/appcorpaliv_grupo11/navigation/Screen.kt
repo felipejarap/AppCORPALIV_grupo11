@@ -24,6 +24,8 @@ sealed class Screen(val route: String) {
 
     data object QuienesSomos : Screen("quienes_somos")
 
+    data object QueHacemos : Screen("que_hacemos")
+
     /** Pantalla de autenticación/login para funcionarios y administradores. */
     data object Login : Screen(route = "login")
 
