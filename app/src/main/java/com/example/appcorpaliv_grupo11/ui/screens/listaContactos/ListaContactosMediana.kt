@@ -2,11 +2,8 @@ package com.example.appcorpaliv_grupo11.ui.screens.listaContactos
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,10 +16,6 @@ import com.example.appcorpaliv_grupo11.model.ContactoEntity
 import com.example.appcorpaliv_grupo11.ui.components.TarjetaMensajeItem
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 
-/**
- * Vista para pantallas medianas (600 dp - 839 dp).
- * Si hay un solo mensaje se expande a todo el ancho; si hay más, los distribuye en 2 columnas.
- */
 @Composable
 fun ListaContactosMediana(viewModel: ContactoViewModel) {
     val listaContactos by viewModel.listaContactos.collectAsState()
@@ -76,23 +69,19 @@ fun ListaContactosMediana(viewModel: ContactoViewModel) {
                 )
             }
         } else {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(
                     items = mensajesFiltrados,
-                    key = { item: ContactoEntity -> item.id },
-                    span = { _ ->
-                        if (mensajesFiltrados.size == 1) GridItemSpan(maxLineSpan) else GridItemSpan(1)
-                    }
+                    key = { item: ContactoEntity -> item.id }
                 ) { item ->
                     TarjetaMensajeItem(
                         contacto = item,
-                        onRechazarClick = { viewModel.cambiarEstadoContacto(item, "Rechazado") },
-                        onContestarClick = { viewModel.cambiarEstadoContacto(item, "Contestado") }
+                        onCambiarEstado = { contacto, nuevoEstado ->
+                            viewModel.cambiarEstadoContacto(contacto, nuevoEstado)
+                        }
                     )
                 }
             }

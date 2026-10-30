@@ -17,7 +17,8 @@ import com.example.appcorpaliv_grupo11.ui.components.TarjetaMensajeItem
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 
 /**
- * Vista para dispositivos de tamaño compacto (< 600 dp). Renderiza los mensajes en 1 sola columna vertical.
+ * Vista para dispositivos de tamaño compacto (< 600 dp).
+ * Renderiza los mensajes en 1 sola columna vertical con filtrado dinámico y eliminación.
  *
  * @param viewModel Instancia de [ContactoViewModel] para administrar los datos y filtros.
  */
@@ -84,8 +85,9 @@ fun ListaContactosCompacta(viewModel: ContactoViewModel) {
                 ) { item ->
                     TarjetaMensajeItem(
                         contacto = item,
-                        onRechazarClick = { viewModel.cambiarEstadoContacto(item, "Rechazado") },
-                        onContestarClick = { viewModel.cambiarEstadoContacto(item, "Contestado") }
+                        onCambiarEstado = { contacto, nuevoEstado ->
+                            viewModel.cambiarEstadoContacto(contacto, nuevoEstado)
+                        }
                     )
                 }
             }

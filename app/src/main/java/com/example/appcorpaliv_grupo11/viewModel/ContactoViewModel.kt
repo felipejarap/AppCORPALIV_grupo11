@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.appcorpaliv_grupo11.model.ContactoEntity
 import com.example.appcorpaliv_grupo11.repository.ContactoRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,12 +22,10 @@ import kotlinx.coroutines.launch
 class ContactoViewModel(private val repository: ContactoRepository) : ViewModel() {
 
     // =========================================================================
-    // ESTADOS DEL FORMULARIO DE CONTACTO (CAMPOS DE TEXTO)
-    // Usan mutableStateOf para reactividad directa con Jetpack Compose.
-    // 'private set' asegura la encapsulación: solo el ViewModel puede modificarlos.
+    // ESTADOS DEL FORMULARIO DE CONTACTO (CAMPOS DE TEXTO Y DROPDOWN)
     // =========================================================================
 
-    /** Guarda el nombre ingresado por el usuario en el formulario. */
+    /** Guarda el nombre ingresado por el usuario. */
     var nombre by mutableStateOf("")
         private set
 
@@ -34,12 +33,46 @@ class ContactoViewModel(private val repository: ContactoRepository) : ViewModel(
     var email by mutableStateOf("")
         private set
 
-    /** Guarda el asunto opcional o título del mensaje. */
+    /** Guarda el número de teléfono móvil de 9 dígitos. */
+    var telefono by mutableStateOf("")
+        private set
+
+    /** Guarda la opción seleccionada de asunto. */
     var asunto by mutableStateOf("")
         private set
 
     /** Guarda el cuerpo principal del mensaje enviado por el usuario. */
     var mensaje by mutableStateOf("")
+        private set
+
+    // =========================================================================
+    // OPCIONES PREDEFINIDAS PARA EL COMBOBOX / DROPDOWN DE ASUNTOS
+    // =========================================================================
+
+    val opcionesAsunto = listOf(
+        "Programa de Intermediación Laboral",
+        "Programa Taller Sociolaboral",
+        "Quiero colaborar",
+        "Ley de Inclusión Laboral"
+    )
+
+    // =========================================================================
+    // ERRORES DE VALIDACIÓN INDIVIDUALES POR CAMPO
+    // =========================================================================
+
+    var nombreError by mutableStateOf<String?>(null)
+        private set
+
+    var emailError by mutableStateOf<String?>(null)
+        private set
+
+    var telefonoError by mutableStateOf<String?>(null)
+        private set
+
+    var asuntoError by mutableStateOf<String?>(null)
+        private set
+
+    var mensajeError by mutableStateOf<String?>(null)
         private set
 
     // =========================================================================
@@ -51,31 +84,22 @@ class ContactoViewModel(private val repository: ContactoRepository) : ViewModel(
         private set
 
     // =========================================================================
-    // ESTADOS DE FLUJO DE LA INTERFAZ (UI STATE Y CONTROL DE ERRORES)
-    // Usan StateFlow para emitir cambios de estado asíncronos y seguros a la UI.
+    // ESTADOS DE FLUJO DE LA INTERFAZ (UI STATE, LOADING Y ERROR GENERAL DE BASE DE DATOS)
     // =========================================================================
 
-    /** Estado interno que indica si el formulario fue enviado con éxito. */
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
     private val _isSubmitted = MutableStateFlow(false)
-    /** Estado público observable por la UI para mostrar la tarjeta de confirmación. */
     val isSubmitted: StateFlow<Boolean> = _isSubmitted.asStateFlow()
 
-    /** Estado interno para manejar mensajes de validación o error de la base de datos. */
     private val _errorMessage = MutableStateFlow<String?>(null)
-    /** Estado público observable por la UI para renderizar alertas o errores en pantalla. */
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
     // =========================================================================
     // LECTURA DE DATOS EN TIEMPO REAL (ROOM DATA FLOW)
     // =========================================================================
 
-    /**
-     * Flujo continuo de mensajes desde la base de datos Room.
-     * Se convierte en un StateFlow mediante [stateIn]:
-     * - scope: Limitado a la vida útil de este ViewModel.
-     * - started: 'WhileSubscribed(5000)' mantiene la lectura activa y espera 5s tras rotaciones de pantalla.
-     * - initialValue: Lista vacía para evitar nulos mientras cargan los datos.
-     */
     val listaContactos: StateFlow<List<ContactoEntity>> = repository.listaContactos
         .stateIn(
             scope = viewModelScope,
@@ -85,98 +109,119 @@ class ContactoViewModel(private val repository: ContactoRepository) : ViewModel(
 
     // =========================================================================
     // FUNCIONES DE ACTUALIZACIÓN DE CAMPOS DEL FORMULARIO
-    // Cada vez que el usuario escribe, actualizan el estado y limpian los errores activos.
     // =========================================================================
 
-    /** Actualiza el campo de nombre y limpia mensajes de error previos. */
     fun onNombreChanged(nuevoNombre: String) {
         nombre = nuevoNombre
-        _errorMessage.value = null
+        nombreError = null
     }
 
-    /** Actualiza el campo de email y limpia mensajes de error previos. */
     fun onEmailChanged(nuevoEmail: String) {
         email = nuevoEmail
-        _errorMessage.value = null
+        emailError = null
     }
-
-    /** Actualiza el campo de asunto y limpia mensajes de error previos. */
-    fun onAsuntoChanged(nuevoAsunto: String) {
-        asunto = nuevoAsunto
-        _errorMessage.value = null
-    }
-
-    /** Actualiza el campo de mensaje y limpia mensajes de error previos. */
-    fun onMensajeChanged(nuevoMensaje: String) {
-        mensaje = nuevoMensaje
-        _errorMessage.value = null
-    }
-
-    // =========================================================================
-    // GESTIÓN DE FILTROS EN LA LISTA
-    // =========================================================================
 
     /**
-     * Cambia el filtro actual para la lista de mensajes en la vista de administración.
-     * @param nuevoFiltro Criterio de filtrado ("Todos", "Pendientes", "Contestados", "Rechazados").
+     * Filtra la entrada para permitir únicamente dígitos numéricos y un máximo de 9 caracteres.
      */
+    fun onTelefonoChanged(nuevoTelefono: String) {
+        val filtrado = nuevoTelefono.filter { it.isDigit() }.take(9)
+        telefono = filtrado
+        telefonoError = null
+    }
+
+    fun onAsuntoChanged(nuevoAsunto: String) {
+        asunto = nuevoAsunto
+        asuntoError = null
+    }
+
+    fun onMensajeChanged(nuevoMensaje: String) {
+        mensaje = nuevoMensaje
+        mensajeError = null
+    }
+
     fun cambiarFiltro(nuevoFiltro: String) {
         filtroActual = nuevoFiltro
     }
 
     // =========================================================================
-    // CREACIÓN Y PERSISTENCIA (ENVÍO DEL FORMULARIO)
+    // VALIDACIONES INDIVIDUALES DEL FORMULARIO
     // =========================================================================
 
-    /**
-     * Valida los datos ingresados y guarda el nuevo mensaje de contacto en Room de forma asíncrona.
-     * @param onSuccess Callback opcional que se ejecuta tras completar el guardado con éxito.
-     */
+    private fun validarCampos(): Boolean {
+        var esValido = true
+
+        if (nombre.isBlank()) {
+            nombreError = "El nombre es obligatorio *"
+            esValido = false
+        }
+
+        if (email.isBlank()) {
+            emailError = "El correo electrónico es obligatorio *"
+            esValido = false
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailError = "Ingresa un correo electrónico válido."
+            esValido = false
+        }
+
+        if (telefono.isBlank()) {
+            telefonoError = "El teléfono es obligatorio *"
+            esValido = false
+        } else if (telefono.length != 9 || !telefono.startsWith("9")) {
+            telefonoError = "Debe ingresar 9 dígitos comenzando con 9 (Ej: 912345678)."
+            esValido = false
+        }
+
+        if (asunto.isBlank()) {
+            asuntoError = "Por favor selecciona un asunto *"
+            esValido = false
+        }
+
+        if (mensaje.isBlank()) {
+            mensajeError = "El mensaje no puede estar vacío *"
+            esValido = false
+        }
+
+        return esValido
+    }
+
+    // =========================================================================
+    // CREACIÓN Y PERSISTENCIA (ENVÍO DEL FORMULARIO CON ANIMACIÓN DE CARGA)
+    // =========================================================================
+
     fun enviarFormulario(onSuccess: () -> Unit = {}) {
-        // 1. Validar que los campos obligatorios no estén vacíos
-        if (nombre.isBlank() || email.isBlank() || mensaje.isBlank()) {
-            _errorMessage.value = "Por favor completa los campos obligatorios (*)."
-            return
-        }
+        if (!validarCampos()) return
 
-        // 2. Validar el formato de correo mediante la utilidad nativa de Android
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _errorMessage.value = "Por favor ingresa un correo electrónico válido."
-            return
-        }
-
-        // Limpiar errores activos antes de proceder al guardado
         _errorMessage.value = null
 
-        // 3. Insertar en Room dentro de una corrutina en segundo plano
         viewModelScope.launch {
+            _isLoading.value = true
             try {
+                // Simula el tiempo de procesamiento/envío de datos (1.5 segundos)
+                delay(1500)
+
                 val nuevoContacto = ContactoEntity(
                     nombre = nombre,
                     email = email,
-                    asunto = asunto,
+                    asunto = "$asunto | Tel: +56$telefono",
                     mensaje = mensaje
-                    // 'estado' toma automáticamente "Pendiente" por defecto en la data class ContactoEntity
                 )
                 repository.guardarContacto(nuevoContacto)
 
-                // Notificar éxito a la interfaz
                 _isSubmitted.value = true
                 onSuccess()
             } catch (e: Exception) {
                 _errorMessage.value = "Error al guardar localmente: ${e.message}"
+            } finally {
+                _isLoading.value = false
             }
         }
     }
 
     // =========================================================================
-    // ACTUALIZACIÓN DE REGISTROS (UPDATE)
+    // ACTUALIZACIÓN DE REGISTROS (UPDATE) Y ELIMINACIÓN
     // =========================================================================
 
-    /**
-     * Actualiza un registro de contacto existente en la base de datos Room.
-     * @param contacto Objeto [ContactoEntity] con los datos modificados.
-     */
     fun actualizarContacto(contacto: ContactoEntity) {
         viewModelScope.launch {
             try {
@@ -187,22 +232,10 @@ class ContactoViewModel(private val repository: ContactoRepository) : ViewModel(
         }
     }
 
-    /**
-     * Cambia el estado de respuesta de un mensaje ("Pendiente" -> "Contestado" o "Rechazado").
-     * Utiliza la función `.copy()` para preservar la inmutabilidad de la entidad.
-     */
     fun cambiarEstadoContacto(contacto: ContactoEntity, nuevoEstado: String) {
         actualizarContacto(contacto.copy(estado = nuevoEstado))
     }
 
-    // =========================================================================
-    // ELIMINACIÓN DE REGISTROS (DELETE)
-    // =========================================================================
-
-    /**
-     * Elimina de forma permanente un registro de mensaje de la base de datos.
-     * @param contacto Registro [ContactoEntity] a eliminar.
-     */
     fun eliminarContacto(contacto: ContactoEntity) {
         viewModelScope.launch {
             try {
@@ -217,15 +250,20 @@ class ContactoViewModel(private val repository: ContactoRepository) : ViewModel(
     // RESTABLECIMIENTO DEL FORMULARIO
     // =========================================================================
 
-    /**
-     * Limpia los campos de texto y restablece los estados de error y confirmación
-     * para permitir ingresar un nuevo mensaje desde cero.
-     */
     fun reiniciarFormulario() {
         nombre = ""
         email = ""
+        telefono = ""
         asunto = ""
         mensaje = ""
+
+        nombreError = null
+        emailError = null
+        telefonoError = null
+        asuntoError = null
+        mensajeError = null
+
+        _isLoading.value = false
         _isSubmitted.value = false
         _errorMessage.value = null
     }

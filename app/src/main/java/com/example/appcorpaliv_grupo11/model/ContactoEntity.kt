@@ -5,33 +5,28 @@ import androidx.room.PrimaryKey
 
 /**
  * Entidad de datos que representa un registro de mensaje de contacto en la base de datos Room.
- * Mapea directamente sus atributos a columnas de la tabla 'contactos' en SQLite.
  */
-@Entity(tableName = "contactos") // Define el nombre explícito de la tabla en SQLite
+@Entity(tableName = "contactos")
 data class ContactoEntity(
 
-    /**
-     * Identificador único y clave primaria (Primary Key) del mensaje.
-     * 'autoGenerate = true' delega a SQLite la generación automática incremental de IDs únicos.
-     */
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    /** Nombre completo del remitente que envió el mensaje. */
+    /** Nombre completo del remitente. */
     val nombre: String,
 
-    /** Correo electrónico de contacto del remitente. */
+    /** Correo electrónico de contacto. */
     val email: String,
 
-    /** Asunto o título descriptivo del mensaje. */
+    /** Teléfono móvil de contacto (9 dígitos). */
+    val telefono: String = "",
+
+    /** Asunto o categoría seleccionada del mensaje. */
     val asunto: String,
 
     /** Cuerpo del mensaje o consulta enviada. */
     val mensaje: String,
 
-    /**
-     * Estado actual del mensaje en la plataforma ("Pendiente", "Contestado", "Rechazado").
-     * Si no se especifica al instanciar el objeto, tomará "Pendiente" por defecto.
-     */
+    /** Estado actual del mensaje ("Pendiente", "Contestado", "Rechazado"). */
     val estado: String = "Pendiente"
 )
