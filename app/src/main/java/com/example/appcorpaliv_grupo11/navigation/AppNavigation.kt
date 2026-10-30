@@ -55,6 +55,12 @@ import com.example.appcorpaliv_grupo11.viewModel.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+/**
+ * Componente principal de navegación de la aplicación.
+ *
+ * Mantiene una estructura uniforme tanto en formato móvil (Compacto) como en escritorio/tablet (Medio y Expandido),
+ * ubicando la opción "Acceso Funcionarios" (o administración de sesión) debajo del interruptor de "Modo Oscuro".
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation(
@@ -118,38 +124,27 @@ fun AppNavigation(
         }
     }
 
-    // Elementos del menú lateral
-    val baseMenuItems = listOf(
+    // Opciones exclusivas de la barra inferior (BottomBar) para móviles
+    val bottomNavItems = listOf(
+        Triple(Screen.Home.route, "Home", Icons.Default.Home),
+        Triple(Screen.LeyInclusion.route, "Ley Inclusión", Icons.Default.Gavel),
+        Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email)
+    )
+
+    // Opciones informativas para el menú desplegable (Drawer) en móviles
+    val infoMenuItemsCompact = listOf(
+        Triple(Screen.QuienesSomos.route, "Quiénes Somos", Icons.Default.Info),
+        Triple(Screen.QueHacemos.route, "Que hacemos", Icons.Default.Info)
+    )
+
+    // Opciones públicas para el riel/panel lateral en pantallas medianas y expandidas
+    val publicMenuItemsExpanded = listOf(
         Triple(Screen.Home.route, "Home", Icons.Default.Home),
         Triple(Screen.LeyInclusion.route, "Ley Inclusión", Icons.Default.Gavel),
         Triple(Screen.QuienesSomos.route, "Quiénes Somos", Icons.Default.Info),
         Triple(Screen.QueHacemos.route, "Que hacemos", Icons.Default.Info),
         Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email)
     )
-
-    val menuItems = if (isLoggedIn) {
-        baseMenuItems + Triple(Screen.ListaContactos.route, "Mensajes", Icons.AutoMirrored.Filled.List)
-    } else {
-        baseMenuItems + Triple(Screen.Login.route, "Acceso Funcionarios", Icons.Default.Lock)
-    }
-
-    // Elementos de la barra inferior (BottomBar)
-    val essentialMenuItems = if (isLoggedIn) {
-        listOf(
-            Triple(Screen.Home.route, "Home", Icons.Default.Home),
-            Triple(Screen.LeyInclusion.route, "Ley Inclusión", Icons.Default.Gavel),
-            Triple(Screen.QuienesSomos.route, "Quiénes Somos", Icons.Default.Info),
-            Triple(Screen.QueHacemos.route, "Que hacemos", Icons.Default.Info),
-            Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email),
-            Triple(Screen.ListaContactos.route, "Mensajes", Icons.AutoMirrored.Filled.List)
-        )
-    } else {
-        listOf(
-            Triple(Screen.Home.route, "Home", Icons.Default.Home),
-            Triple(Screen.LeyInclusion.route, "Ley Inclusión", Icons.Default.Gavel),
-            Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email)
-        )
-    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -163,7 +158,7 @@ fun AppNavigation(
                             .padding(16.dp)
                             .verticalScroll(rememberScrollState())
                     ) {
-                        // Cabecera del Menú Desplegable (Aquí sí va el Logotipo de la marca)
+                        // Cabecera del Menú Desplegable con Logotipo
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(bottom = 16.dp)
@@ -190,9 +185,11 @@ fun AppNavigation(
                                 color = MaterialTheme.colorScheme.primary
                             )
                         }
+
                         HorizontalDivider(modifier = Modifier.padding(bottom = 12.dp))
 
-                        menuItems.forEach { (route, label, icon) ->
+                        // Páginas informativas
+                        infoMenuItemsCompact.forEach { (route, label, icon) ->
                             NavigationDrawerItem(
                                 icon = { Icon(icon, contentDescription = label) },
                                 label = { Text(label) },
@@ -206,8 +203,49 @@ fun AppNavigation(
                             )
                         }
 
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+
+                        // Switch de Tema (Modo Oscuro)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = if (isDarkTheme) Icons.Default.DarkMode else Icons.Default.LightMode,
+                                    contentDescription = "Tema Oscuro",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(
+                                    text = "Modo Oscuro",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                            Switch(
+                                checked = isDarkTheme,
+                                onCheckedChange = { onToggleTheme() }
+                            )
+                        }
+
+                        // Acceso privado / Gestión de sesión
                         if (isLoggedIn) {
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                            NavigationDrawerItem(
+                                icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Mensajes") },
+                                label = { Text("Mensajes") },
+                                selected = currentRoute == Screen.ListaContactos.route,
+                                onClick = {
+                                    scope.launch { drawerState.close() }
+                                    navegarA(Screen.ListaContactos.route)
+                                },
+                                modifier = Modifier.padding(vertical = 2.dp),
+                                shape = MaterialTheme.shapes.medium
+                            )
+
                             NavigationDrawerItem(
                                 icon = {
                                     Icon(
@@ -224,6 +262,18 @@ fun AppNavigation(
                                     navController.navigate(Screen.Home.route) {
                                         popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
                                     }
+                                },
+                                modifier = Modifier.padding(vertical = 2.dp),
+                                shape = MaterialTheme.shapes.medium
+                            )
+                        } else {
+                            NavigationDrawerItem(
+                                icon = { Icon(Icons.Default.Lock, contentDescription = "Acceso Funcionarios") },
+                                label = { Text("Acceso Funcionarios") },
+                                selected = currentRoute == Screen.Login.route,
+                                onClick = {
+                                    scope.launch { drawerState.close() }
+                                    navegarA(Screen.Login.route)
                                 },
                                 modifier = Modifier.padding(vertical = 2.dp),
                                 shape = MaterialTheme.shapes.medium
@@ -255,15 +305,6 @@ fun AppNavigation(
                                 color = MaterialTheme.colorScheme.primary
                             )
                         },
-                        actions = {
-                            IconButton(onClick = onToggleTheme) {
-                                Icon(
-                                    imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
-                                    contentDescription = "Cambiar tema",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        },
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = MaterialTheme.colorScheme.background
                         )
@@ -273,7 +314,7 @@ fun AppNavigation(
             bottomBar = {
                 if (mostrarNavbar && isCompact) {
                     NavigationBar {
-                        essentialMenuItems.forEach { (route, label, icon) ->
+                        bottomNavItems.forEach { (route, label, icon) ->
                             NavigationBarItem(
                                 icon = { Icon(icon, contentDescription = label) },
                                 label = { Text(label) },
@@ -315,6 +356,7 @@ fun AppNavigation(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
+                            // Cabecera del panel expandible
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -362,17 +404,6 @@ fun AppNavigation(
                                 }
                             }
 
-                            IconButton(
-                                onClick = onToggleTheme,
-                                modifier = Modifier.padding(vertical = 2.dp)
-                            ) {
-                                Icon(
-                                    imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
-                                    contentDescription = "Cambiar tema",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
-
                             AnimatedVisibility(
                                 visible = isMenuExpanded,
                                 enter = fadeIn(animationSpec = tween(250)),
@@ -381,7 +412,8 @@ fun AppNavigation(
                                 Column {
                                     HorizontalDivider(modifier = Modifier.padding(bottom = 8.dp))
 
-                                    menuItems.forEach { (route, label, icon) ->
+                                    // 1. Secciones de navegación principal
+                                    publicMenuItemsExpanded.forEach { (route, label, icon) ->
                                         NavigationDrawerItem(
                                             icon = { Icon(icon, contentDescription = label) },
                                             label = { Text(label) },
@@ -392,8 +424,48 @@ fun AppNavigation(
                                         )
                                     }
 
+                                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+
+                                    // 2. Control de Tema (Modo Oscuro)
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(
+                                                imageVector = if (isDarkTheme) Icons.Default.DarkMode else Icons.Default.LightMode,
+                                                contentDescription = "Tema Oscuro",
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                            Spacer(modifier = Modifier.width(12.dp))
+                                            Text(
+                                                text = "Modo Oscuro",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurface
+                                            )
+                                        }
+                                        Switch(
+                                            checked = isDarkTheme,
+                                            onCheckedChange = { onToggleTheme() }
+                                        )
+                                    }
+
+                                    // 3. Acceso a Funcionarios / Administración de sesión debajo de Modo Oscuro
                                     if (isLoggedIn) {
+                                        NavigationDrawerItem(
+                                            icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Mensajes") },
+                                            label = { Text("Mensajes") },
+                                            selected = currentRoute == Screen.ListaContactos.route,
+                                            onClick = { navegarA(Screen.ListaContactos.route) },
+                                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                                            shape = MaterialTheme.shapes.medium
+                                        )
+
                                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
                                         NavigationDrawerItem(
                                             icon = {
                                                 Icon(
@@ -410,7 +482,16 @@ fun AppNavigation(
                                                     popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
                                                 }
                                             },
-                                            modifier = Modifier.padding(horizontal = 4.dp),
+                                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                                            shape = MaterialTheme.shapes.medium
+                                        )
+                                    } else {
+                                        NavigationDrawerItem(
+                                            icon = { Icon(Icons.Default.Lock, contentDescription = "Acceso Funcionarios") },
+                                            label = { Text("Acceso Funcionarios") },
+                                            selected = currentRoute == Screen.Login.route,
+                                            onClick = { navegarA(Screen.Login.route) },
+                                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
                                             shape = MaterialTheme.shapes.medium
                                         )
                                     }
@@ -525,6 +606,9 @@ fun AppNavigation(
     }
 }
 
+/**
+ * Función utilitaria interna para consultar si el dispositivo se clasifica como pantalla compacta (< 600 dp).
+ */
 @Composable
 private fun esPantallaCompacta(): Boolean {
     val configuration = LocalConfiguration.current

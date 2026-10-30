@@ -2,8 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- AGREGA ESTOS DOS PERMISOS AQUÍ -->
+    <!-- Permite a la aplicación abrir conexiones de red hacia servidores externos (HTTP/HTTPS) -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Permite consultar el estado activo de las redes (Wi-Fi, datos móviles, Ethernet) -->
+    <!-- Necesario para la función 'isInternetAvailable()' en ConnectivityManager -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
@@ -15,11 +18,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCORPALIV_grupo11">
-
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.AppCORPALIV_grupo11"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -29,5 +30,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
@@ -18,6 +19,10 @@ import com.example.appcorpaliv_grupo11.model.ContactoEntity
 import com.example.appcorpaliv_grupo11.ui.components.TarjetaMensajeItem
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 
+/**
+ * Vista para pantallas medianas (600 dp - 839 dp).
+ * Si hay un solo mensaje se expande a todo el ancho; si hay más, los distribuye en 2 columnas.
+ */
 @Composable
 fun ListaContactosMediana(viewModel: ContactoViewModel) {
     val listaContactos by viewModel.listaContactos.collectAsState()
@@ -37,7 +42,7 @@ fun ListaContactosMediana(viewModel: ContactoViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(24.dp)
+            .padding(16.dp)
     ) {
         Text(
             text = "Gestión de Mensajes",
@@ -46,7 +51,7 @@ fun ListaContactosMediana(viewModel: ContactoViewModel) {
             color = MaterialTheme.colorScheme.onBackground
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(filtros) { filtro ->
@@ -58,7 +63,7 @@ fun ListaContactosMediana(viewModel: ContactoViewModel) {
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         if (mensajesFiltrados.isEmpty()) {
             Box(
@@ -72,14 +77,17 @@ fun ListaContactosMediana(viewModel: ContactoViewModel) {
             }
         } else {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 380.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(
                     items = mensajesFiltrados,
-                    key = { item: ContactoEntity -> item.id }
+                    key = { item: ContactoEntity -> item.id },
+                    span = { _ ->
+                        if (mensajesFiltrados.size == 1) GridItemSpan(maxLineSpan) else GridItemSpan(1)
+                    }
                 ) { item ->
                     TarjetaMensajeItem(
                         contacto = item,
