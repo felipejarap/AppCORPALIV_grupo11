@@ -1,5 +1,7 @@
 package com.example.appcorpaliv_grupo11.ui.components
 
+import android.content.Intent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -13,24 +15,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import com.example.appcorpaliv_grupo11.model.ContactoEntity
 
+/**
+ * Componente visual reutilizable que muestra la tarjeta con la información de un contacto enviado.
+ *
+ * Cumplimiento IE 2.4.1 (Recursos del dispositivo):
+ * - Acción de Correo: Lanza Intent.ACTION_SENDTO abriendo el cliente de correo del sistema (Gmail, etc.).
+ * - Acción de Teléfono: Lanza Intent.ACTION_DIAL abriendo el marcador nativo del sistema con formato +56.
+ */
 @Composable
 fun TarjetaMensajeItem(
     contacto: ContactoEntity,
     onCambiarEstado: (ContactoEntity, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Contexto de Android para llamar a las funciones e Intents nativos del sistema
+    val context = LocalContext.current
+
+    // Paleta de colores dinámica en función del estado actual del registro
     val (colorContenedor, colorTexto) = when (contacto.estado) {
         "Contestado" -> Pair(Color(0xFFE8F5E9), Color(0xFF2E7D32))
         "Rechazado" -> Pair(Color(0xFFFFEBEE), Color(0xFFC62828))
         else -> Pair(Color(0xFFFFF3E0), Color(0xFFE65100))
     }
 
+    // Extracción y formateo preventivo de datos almacenados en el objeto
     val telefonoMostrar = when {
         contacto.telefono.isNotBlank() -> contacto.telefono
         contacto.asunto.contains("Tel:") -> contacto.asunto.substringAfter("Tel:").trim()
@@ -54,7 +70,9 @@ fun TarjetaMensajeItem(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // Cabecera: Nombre y Estado
+            // =========================================================================
+            // 1. CABECERA: NOMBRE Y BADGE DE ESTADO
+            // =========================================================================
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -99,27 +117,42 @@ fun TarjetaMensajeItem(
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
-            // Correo y Teléfono
+            // =========================================================================
+            // 2. RECURSOS NATIVOS: CORREO Y TELÉFONO INTERACTIVOS (INTENTS IMPLÍCITOS KTX)
+            // =========================================================================
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // ---------------------------------------------------------------------
+                // RECURSO NATIVO 1: Enviar Correo (ACTION_SENDTO + KTX toUri)
+                // ---------------------------------------------------------------------
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f, fill = false)
+                    modifier = Modifier
+                        .weight(1f, fill = false)
+                        .clickable {
+                            if (contacto.email.isNotBlank()) {
+                                val intentEmail = Intent(Intent.ACTION_SENDTO).apply {
+                                    data = "mailto:${contacto.email}".toUri()
+                                    putExtra(Intent.EXTRA_SUBJECT, "Respuesta a: $asuntoLimpio")
+                                }
+                                context.startActivity(intentEmail)
+                            }
+                        }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Email,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.outline,
+                        contentDescription = "Enviar Correo",
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = contacto.email,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.primary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -127,18 +160,39 @@ fun TarjetaMensajeItem(
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                // ---------------------------------------------------------------------
+                // RECURSO NATIVO 2: Marcador Telefónico con Prefijo +56 (ACTION_DIAL + KTX toUri)
+                // ---------------------------------------------------------------------
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable {
+                        val digitsOnly = telefonoMostrar.filter { it.isDigit() }
+                        if (digitsOnly.isNotBlank()) {
+                            // Antepone el código de país +56 si el número es de 9 dígitos
+                            val numFinal = if (digitsOnly.length == 9) {
+                                "+56$digitsOnly"
+                            } else {
+                                "+$digitsOnly"
+                            }
+
+                            val intentLlamar = Intent(Intent.ACTION_DIAL).apply {
+                                data = "tel:$numFinal".toUri()
+                            }
+                            context.startActivity(intentLlamar)
+                        }
+                    }
+                ) {
                     Icon(
                         imageVector = Icons.Default.Phone,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.outline,
+                        contentDescription = "Llamar por teléfono",
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = telefonoMostrar,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.primary,
                         maxLines = 1
                     )
                 }
@@ -146,7 +200,9 @@ fun TarjetaMensajeItem(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Asunto
+            // =========================================================================
+            // 3. ASUNTO Y DETALLE DEL MENSAJE
+            // =========================================================================
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -168,7 +224,6 @@ fun TarjetaMensajeItem(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Cuerpo del mensaje
             Text(
                 text = contacto.mensaje,
                 style = MaterialTheme.typography.bodyMedium,
@@ -176,7 +231,9 @@ fun TarjetaMensajeItem(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Acciones de administración: Solo visibles cuando el estado es "Pendiente"
+            // =========================================================================
+            // 4. ACCIONES DE ADMINISTRACIÓN (Visibles únicamente para estado "Pendiente")
+            // =========================================================================
             if (contacto.estado.equals("Pendiente", ignoreCase = true)) {
                 Spacer(modifier = Modifier.height(12.dp))
 
