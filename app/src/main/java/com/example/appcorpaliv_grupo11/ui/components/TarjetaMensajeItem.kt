@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Subject
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.example.appcorpaliv_grupo11.model.ContactoEntity
+import androidx.compose.material.icons.automirrored.filled.Subject
 
 /**
  * Componente visual reutilizable que muestra la tarjeta con la información de un contacto enviado.
@@ -208,7 +208,7 @@ fun TarjetaMensajeItem(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageVector = Icons.Default.Subject,
+                    imageVector = Icons.AutoMirrored.Filled.Subject,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
