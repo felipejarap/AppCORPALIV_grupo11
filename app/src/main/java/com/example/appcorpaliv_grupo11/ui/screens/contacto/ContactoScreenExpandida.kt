@@ -3,7 +3,6 @@ package com.example.appcorpaliv_grupo11.ui.screens.contacto
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Subject
@@ -15,13 +14,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 import com.example.appcorpaliv_grupo11.ui.components.BotonPrimario
 import com.example.appcorpaliv_grupo11.ui.components.CampoTextoInput
 import com.example.appcorpaliv_grupo11.ui.components.FooterInformativo
+import com.example.appcorpaliv_grupo11.ui.components.TarjetaExitoAnimada
 import com.example.appcorpaliv_grupo11.ui.components.TarjetaInfoContacto
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 
@@ -51,47 +50,18 @@ fun ContactoScreenExpandida(viewModel: ContactoViewModel) {
                 TarjetaInfoContacto()
             }
 
-            // Columna Derecha: Formulario de Entrada
+            // Columna Derecha: Formulario / Tarjeta de éxito animada
             Column(
                 modifier = Modifier.weight(1.2f)
             ) {
-                if (isSubmitted) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
-                        ),
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(32.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "¡Mensaje Enviado!",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 22.sp,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "Gracias por contactarte con Corpaliv / Alba Lab. Te responderemos a la brevedad.",
-                                fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Button(
-                                onClick = { viewModel.reiniciarFormulario() },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
-                                )
-                            ) {
-                                Text("Enviar otro mensaje")
-                            }
-                        }
-                    }
-                } else {
+                // Componente animado de éxito
+                TarjetaExitoAnimada(
+                    mostrarExito = isSubmitted,
+                    onEnviarOtroMensaje = { viewModel.reiniciarFormulario() }
+                )
+
+                // Campos del formulario (se ocultan mientras la tarjeta de éxito esté visible)
+                if (!isSubmitted) {
                     CampoTextoInput(
                         value = viewModel.nombre,
                         onValueChange = { viewModel.onNombreChanged(it) },
