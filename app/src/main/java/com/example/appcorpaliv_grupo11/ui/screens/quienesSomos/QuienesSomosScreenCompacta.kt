@@ -12,6 +12,21 @@ import androidx.compose.ui.unit.sp
 import com.example.appcorpaliv_grupo11.ui.components.FooterInformativo
 import com.example.appcorpaliv_grupo11.ui.components.InsigniaMideso
 
+/**
+ * PANTALLA DE QUIÉNES SOMOS EN FORMATO COMPACTO (SMARTPHONES PORTRAIT)
+ *
+ * Sub-vista adaptativa diseñada para dispositivos móviles con ancho de pantalla menor a 600 dp.
+ * Despliega la información institucional, historia y misión de Corpaliv en un flujo continuo de 1 columna:
+ * 1. Insignia MIDESO de acreditación institucional (InsigniaMideso).
+ * 2. Titular principal de la sección.
+ * 3. Tarjeta informativa Sobre Corpaliv (Card) en tono surfaceVariant.
+ * 4. Tarjeta destacada Nuestra Misión en tono primaryContainer.
+ * 5. Tarjeta informativa Nuestro Equipo en tono surfaceVariant.
+ * 6. Botón primario de acción para solicitar contacto directo.
+ * 7. Pie de página informativo institucional (FooterInformativo).
+ *
+ * @param onContactoClick Callback emitido cuando el usuario presiona el botón para solicitar contacto.
+ */
 @Composable
 fun QuienesSomosScreenCompacta(
     onContactoClick: () -> Unit = {}
@@ -22,14 +37,18 @@ fun QuienesSomosScreenCompacta(
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        // 1. Insignia MIDESO
+        // =========================================================================
+        // 1. INSIGNIA DE ACREDITACIÓN INSTITUCIONAL MIDESO
+        // =========================================================================
         InsigniaMideso(
             texto = "Acreditación MIDESO - Corpaliv"
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 2. Título principal
+        // =========================================================================
+        // 2. TÍTULO PRINCIPAL DE LA SECCIÓN INSTITUCIONAL
+        // =========================================================================
         Text(
             text = "¿Quiénes Somos?",
             style = MaterialTheme.typography.headlineSmall,
@@ -39,7 +58,9 @@ fun QuienesSomosScreenCompacta(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // 3. Tarjeta sobre Corpaliv (Estilo surfaceVariant)
+        // =========================================================================
+        // 3. TARJETA INFORMATIVA: RESEÑA SOBRE CORPALIV
+        // =========================================================================
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
@@ -64,7 +85,9 @@ fun QuienesSomosScreenCompacta(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 4. Tarjeta Misión y Visión (Estilo primaryContainer)
+        // =========================================================================
+        // 4. TARJETA DESTACADA: NUESTRA MISIÓN INSTITUCIONAL
+        // =========================================================================
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
@@ -89,7 +112,9 @@ fun QuienesSomosScreenCompacta(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 5. Tarjeta Nuestro Equipo (Estilo surfaceVariant)
+        // =========================================================================
+        // 5. TARJETA INFORMATIVA: NUESTRO EQUIPO DE TRABAJO
+        // =========================================================================
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
@@ -114,7 +139,9 @@ fun QuienesSomosScreenCompacta(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 6. Botón de acción para contactar
+        // =========================================================================
+        // 6. BOTÓN PRINCIPAL DE LLAMADO A LA ACCIÓN (CONTACTO)
+        // =========================================================================
         Button(
             onClick = onContactoClick,
             modifier = Modifier.fillMaxWidth()
@@ -124,7 +151,9 @@ fun QuienesSomosScreenCompacta(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // 7. Footer Informativo
+        // =========================================================================
+        // 7. PIE DE PÁGINA INFORMATIVO INSTITUCIONAL
+        // =========================================================================
         FooterInformativo()
     }
 }

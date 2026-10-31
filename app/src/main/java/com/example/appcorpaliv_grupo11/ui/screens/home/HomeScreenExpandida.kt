@@ -21,6 +21,20 @@ import com.example.appcorpaliv_grupo11.ui.components.InsigniaMideso
 import com.example.appcorpaliv_grupo11.ui.components.TarjetaProductoItem
 import com.example.appcorpaliv_grupo11.viewModel.MainViewModel
 
+/**
+ * PANTALLA PRINCIPAL DE INICIO EN FORMATO EXPANDIDO (TABLETS EN LANDSCAPE / MONITORES)
+ *
+ * Sub-vista adaptativa diseñada para pantallas de más de 840 dp de ancho.
+ * Reorganiza la portada del catálogo para aprovechar el espacio horizontal mediante:
+ * 1. Cabecera alineada en fila ([Row]) con el título de la sección e [InsigniaMideso].
+ * 2. Banner principal de bienvenida [HeroBanner] con navegación integrada.
+ * 3. Malla cuadrícula interactiva de 4 columnas ([LazyVerticalGrid]) para exhibir tarjetas de productos [TarjetaProductoItem].
+ * 4. Pie de página informativo institucional con [FooterInformativo].
+ *
+ * @param navController Controlador de navegación de Jetpack Navigation para transiciones entre pantallas.
+ * @param viewModel Instancia del ViewModel [MainViewModel] preparada para suministrar los datos del catálogo.
+ */
+@Suppress("UNUSED_PARAMETER")
 @Composable
 fun HomeScreenExpandida(
     navController: NavController,
@@ -32,7 +46,9 @@ fun HomeScreenExpandida(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 40.dp, vertical = 32.dp)
     ) {
-        // Cabecera principal
+        // =========================================================================
+        // 1. CABECERA PRINCIPAL CON ALINEACIÓN HORIZONTAL (TITULAR + INSIGNIA)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -54,6 +70,7 @@ fun HomeScreenExpandida(
 
             Spacer(modifier = Modifier.width(24.dp))
 
+            // Insignia acreditativa de la Ley 21.015 en el extremo derecho
             InsigniaMideso(
                 texto = "Acreditación MIDESO - Ley 21.015"
             )
@@ -61,7 +78,9 @@ fun HomeScreenExpandida(
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        // Hero Banner
+        // =========================================================================
+        // 2. HERO BANNER PRINCIPAL CON EVENTOS DE NAVEGACIÓN
+        // =========================================================================
         HeroBanner(
             onVerTiendaClick = { /* Acción ver tienda */ },
             onContactoClick = { navController.navigate("contacto") }
@@ -69,7 +88,9 @@ fun HomeScreenExpandida(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Sección de productos
+        // =========================================================================
+        // 3. SECCIÓN DE PRODUCTOS EN MALLA MULTICOLUMNA (4 COLUMNAS)
+        // =========================================================================
         Text(
             text = "Nuestros Productos Destacados",
             style = MaterialTheme.typography.titleLarge,
@@ -79,6 +100,7 @@ fun HomeScreenExpandida(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Cuadrícula vertical optimizada con tope de altura para evitar conflictos con el scroll general
         LazyVerticalGrid(
             columns = GridCells.Fixed(4),
             horizontalArrangement = Arrangement.spacedBy(20.dp),
@@ -99,6 +121,9 @@ fun HomeScreenExpandida(
 
         Spacer(modifier = Modifier.height(40.dp))
 
+        // =========================================================================
+        // 4. PIE DE PÁGINA INFORMATIVO INSTITUCIONAL
+        // =========================================================================
         FooterInformativo()
     }
 }

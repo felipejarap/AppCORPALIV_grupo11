@@ -10,35 +10,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 /**
- * Función composable utilitaria para calcular la clase de tamaño de ventana ([WindowSizeClass]) actual.
+ * FUNCIÓN COMPOSABLE UTILITARIA DE TAMAÑO DE VENTANA
  *
- * Permite adaptar dinámicamente el diseño de la interfaz de usuario según el tamaño de la pantalla
- * (pantallas compactas, medianas o expandidas) en arquitecturas de Compose responsivas.
+ * Calcula y retorna la clase de tamaño de ventana ([WindowSizeClass]) activa.
+ * Permite adaptar dinámicamente el diseño de la interfaz de usuario en tiempo de ejecución
+ * (pantallas compactas, medianas o expandidas) en arquitecturas responsivas de Jetpack Compose.
  *
- * @return [WindowSizeClass] que representa los anchos y altos de la ventana activa.
+ * @return [WindowSizeClass] que clasifica los anchos y altos de la ventana activa.
  */
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun obtenerWindowSizeClass(): WindowSizeClass {
-    // Obtiene el contexto local de Jetpack Compose
+    // Obtiene el contexto local activo de Jetpack Compose
     val context = LocalContext.current
 
-    // Extrae la Activity asociada desde la jerarquía del Context
+    // Extrae la Activity hospeda desde la jerarquía de contextos usando la extensión `findActivity()`
     val activity = context.findActivity()
 
-    // Calcula y retorna la clase de tamaño de ventana usando la API de Material3
+    // Calcula y retorna la clase de tamaño de ventana oficial de la librería Material3
     return calculateWindowSizeClass(activity)
 }
 
 /**
- * Función de extensión recursiva por la cola (tailrec) sobre [Context] para extraer
- * la instancia de [Activity] hospedadora.
+ * FUNCIÓN DE EXTENSIÓN RECURSIVA PARA OBTENER LA ACTIVITY
  *
- * Recorre la cadena de envoltorios [ContextWrapper] hasta encontrar el [Activity] base.
+ * Función de extensión optimizada mediante recursión por la cola (`tailrec`) sobre [Context].
+ * Recorre en profundidad la cadena de envoltorios de contextos ([ContextWrapper]) hasta encontrar
+ * la instancia base de la [Activity] que hospeda la vista.
  *
- * @receiver Contexto actual de la aplicación o vista.
- * @return Instancia válida de [Activity].
- * @throws IllegalStateException Si el contexto no proviene de un entorno de Activity.
+ * @receiver Contexto actual expuesto por la vista o aplicación.
+ * @return Instancia concreta de la [Activity] hospedadora.
+ * @throws IllegalStateException Si la cadena de contextos no proviene de una Activity válida.
  */
 private tailrec fun Context.findActivity(): Activity {
     return when (this) {

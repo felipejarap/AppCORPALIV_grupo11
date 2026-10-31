@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Subject
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
@@ -21,38 +22,47 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.example.appcorpaliv_grupo11.model.ContactoEntity
-import androidx.compose.material.icons.automirrored.filled.Subject
 
 /**
- * Componente visual reutilizable que muestra la tarjeta con la información de un contacto enviado.
+ * COMPONENTE REUTILIZABLE DE ELEMENTO DE TARJETA DE MENSAJE / CONTACTO
  *
- * Cumplimiento IE 2.4.1 (Recursos del dispositivo):
- * - Acción de Correo: Lanza Intent.ACTION_SENDTO abriendo el cliente de correo del sistema (Gmail, etc.).
- * - Acción de Teléfono: Lanza Intent.ACTION_DIAL abriendo el marcador nativo del sistema con formato +56.
+ * Tarjeta interactiva que despliega los detalles de una consulta o mensaje enviado por un usuario.
+ * Integra el acceso directo a recursos nativos del sistema mediante Intents Implícitos
+ * (Cliente de Correo y Marcador Telefónico) y expone acciones administrativas para modificar
+ * el estado del registro ("Pendiente", "Contestado", "Rechazado") en la base de datos Room.
+ *
+ * Cumplimiento Criterio IE 2.4.1 (Integración con Recursos del Dispositivo):
+ * - Acción de Correo: Lanza `Intent.ACTION_SENDTO` abriendo la app de correo del sistema (Gmail, etc.).
+ * - Acción de Teléfono: Lanza `Intent.ACTION_DIAL` abriendo el marcador nativo con formato estándar (+56).
+ *
+ * @param contacto Objeto de entidad [ContactoEntity] con la información almacenada en Room.
+ * @param onCambiarEstado Callback que notifica al ViewModel la actualización de estado del registro.
+ * @param modifier Modificador para personalizar la maquetación externa desde el composable padre (primer parámetro opcional).
  */
 @Composable
 fun TarjetaMensajeItem(
     contacto: ContactoEntity,
     onCambiarEstado: (ContactoEntity, String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier // Reordenado: Primer parámetro opcional según las guías de Compose
 ) {
-    // Contexto de Android para llamar a las funciones e Intents nativos del sistema
+    // Obtención del contexto nativo de Android para lanzar las intenciones de sistema (Intents)
     val context = LocalContext.current
 
-    // Paleta de colores dinámica en función del estado actual del registro
+    // Paleta de colores dinámica asignada en función del estado del registro en la base de datos
     val (colorContenedor, colorTexto) = when (contacto.estado) {
-        "Contestado" -> Pair(Color(0xFFE8F5E9), Color(0xFF2E7D32))
-        "Rechazado" -> Pair(Color(0xFFFFEBEE), Color(0xFFC62828))
-        else -> Pair(Color(0xFFFFF3E0), Color(0xFFE65100))
+        "Contestado" -> Pair(Color(0xFFE8F5E9), Color(0xFF2E7D32)) // Verde Claro / Oscuro
+        "Rechazado" -> Pair(Color(0xFFFFEBEE), Color(0xFFC62828))  // Rojo Claro / Oscuro
+        else -> Pair(Color(0xFFFFF3E0), Color(0xFFE65100))         // Naranja Claro / Oscuro (Pendiente)
     }
 
-    // Extracción y formateo preventivo de datos almacenados en el objeto
+    // Extracción y formateo preventivo del número de teléfono
     val telefonoMostrar = when {
         contacto.telefono.isNotBlank() -> contacto.telefono
         contacto.asunto.contains("Tel:") -> contacto.asunto.substringAfter("Tel:").trim()
         else -> "Sin teléfono"
     }
 
+    // Saneamiento de la cadena del asunto si contenía datos concatenados
     val asuntoLimpio = if (contacto.asunto.contains("| Tel:")) {
         contacto.asunto.substringBefore("| Tel:").trim()
     } else {
@@ -71,7 +81,7 @@ fun TarjetaMensajeItem(
                 .padding(16.dp)
         ) {
             // =========================================================================
-            // 1. CABECERA: NOMBRE Y BADGE DE ESTADO
+            // 1. CABECERA: NOMBRE DEL EMISOR Y BADGE DE ESTADO
             // =========================================================================
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -84,7 +94,7 @@ fun TarjetaMensajeItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Person,
-                        contentDescription = null,
+                        contentDescription = null, // Ícono decorativo
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
                     )
@@ -101,6 +111,7 @@ fun TarjetaMensajeItem(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
+                // Badge o etiqueta de estado con color dinámico según la categoría
                 Surface(
                     color = colorContenedor,
                     shape = RoundedCornerShape(8.dp)
@@ -168,7 +179,7 @@ fun TarjetaMensajeItem(
                     modifier = Modifier.clickable {
                         val digitsOnly = telefonoMostrar.filter { it.isDigit() }
                         if (digitsOnly.isNotBlank()) {
-                            // Antepone el código de país +56 si el número es de 9 dígitos
+                            // Antepone el código de país +56 si el número es de 9 dígitos (Chile)
                             val numFinal = if (digitsOnly.length == 9) {
                                 "+56$digitsOnly"
                             } else {
@@ -209,7 +220,7 @@ fun TarjetaMensajeItem(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Subject,
-                    contentDescription = null,
+                    contentDescription = null, // Ícono decorativo
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(16.dp)
                 )

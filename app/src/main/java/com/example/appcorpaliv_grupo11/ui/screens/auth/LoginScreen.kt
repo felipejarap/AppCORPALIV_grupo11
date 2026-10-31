@@ -6,13 +6,14 @@ import androidx.compose.ui.platform.LocalConfiguration
 import com.example.appcorpaliv_grupo11.viewModel.AuthViewModel
 
 /**
- * Pantalla principal de Login.
+ * PANTALLA PRINCIPAL DE LOGIN (CONTENEDOR ADAPTATIVO)
  *
- * Selecciona el diseño adecuado (Compacto, Mediano o Expandido) según el tamaño del dispositivo.
+ * Evalúa el ancho disponible en la pantalla del dispositivo mediante WindowWidthSizeClass
+ * y delega la maquetación a la vista correspondiente (Compacta, Mediana o Expandida).
  *
- * @param windowSizeClass Clasificación del ancho de ventana. Por defecto se calcula de forma dinámica.
- * @param authViewModel Instancia del [AuthViewModel] para la autenticación de usuarios.
- * @param onLoginSuccess Callback a ejecutar cuando el inicio de sesión sea exitoso.
+ * @param windowSizeClass Clasificación del ancho de pantalla (calculada dinámicamente si no se provee).
+ * @param authViewModel Instancia del ViewModel para la gestión de credenciales y estado de sesión.
+ * @param onLoginSuccess Evento a ejecutar cuando la autenticación resulta exitosa.
  */
 @Composable
 fun LoginScreen(
@@ -29,7 +30,10 @@ fun LoginScreen(
 }
 
 /**
- * Obtiene la categoría de ancho de pantalla [WindowWidthSizeClass] a partir de la [LocalConfiguration] actual.
+ * FUNCIÓN AUXILIAR DE CÁLCULO DE TAMAÑO DE VENTANA
+ *
+ * Obtiene la categoría de ancho WindowWidthSizeClass analizando los dp disponibles
+ * en la configuración local mediante LocalConfiguration.current.
  */
 @Composable
 private fun obtenerWindowWidthSizeClass(): WindowWidthSizeClass {

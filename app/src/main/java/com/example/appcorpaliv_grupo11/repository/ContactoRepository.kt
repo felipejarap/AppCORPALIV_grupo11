@@ -5,7 +5,8 @@ import com.example.appcorpaliv_grupo11.model.ContactoEntity
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Repositorio encargados de gestionar las operaciones de datos de los mensajes de contacto.
+ * Repositorio encargado de gestionar las operaciones de datos de los mensajes de contacto.
+ *
  * Actúa como punto único de acceso a los datos (Single Source of Truth), intermediando entre
  * el DAO de Room ([ContactoDao]) y los ViewModels de la aplicación.
  *
@@ -15,6 +16,7 @@ class ContactoRepository(private val contactoDao: ContactoDao) {
 
     /**
      * Flujo reactivo continuo que emite la lista completa de mensajes guardados en Room.
+     *
      * Cualquier modificación en la tabla de la base de datos actualizará automáticamente este [Flow].
      */
     val listaContactos: Flow<List<ContactoEntity>> = contactoDao.obtenerTodosLosContactos()

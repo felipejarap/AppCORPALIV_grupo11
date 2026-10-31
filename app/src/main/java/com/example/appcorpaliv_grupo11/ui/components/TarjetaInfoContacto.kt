@@ -16,10 +16,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * COMPONENTE REUTILIZABLE DE TARJETA DE INFORMACIÓN DE CONTACTO
+ *
+ * Componente atómico de maquetación que agrupa los canales oficiales de comunicación
+ * e interacción institucionales de Corpaliv / Alba Lab (Dirección física, correo, teléfono y redes sociales).
+ * Descompone la interfaz en sub-composables privados ([ItemInfoContactoDetalle] y [BotonRedSocial])
+ * para maximizar la legibilidad y modularidad interna.
+ *
+ * @param modifier Modificador para personalizar la maquetación externa desde la vista contenedora.
+ */
 @Composable
 fun TarjetaInfoContacto(
     modifier: Modifier = Modifier
 ) {
+    // Tarjeta contenedora con esquinas redondeadas de 24 dp y fondo semántico primaryContainer
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -32,6 +43,7 @@ fun TarjetaInfoContacto(
                 .fillMaxWidth()
                 .padding(24.dp)
         ) {
+            // Encabezado principal de la tarjeta
             Text(
                 text = "Contacto",
                 style = MaterialTheme.typography.headlineMedium,
@@ -41,6 +53,7 @@ fun TarjetaInfoContacto(
 
             Spacer(modifier = Modifier.height(20.dp))
 
+            // Canal 1: Dirección física de la sede
             ItemInfoContactoDetalle(
                 icono = Icons.Default.LocationOn,
                 titulo = "General Salvo 20, Of. 110, Providencia.",
@@ -49,6 +62,7 @@ fun TarjetaInfoContacto(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Canal 2: Correo electrónico corporativo
             ItemInfoContactoDetalle(
                 icono = Icons.Default.Email,
                 titulo = "mhasche@corpaliv.cl",
@@ -57,6 +71,7 @@ fun TarjetaInfoContacto(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Canal 3: Teléfono de contacto
             ItemInfoContactoDetalle(
                 icono = Icons.Default.Phone,
                 titulo = "+569 9221 3413",
@@ -65,16 +80,24 @@ fun TarjetaInfoContacto(
 
             Spacer(modifier = Modifier.height(20.dp))
 
+            // Fila de botones circulares para accesos a Redes Sociales
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                BotonRedSocial(texto = "ig")
-                BotonRedSocial(texto = "in")
+                BotonRedSocial(texto = "ig") // Instagram
+                BotonRedSocial(texto = "in") // LinkedIn
             }
         }
     }
 }
 
+/**
+ * SUB-COMPONENTE PRIVADO PARA RENDERIZAR CADA LÍNEA DETALLADA DE CONTACTO
+ *
+ * @param icono Vector gráfico representativo del canal de contacto.
+ * @param titulo Texto principal del dato de contacto (ej: dirección o número).
+ * @param subtitulo Etiqueta secundaria explicativa (ej: "Email" o "Ubicación").
+ */
 @Composable
 private fun ItemInfoContactoDetalle(
     icono: ImageVector,
@@ -84,7 +107,7 @@ private fun ItemInfoContactoDetalle(
     Row(verticalAlignment = Alignment.Top) {
         Icon(
             imageVector = icono,
-            contentDescription = null,
+            contentDescription = null, // Ícono puramente decorativo
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .size(22.dp)
@@ -109,11 +132,16 @@ private fun ItemInfoContactoDetalle(
     }
 }
 
+/**
+ * SUB-COMPONENTE PRIVADO DE BOTÓN CIRCULAR PARA REDES SOCIALES
+ *
+ * @param texto Sigla o inicial de la red social a mostrar dentro del ícono circular.
+ */
 @Composable
 private fun BotonRedSocial(texto: String) {
     Surface(
         modifier = Modifier.size(36.dp),
-        shape = CircleShape,
+        shape = CircleShape, // Ocupa un molde elíptico/circular perfecto
         color = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary
     ) {

@@ -1,36 +1,40 @@
 package com.example.appcorpaliv_grupo11.model
 
 /**
- * Clase de datos inmutable (UI State) que encapsula el estado completo de la interfaz
- * de usuario para la pantalla del formulario de contacto.
+ * CLASE DE ESTADO COMPLETO DE LA UI (UI STATE - PATRÓN UDF)
  *
- * Centraliza los valores de los campos de entrada, los mensajes de error individuales
- * y el estado de la entrega, facilitando la preservación del estado ante cambios de configuración
- * (como rotaciones) y garantizando un flujo de datos unidireccional (UDF) hacia las vistas en Jetpack Compose.
+ * Centraliza todo el estado mutable de la pantalla del formulario en un único objeto inmutable.
+ * Implementa el flujo de datos unidireccional (Unidirectional Data Flow - UDF), permitiendo que la UI
+ * en Jetpack Compose reaccione automáticamente a cualquier cambio y conserve el estado ante
+ * rotaciones de pantalla.
  */
 data class ContactoUiState(
 
-    /** Valor actual ingresado en el campo de texto del nombre. */
+    /** Almacena el texto introducido en el campo de texto del Nombre del remitente. */
     val nombre: String = "",
 
-    /** Valor actual ingresado en el campo de correo electrónico. */
+    /** Almacena el texto introducido en el campo del Correo Electrónico. */
     val email: String = "",
 
-    /** Valor actual ingresado en el campo de teléfono móvil (9 dígitos). */
+    /** Almacena el texto introducido en el campo del Teléfono móvil. */
     val telefono: String = "",
 
-    /** Opción seleccionada en el ComboBox de asunto. */
+    /** Almacena la opción actual seleccionada en el menú o ComboBox de Asunto. */
     val asunto: String = "",
 
-    /** Valor actual ingresado en el área de texto del mensaje. */
+    /** Almacena el texto introducido en el área de texto del Mensaje principal. */
     val mensaje: String = "",
 
-    /** Objeto que agrupa todos los mensajes de error de validación por campo individual. */
+    /**
+     * Instancia de [ContactoErrores] que agrupa los mensajes de validación individuales.
+     * Se inicializa con una instancia vacía (sin errores) por defecto.
+     */
     val errores: ContactoErrores = ContactoErrores(),
 
     /**
-     * Indica si el formulario fue enviado exitosamente.
-     * Cuando es `true`, la interfaz reacciona desplegando la tarjeta animada de confirmación de éxito.
+     * Bandera (Flag) booleana de éxito en el envío del formulario.
+     * - `false`: Muestra el formulario activo listo para edición.
+     * - `true`: Despliega el componente visual o tarjeta de confirmación de éxito.
      */
     val isSubmitted: Boolean = false
 )

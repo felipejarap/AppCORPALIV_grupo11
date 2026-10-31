@@ -56,10 +56,14 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
- * Componente principal de navegación de la aplicación.
+ * COMPONENTE PRINCIPAL DE NAVEGACIÓN Y ESTRUCTURA DE LA APP (APP NAVIGATION)
  *
- * Mantiene una estructura uniforme tanto en formato móvil (Compacto) como en escritorio/tablet (Medio y Expandido),
- * ubicando la opción "Acceso Funcionarios" (o administración de sesión) debajo del interruptor de "Modo Oscuro".
+ * Contenedor orquestador de la interfaz. Define el marco visual (Scaffold, Drawer, BottomBar, TopBar)
+ * y mapea las rutas del NavHost con animaciones de transición. Se adapta dinámicamente según el tamaño
+ * de pantalla (Compacta vs Mediana/Expandida).
+ *
+ * @param isDarkTheme Estado booleano actual del tema (Modo Oscuro).
+ * @param onToggleTheme Callback emitido al presionar el Switch para alternar el tema visual.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,22 +71,29 @@ fun AppNavigation(
     isDarkTheme: Boolean = false,
     onToggleTheme: () -> Unit = {}
 ) {
+    // Controlador principal de la pila de navegación de Compose
     val navController = rememberNavController()
+    // Determina si el dispositivo actual es de pantalla compacta (< 600 dp)
     val isCompact = esPantallaCompacta()
 
+    // Estado del menú lateral desplegable (Drawer) y scope para corrutinas
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    // Controla si el panel lateral expandible en tablets/escritorio está abierto o contraído
     var isMenuExpanded by remember { mutableStateOf(false) }
 
+    // Instanciación de ViewModels requeridos para la navegación global y sesión
     val mainViewModel: MainViewModel = viewModel()
     val authViewModel: AuthViewModel = viewModel()
 
+    // Observa el estado de sesión autenticada en tiempo real
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
 
+    // Rastrea la ruta activa actualmente en el NavController
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // Rutas permitidas con Navbar
+    // Valida si la ruta actual debe mostrar la barra de navegación (Navbar)
     val mostrarNavbar = currentRoute == null || currentRoute in listOf(
         Screen.Home.route,
         Screen.LeyInclusion.route,
@@ -93,7 +104,7 @@ fun AppNavigation(
         Screen.Login.route
     )
 
-    // Navegación limpia
+    // Función lambda auxiliar para ejecutar navegación limpia evitando duplicación de destinos en el historial
     val navegarA: (String) -> Unit = { route ->
         if (currentRoute != route) {
             navController.navigate(route) {
@@ -106,6 +117,7 @@ fun AppNavigation(
         }
     }
 
+    // Escucha eventos de navegación unidireccionales emitidos desatendidamente por el MainViewModel
     LaunchedEffect(Unit) {
         mainViewModel.navigationEvents.collectLatest { event ->
             when (event) {
@@ -124,20 +136,20 @@ fun AppNavigation(
         }
     }
 
-    // Opciones exclusivas de la barra inferior (BottomBar) para móviles
+    // Colección de ítems para la barra inferior (BottomBar) exclusiva de smartphones
     val bottomNavItems = listOf(
         Triple(Screen.Home.route, "Home", Icons.Default.Home),
         Triple(Screen.LeyInclusion.route, "Ley Inclusión", Icons.Default.Gavel),
         Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email)
     )
 
-    // Opciones informativas para el menú desplegable (Drawer) en móviles
+    // Colección de secciones informativas para el menú hamburguesa (Drawer) móvil
     val infoMenuItemsCompact = listOf(
         Triple(Screen.QuienesSomos.route, "Quiénes Somos", Icons.Default.Info),
         Triple(Screen.QueHacemos.route, "Que hacemos", Icons.Default.Info)
     )
 
-    // Opciones públicas para el riel/panel lateral en pantallas medianas y expandidas
+    // Colección completa de menús para el riel lateral en pantallas anchas (Tablets/Desktops)
     val publicMenuItemsExpanded = listOf(
         Triple(Screen.Home.route, "Home", Icons.Default.Home),
         Triple(Screen.LeyInclusion.route, "Ley Inclusión", Icons.Default.Gavel),
@@ -146,6 +158,7 @@ fun AppNavigation(
         Triple(Screen.Contacto.route, "Contacto", Icons.Default.Email)
     )
 
+    // Menú Desplegable Modal (ModalNavigationDrawer) para dispositivos móviles
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = isCompact && mostrarNavbar,
@@ -158,7 +171,7 @@ fun AppNavigation(
                             .padding(16.dp)
                             .verticalScroll(rememberScrollState())
                     ) {
-                        // Cabecera del Menú Desplegable con Logotipo
+                        // Cabecera del Drawer con Isotipo y Marca de la aplicación
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(bottom = 16.dp)
@@ -188,7 +201,7 @@ fun AppNavigation(
 
                         HorizontalDivider(modifier = Modifier.padding(bottom = 12.dp))
 
-                        // Páginas informativas
+                        // Ítems de páginas informativas
                         infoMenuItemsCompact.forEach { (route, label, icon) ->
                             NavigationDrawerItem(
                                 icon = { Icon(icon, contentDescription = label) },
@@ -205,7 +218,7 @@ fun AppNavigation(
 
                         HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
-                        // Switch de Tema (Modo Oscuro)
+                        // Fila con el conmutador de tema (Switch Modo Oscuro)
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -232,7 +245,7 @@ fun AppNavigation(
                             )
                         }
 
-                        // Acceso privado / Gestión de sesión
+                        // Renderizado condicional del área privada según estado de autenticación (isLoggedIn)
                         if (isLoggedIn) {
                             NavigationDrawerItem(
                                 icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Mensajes") },
@@ -284,6 +297,7 @@ fun AppNavigation(
             }
         }
     ) {
+        // Estructura Scaffold con TopAppBar y NavigationBar inferiores en pantallas móviles
         Scaffold(
             topBar = {
                 if (mostrarNavbar && isCompact) {
@@ -331,6 +345,7 @@ fun AppNavigation(
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
+                // Layout adaptativo: Muestra panel lateral expansible con animación Spring en tablets/pantallas grandes
                 if (mostrarNavbar && !isCompact) {
                     val menuWidth by animateDpAsState(
                         targetValue = if (isMenuExpanded) 240.dp else 64.dp,
@@ -356,7 +371,7 @@ fun AppNavigation(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            // Cabecera del panel expandible
+                            // Cabecera interactiva del panel colapsable
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -501,6 +516,7 @@ fun AppNavigation(
                     }
                 }
 
+                // NavHost: Define el grafo de pantallas y transiciones animadas al cambiar de ruta
                 NavHost(
                     navController = navController,
                     startDestination = Screen.Home.route,
@@ -529,24 +545,29 @@ fun AppNavigation(
                         )
                     }
                 ) {
+                    // Ruta: Pantalla de Inicio (Home)
                     composable(route = Screen.Home.route) {
                         HomeScreen(navController = navController, viewModel = mainViewModel)
                     }
+                    // Ruta: Ley de Inclusión
                     composable(route = Screen.LeyInclusion.route) {
                         LeyInclusionScreen(
                             onContactarClick = { navegarA(Screen.Contacto.route) }
                         )
                     }
+                    // Ruta: Quiénes Somos
                     composable(route = Screen.QuienesSomos.route){
                         QuienesSomosScreen(
                             onContactoClick = { navegarA(Screen.Contacto.route) }
                         )
                     }
+                    // Ruta: Qué Hacemos
                     composable(route = Screen.QueHacemos.route){
                         QueHacemosScreen(
                             onContactoClick = { navegarA(Screen.Contacto.route) }
                         )
                     }
+                    // Ruta: Formulario de Contacto (Construye dinámicamente el ViewModel inyectando el Repositorio)
                     composable(route = Screen.Contacto.route) {
                         val context = LocalContext.current
                         val database = AppDatabase.getDatabase(context)
@@ -563,6 +584,7 @@ fun AppNavigation(
 
                         ContactoScreen(viewModel = contactoViewModel)
                     }
+                    // Ruta: Inicio de Sesión de Funcionarios (Login)
                     composable(route = Screen.Login.route) {
                         LoginScreen(
                             authViewModel = authViewModel,
@@ -573,6 +595,7 @@ fun AppNavigation(
                             }
                         )
                     }
+                    // Ruta: Panel Privado de Mensajes (Protegido por autenticación)
                     composable(route = Screen.ListaContactos.route) {
                         if (isLoggedIn) {
                             val context = LocalContext.current
@@ -590,6 +613,7 @@ fun AppNavigation(
 
                             ListaContactosScreen(viewModel = contactoViewModel)
                         } else {
+                            // Redirecciona al Login si intenta ingresar sin estar autenticado
                             LoginScreen(
                                 authViewModel = authViewModel,
                                 onLoginSuccess = {
@@ -607,7 +631,12 @@ fun AppNavigation(
 }
 
 /**
- * Función utilitaria interna para consultar si el dispositivo se clasifica como pantalla compacta (< 600 dp).
+ * FUNCIÓN UTILITARIA AUXILIAR DE DISEÑO RESPONSIVO
+ *
+ * Determina en tiempo real si el ancho disponible de pantalla corresponde a un dispositivo compacto.
+ *
+ * @return `true` si la pantalla tiene un ancho inferior a 600 dp (Smartphones),
+ *         `false` para pantallas medianas o anchas (Tablets/Desktops).
  */
 @Composable
 private fun esPantallaCompacta(): Boolean {

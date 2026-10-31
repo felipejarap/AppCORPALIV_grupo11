@@ -17,36 +17,44 @@ import com.example.appcorpaliv_grupo11.ui.utils.isInternetAvailable
 import com.example.appcorpaliv_grupo11.viewModel.MainViewModel
 
 /**
- * Actividad principal y punto de entrada único de la aplicación (Single Activity Architecture).
- * Se encarga de inicializar la interfaz declarativa con Jetpack Compose, aplicar la configuración
- * del tema (Modo Oscuro / Claro) y validar el estado inicial de conexión a Internet.
+ * ACTIVIDAD PRINCIPAL Y PUNTO DE ENTRADA (SINGLE ACTIVITY ARCHITECTURE)
+ *
+ * Es la única Actividad de Android en el proyecto (`ComponentActivity`). Actúa como el contenedor host
+ * para la interfaz declarativa construida con Jetpack Compose.
+ * Inicializa el tema global (Modo Oscuro/Claro), gestiona la inyección inicial del `MainViewModel`
+ * y evalúa la disponibilidad de red para alternar entre el flujo de navegación principal o la pantalla offline.
  */
 class MainActivity : ComponentActivity() {
 
+    /**
+     * Punto de inicio del ciclo de vida de la Actividad.
+     *
+     * @param savedInstanceState Estado previamente guardado de la Actividad en caso de recreación por el sistema.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Define el contenido visual de la actividad utilizando Jetpack Compose
+        // Asigna el bloque de composición declarativa de Compose como vista raíz de la pantalla
         setContent {
             // =========================================================================
             // INICIALIZACIÓN DE VIEWMODEL Y ESTADOS GLOBALES
             // =========================================================================
 
-            /** ViewModel global para la gestión del tema y navegación. */
+            /** Instancia del ViewModel global para la gestión del tema y la navegación desacoplada. */
             val mainViewModel: MainViewModel = viewModel()
 
-            /** Estado observable que indica si el Modo Oscuro está activo. */
+            /** Estado observable que rastrea reactivamente si el Modo Oscuro está activo. */
             val isDarkTheme by mainViewModel.isDarkTheme.collectAsState()
 
-            // Envoltorio del tema de la aplicación con soporte para Modo Oscuro/Claro dinámico
+            // Envoltorio del tema de la aplicación que aplica la paleta de colores según el estado `isDarkTheme`
             AppCORPALIV_grupo11Theme(darkTheme = isDarkTheme) {
 
-                // Contexto de Android necesario para verificar servicios del sistema (conectividad)
+                // Obtiene el contexto actual de la aplicación necesario para acceder a los servicios de red
                 val context = LocalContext.current
 
                 /**
-                 * Estado reactivo que almacena si hay conexión a Internet disponible.
-                 * Se inicializa al componer la vista mediante la utilidad [isInternetAvailable].
+                 * Estado mutable local que almacena si el dispositivo tiene acceso a Internet.
+                 * Se inicializa mediante la función utilitaria [isInternetAvailable].
                  */
                 var hasInternet by remember { mutableStateOf(isInternetAvailable(context)) }
 
@@ -57,18 +65,18 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // Control de flujo según el estado de conectividad a la red
+                    // Evaluación condicional de conectividad a la red
                     if (hasInternet) {
-                        // Muestra el grafo de navegación principal de la aplicación
+                        // Renderiza el orquestador principal de pantallas y barras de navegación
                         AppNavigation(
                             isDarkTheme = isDarkTheme,
                             onToggleTheme = { mainViewModel.toggleTheme() }
                         )
                     } else {
-                        // Muestra la pantalla alternativa de falta de conexión con opción de reintento
+                        // Despliega la pantalla de alerta por falta de conectividad con botón de reintento
                         NoInternetScreen(
                             onRetry = {
-                                // Revisa nuevamente la conexión al presionar "Reintentar"
+                                // Vuelve a consultar el gestor de conectividad al presionar el botón "Reintentar"
                                 hasInternet = isInternetAvailable(context)
                             }
                         )

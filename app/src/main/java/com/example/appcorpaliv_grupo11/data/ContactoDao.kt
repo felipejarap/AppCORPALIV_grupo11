@@ -10,63 +10,82 @@ import com.example.appcorpaliv_grupo11.model.ContactoEntity
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Objeto de Acceso a Datos (DAO) para la entidad [ContactoEntity].
- * Define las operaciones CRUD (Crear, Leer, Actualizar, Eliminar) y consultas SQL
- * para interactuar con la tabla 'contactos' de la base de datos Room.
+ * INTERFAZ DAO (Data Access Object)
+ *
+ * Define la interfaz de acceso a datos para la entidad [ContactoEntity].
+ * Room genera automáticamente la implementación de estas funciones SQL en tiempo de compilación.
+ * Permite ejecutar las operaciones básicas del ciclo de datos CRUD (Crear, Leer, Actualizar, Eliminar).
  */
 @Dao
 interface ContactoDao {
 
     /**
-     * Inserta un nuevo registro de contacto en la base de datos.
-     * Utiliza [OnConflictStrategy.REPLACE] para sobrescribir el registro existente si coincide la Clave Primaria (ID).
+     * Inserta un nuevo registro de contacto en la tabla 'contactos'.
      *
-     * @param contacto Objeto [ContactoEntity] que contiene los datos del mensaje enviado.
+     * @param contacto Objeto de tipo [ContactoEntity] a guardar.
+     *
+     * - @Insert: Le indica a Room que genera una sentencia SQL INSERT.
+     * - onConflict = OnConflictStrategy.REPLACE: Si se intenta insertar un objeto con un ID que ya existe,
+     *   reemplaza/sobrescribe el registro previo en lugar de lanzar un error.
+     * - suspend: Ejecución asíncrona dentro de Corrutinas para no bloquear el hilo principal de la UI.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun guardarContacto(contacto: ContactoEntity)
 
     /**
-     * Obtiene todos los contactos registrados en la tabla, ordenados descendentemente por ID
-     * (los mensajes más recientes aparecen primero).
+     * Obtiene la totalidad de los contactos almacenados en la base de datos.
      *
-     * Devuelve un [Flow] que emite automáticamente la lista actualizada en tiempo real
-     * cada vez que ocurre un cambio en la tabla de la base de datos.
+     * @return [Flow] Lista reactiva observable que emite cambios automáticos en la UI.
+     *
+     * - @Query("SELECT * FROM contactos ORDER BY id DESC"): Consulta SQL personalizada que extrae todos
+     *   los registros ordenados de forma descendente (los más recientes aparecen primero).
+     * - Nota: Las funciones que retornan [Flow] NO llevan la palabra clave 'suspend', ya que Flow maneja
+     *   la asincronía y reactividad de forma nativa.
      */
     @Query("SELECT * FROM contactos ORDER BY id DESC")
     fun obtenerTodosLosContactos(): Flow<List<ContactoEntity>>
 
     /**
-     * Busca y obtiene un contacto específico según su identificador único ([id]).
+     * Busca y obtiene un único contacto según su ID clave primaria.
      *
-     * @param id Identificador clave primaria del contacto a consultar.
-     * @return El [ContactoEntity] encontrado o `null` si no existe coincidencia.
+     * @param id Identificador numérico de la clave primaria.
+     * @return [ContactoEntity] si existe coincidencia, o `null` en caso contrario.
+     *
+     * - SQL: "SELECT * FROM contactos WHERE id = :id" (Usa `:id` para vincular el parámetro de Kotlin a la consulta SQL).
+     * - suspend: Debe llamarse dentro de una corrutina en un hilo secundario (ej. Dispatchers.IO).
      */
     @Query("SELECT * FROM contactos WHERE id = :id")
     suspend fun obtenerContactoPorId(id: Int): ContactoEntity?
 
     /**
-     * Actualiza los datos de un contacto existente en la tabla (ej. cambio de estado "Pendiente" a "Contestado").
+     * Actualiza la información existente de un contacto (ej: cambiar estado de "Pendiente" a "Contestado").
      *
-     * @param contacto Objeto [ContactoEntity] con los datos actualizados según su ID.
+     * @param contacto Objeto [ContactoEntity] con los valores modificados pero manteniendo el mismo ID.
+     *
+     * - @Update: Busca el registro en la base de datos coincidiendo por su @PrimaryKey (ID) y actualiza sus columnas.
+     * - suspend: Ejecución asíncrona segura.
      */
     @Update
     suspend fun actualizarContacto(contacto: ContactoEntity)
 
     /**
-     * Elimina de forma permanente un registro específico de la tabla de contactos.
+     * Borra de forma permanente un registro de la base de datos.
      *
-     * @param contacto Objeto [ContactoEntity] a remover de la base de datos.
+     * @param contacto Objeto [ContactoEntity] que se eliminará.
+     *
+     * - @Delete: Ejecuta la sentencia DELETE basándose en la clave primaria del objeto provisto.
+     * - suspend: Ejecución en hilo secundario.
      */
     @Delete
     suspend fun eliminarContacto(contacto: ContactoEntity)
 
     /**
-     * Obtiene una lista de contactos filtrados según su estado ("Pendiente", "Contestado", "Rechazado"),
-     * ordenados descendentemente por ID.
+     * Filtra los contactos almacenados basándose en su estado actual ("Pendiente", "Contestado", "Rechazado").
      *
-     * @param estado Criterio de estado por el cual filtrar los mensajes.
-     * @return [Flow] observable en tiempo real con la lista de contactos filtrada.
+     * @param estado Criterio de filtrado en formato texto.
+     * @return [Flow] observable reactivo en tiempo real filtrado por la condición especificada.
+     *
+     * - SQL: "SELECT * FROM contactos WHERE estado = :estado ORDER BY id DESC"
      */
     @Query("SELECT * FROM contactos WHERE estado = :estado ORDER BY id DESC")
     fun obtenerPorEstado(estado: String): Flow<List<ContactoEntity>>

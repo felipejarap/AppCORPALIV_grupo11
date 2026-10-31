@@ -13,6 +13,20 @@ import androidx.compose.ui.unit.sp
 import com.example.appcorpaliv_grupo11.ui.components.FooterInformativo
 import com.example.appcorpaliv_grupo11.ui.components.InsigniaMideso
 
+/**
+ * PANTALLA DE LEY DE INCLUSIÓN EN FORMATO MEDIANO (TABLETS PORTRAIT / SMARTPHONES APASIONADOS)
+ *
+ * Sub-vista adaptativa optimizada para dispositivos con un ancho de pantalla entre 600 dp y 839 dp.
+ * Reorganiza la información legal y corporativa de la Ley N° 21.015 en un formato de dos columnas:
+ * 1. Cabecera en fila ([Row]) con el título principal e [InsigniaMideso] alineados horizontalmente.
+ * 2. Distribución horizontal en 2 columnas paralelas ([Row] con dos [Card] de peso equitativo `weight(1f)`):
+ *    - Columna 1: Marco Legal y reserva obligatoria del 1%.
+ *    - Columna 2: Cumplimiento Alternativo mediante donaciones o contratación de servicios Corpaliv.
+ * 3. Botón de acción alineado al extremo derecho (`Alignment.End`) para solicitar asesoría técnica.
+ * 4. Pie de página informativo institucional con [FooterInformativo].
+ *
+ * @param onContactarClick Callback emitido cuando el usuario solicita asesoría o contacto directo.
+ */
 @Composable
 fun LeyInclusionScreenMediana(
     onContactarClick: () -> Unit = {}
@@ -23,6 +37,9 @@ fun LeyInclusionScreenMediana(
             .verticalScroll(rememberScrollState())
             .padding(24.dp)
     ) {
+        // =========================================================================
+        // 1. CABECERA PRINCIPAL HORIZONTAL (TÍTULO DE LA LEY + INSIGNIA MIDESO)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -38,6 +55,7 @@ fun LeyInclusionScreenMediana(
 
             Spacer(modifier = Modifier.width(16.dp))
 
+            // Insignia acreditativa oficial de la Ley N° 21.015
             InsigniaMideso(
                 texto = "Acreditación MIDESO - Ley 21.015"
             )
@@ -45,10 +63,14 @@ fun LeyInclusionScreenMediana(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // =========================================================================
+        // 2. PANEL DE DOS COLUMNAS HORIZONTALES (MARCO LEGAL VS MEDIDA ALTERNATIVA)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Columna 1: Explicación del Marco Legal Regulatorio
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(
@@ -71,6 +93,7 @@ fun LeyInclusionScreenMediana(
                 }
             }
 
+            // Columna 2: Mecanismo de Cumplimiento por Donaciones y Servicios Corpaliv
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(
@@ -96,6 +119,9 @@ fun LeyInclusionScreenMediana(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // =========================================================================
+        // 3. BOTÓN PRINCIPAL DE LLAMADO A LA ACCIÓN (ALINEADO A LA DERECHA)
+        // =========================================================================
         Button(
             onClick = onContactarClick,
             modifier = Modifier.align(Alignment.End)
@@ -105,6 +131,9 @@ fun LeyInclusionScreenMediana(
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // =========================================================================
+        // 4. PIE DE PÁGINA INFORMATIVO INSTITUCIONAL
+        // =========================================================================
         FooterInformativo()
     }
 }

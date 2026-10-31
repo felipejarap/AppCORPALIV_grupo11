@@ -12,24 +12,44 @@ import androidx.compose.ui.unit.sp
 import com.example.appcorpaliv_grupo11.ui.components.FooterInformativo
 import com.example.appcorpaliv_grupo11.ui.components.InsigniaMideso
 
+/**
+ * PANTALLA DE LEY DE INCLUSIÓN EN FORMATO COMPACTO (SMARTPHONES PORTRAIT)
+ *
+ * Sub-vista adaptativa diseñada para teléfonos móviles en formato vertical.
+ * Presenta el marco regulatorio de la Ley N° 21.015 y los mecanismos de cumplimiento alternativo
+ * en un flujo continuo de una sola columna mediante [rememberScrollState]:
+ * 1. Insignia de acreditación oficial MIDESO [InsigniaMideso].
+ * 2. Encabezado principal del módulo.
+ * 3. Tarjeta explicativa del marco legal [Card] con estilo de superficie variada.
+ * 4. Tarjeta destacada de medida de cumplimiento alternativo mediante servicios Corpaliv.
+ * 5. Botón primario de acción para solicitar asesoría técnica e iniciar el contacto.
+ * 6. Pie de página informativo institucional [FooterInformativo].
+ *
+ * @param onContactarClick Callback emitido cuando el usuario presiona el botón de solicitud de asesoría.
+ */
 @Composable
 fun LeyInclusionScreenCompacta(
     onContactarClick: () -> Unit = {}
 ) {
+    // Contenedor principal vertical desplazable para garantizar legibilidad en pantallas reducidas
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        // 1. Insignia MIDESO
+        // =========================================================================
+        // 1. INSIGNIA DE ACREDITACIÓN INSTITUCIONAL MIDESO
+        // =========================================================================
         InsigniaMideso(
             texto = "Acreditación MIDESO - Ley N° 21.015"
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 2. Título principal
+        // =========================================================================
+        // 2. TÍTULO PRINCIPAL DEL MÓDULO INFORMATIVO
+        // =========================================================================
         Text(
             text = "Cumplimiento de Ley de Inclusión Laboral",
             style = MaterialTheme.typography.headlineSmall,
@@ -39,7 +59,9 @@ fun LeyInclusionScreenCompacta(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // 3. Tarjeta marco legal
+        // =========================================================================
+        // 3. TARJETA INFORMATIVA: MARCO LEGAL REGULATORIO DE LA LEY 21.015
+        // =========================================================================
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
@@ -64,7 +86,9 @@ fun LeyInclusionScreenCompacta(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 4. Tarjeta cumplimiento alternativo
+        // =========================================================================
+        // 4. TARJETA DESTACADA: MEDIDA DE CUMPLIMIENTO ALTERNATIVO (CORPALIV)
+        // =========================================================================
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
@@ -89,7 +113,9 @@ fun LeyInclusionScreenCompacta(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 5. Botón de acción para contactar
+        // =========================================================================
+        // 5. BOTÓN PRINCIPAL DE LLAMADO A LA ACCIÓN (SOLICITUD DE ASESORÍA)
+        // =========================================================================
         Button(
             onClick = onContactarClick,
             modifier = Modifier.fillMaxWidth()
@@ -99,7 +125,9 @@ fun LeyInclusionScreenCompacta(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // 6. Footer Informativo
+        // =========================================================================
+        // 6. PIE DE PÁGINA INFORMATIVO INSTITUCIONAL
+        // =========================================================================
         FooterInformativo()
     }
 }

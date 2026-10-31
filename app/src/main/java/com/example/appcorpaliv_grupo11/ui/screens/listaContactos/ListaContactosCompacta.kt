@@ -17,17 +17,28 @@ import com.example.appcorpaliv_grupo11.ui.components.TarjetaMensajeItem
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 
 /**
- * Vista para dispositivos de tamaño compacto (< 600 dp).
- * Renderiza los mensajes en 1 sola columna vertical con filtrado dinámico y eliminación.
+ * PANTALLA DE LISTA DE CONTACTOS EN FORMATO COMPACTO (SMARTPHONES PORTRAIT)
  *
- * @param viewModel Instancia de [ContactoViewModel] para administrar los datos y filtros.
+ * Sub-vista adaptativa diseñada para dispositivos móviles con ancho de pantalla menor a 600 dp.
+ * Renderiza el listado de solicitudes recibidas en una sola columna vertical optimizada ([LazyColumn]):
+ * 1. Encabezado principal del panel de administración.
+ * 2. Barra deslizable de chips de filtrado ([FilterChip] en [LazyRow]) por estado ("Todos", "Pendientes", "Contestados", "Rechazados").
+ * 3. Filtrado eficiente en memoria recalculado reactivamente mediante [remember].
+ * 4. Estado vacío informativo cuando la lista filtrada no arroje coincidencias.
+ * 5. Tarjetas interactivas [TarjetaMensajeItem] para gestionar el estado de los registros en la base de datos Room.
+ *
+ * @param viewModel Instancia de [ContactoViewModel] para administrar la lectura y actualización de los estados.
  */
 @Composable
 fun ListaContactosCompacta(viewModel: ContactoViewModel) {
+    // Observación reactiva de la lista completa de contactos desde el StateFlow del ViewModel
     val listaContactos by viewModel.listaContactos.collectAsState()
+
+    // Filtro actualmente seleccionado en la interfaz
     val filtroActual = viewModel.filtroActual
     val filtros = listOf("Todos", "Pendientes", "Contestados", "Rechazados")
 
+    // Cálculo optimizado del filtrado en memoria reactivo para evitar recomputaciones innecesarias
     val mensajesFiltrados = remember(filtroActual, listaContactos) {
         when (filtroActual) {
             "Pendientes" -> listaContactos.filter { it.estado.equals("Pendiente", ignoreCase = true) }
@@ -43,6 +54,9 @@ fun ListaContactosCompacta(viewModel: ContactoViewModel) {
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
+        // =========================================================================
+        // 1. ENCABEZADO DE LA SECCIÓN ADMINISTRATIVA
+        // =========================================================================
         Text(
             text = "Gestión de Mensajes",
             style = MaterialTheme.typography.headlineSmall,
@@ -52,6 +66,9 @@ fun ListaContactosCompacta(viewModel: ContactoViewModel) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        // =========================================================================
+        // 2. BARRA HORIZONTAL DE FILTROS MEDIANTE CHIPS (LAZYROW)
+        // =========================================================================
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(filtros) { filtro ->
                 FilterChip(
@@ -64,6 +81,9 @@ fun ListaContactosCompacta(viewModel: ContactoViewModel) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // =========================================================================
+        // 3. RENDERIZADO CONDICIONAL: ESTADO VACÍO VS LISTA DE MENSAJES (LAZYCOLUMN)
+        // =========================================================================
         if (mensajesFiltrados.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),

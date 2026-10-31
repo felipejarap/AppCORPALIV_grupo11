@@ -16,12 +16,29 @@ import com.example.appcorpaliv_grupo11.model.ContactoEntity
 import com.example.appcorpaliv_grupo11.ui.components.TarjetaMensajeItem
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 
+/**
+ * PANTALLA DE LISTA DE CONTACTOS EN FORMATO EXPANDIDO (TABLETS EN LANDSCAPE / MONITORES)
+ *
+ * Sub-vista adaptativa diseñada para pantallas de gran formato (ancho superior a 840 dp).
+ * Reorganiza el panel de administración con márgenes amplios y tipografías de gran jerarquía:
+ * 1. Encabezado principal en estilo MaterialTheme.typography.headlineLarge.
+ * 2. Barra horizontal de filtros dinámicos mediante FilterChip en LazyRow.
+ * 3. Filtrado eficiente en memoria con remember recalculado automáticamente ante cambios en el StateFlow.
+ * 4. Estado vacío centrado cuando la consulta no retorne coincidencias para el filtro activo.
+ * 5. Listado vertical optimizado (LazyColumn) con tarjetas TarjetaMensajeItem y separación amplia de 16 dp.
+ *
+ * @param viewModel Instancia de [ContactoViewModel] para administrar la consulta y actualización de estados en Room.
+ */
 @Composable
 fun ListaContactosExpandida(viewModel: ContactoViewModel) {
+    // Suscripción reactiva al StateFlow expuesto por el ViewModel para sincronizar cambios en Room
     val listaContactos by viewModel.listaContactos.collectAsState()
+
+    // Estado del filtro de búsqueda seleccionado
     val filtroActual = viewModel.filtroActual
     val filtros = listOf("Todos", "Pendientes", "Contestados", "Rechazados")
 
+    // Cálculo recordado del filtrado para evitar ejecuciones innecesarias durante las recomposiciones
     val mensajesFiltrados = remember(filtroActual, listaContactos) {
         when (filtroActual) {
             "Pendientes" -> listaContactos.filter { it.estado.equals("Pendiente", ignoreCase = true) }
@@ -37,6 +54,9 @@ fun ListaContactosExpandida(viewModel: ContactoViewModel) {
             .background(MaterialTheme.colorScheme.background)
             .padding(24.dp)
     ) {
+        // =========================================================================
+        // 1. ENCABEZADO DESTACADO DEL PANEL DE ADMINISTRACIÓN
+        // =========================================================================
         Text(
             text = "Gestión de Mensajes",
             style = MaterialTheme.typography.headlineLarge,
@@ -46,6 +66,9 @@ fun ListaContactosExpandida(viewModel: ContactoViewModel) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        // =========================================================================
+        // 2. BARRA DE CHIPS PARA FILTRADO POR ESTADO (LAZYROW)
+        // =========================================================================
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(filtros) { filtro ->
                 FilterChip(
@@ -58,6 +81,9 @@ fun ListaContactosExpandida(viewModel: ContactoViewModel) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // =========================================================================
+        // 3. RENDERIZADO DE LA LISTA O ESTADO VACÍO (LAZYCOLUMN)
+        // =========================================================================
         if (mensajesFiltrados.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
