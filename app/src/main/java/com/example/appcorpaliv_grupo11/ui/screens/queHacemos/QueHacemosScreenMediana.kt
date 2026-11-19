@@ -13,6 +13,20 @@ import androidx.compose.ui.unit.sp
 import com.example.appcorpaliv_grupo11.ui.components.FooterInformativo
 import com.example.appcorpaliv_grupo11.ui.components.InsigniaMideso
 
+/**
+ * PANTALLA DE QUÉ HACEMOS EN FORMATO MEDIANO (TABLETS PORTRAIT / SMARTPHONES LANDSCAPE)
+ *
+ * Sub-vista adaptativa diseñada para dispositivos de formato intermedio (ancho entre 600 dp y 839 dp).
+ * Organiza los 6 servicios corporativos e institucionales en una matriz fluida de 3 filas x 2 columnas:
+ * 1. Encabezado en fila (Row) con titular en estilo MaterialTheme.typography.headlineMedium e InsigniaMideso.
+ * 2. Fila 1 (2 columnas): Capacitaciones de Inclusión y Experiencias de Inclusión.
+ * 3. Fila 2 (2 columnas): Análisis de Puesto de Trabajo y Acompañamiento de Inserción.
+ * 4. Fila 3 (2 columnas): Accesibilidad Universal y Políticas y Hunting Inclusivo.
+ * 5. Botón primario de acción alineado al extremo derecho (Alignment.End).
+ * 6. Pie de página informativo institucional (FooterInformativo).
+ *
+ * @param onContactoClick Callback emitido cuando el usuario solicita mayor información o contacto directo.
+ */
 @Composable
 fun QueHacemosScreenMediana(
     onContactoClick: () -> Unit = {}
@@ -23,7 +37,9 @@ fun QueHacemosScreenMediana(
             .verticalScroll(rememberScrollState())
             .padding(24.dp)
     ) {
-        // 1. Encabezado principal: Título a la izquierda e Insignia a la derecha
+        // =========================================================================
+        // 1. ENCABEZADO PRINCIPAL HORIZONTAL (TITULAR MEDIANO + INSIGNIA MIDESO)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -46,6 +62,7 @@ fun QueHacemosScreenMediana(
 
             Spacer(modifier = Modifier.width(16.dp))
 
+            // Insignia oficial de acreditación MIDESO
             InsigniaMideso(
                 texto = "Acreditación MIDESO - Corpaliv"
             )
@@ -53,7 +70,9 @@ fun QueHacemosScreenMediana(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 2. Fila 1: Capacitaciones y Experiencias de Inclusión
+        // =========================================================================
+        // 2. FILA 1: CAPACITACIONES Y EXPERIENCIAS DE INCLUSIÓN (2 COLUMNAS)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -107,7 +126,9 @@ fun QueHacemosScreenMediana(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 3. Fila 2: Análisis de Puesto y Acompañamiento Laboral
+        // =========================================================================
+        // 3. FILA 2: ANÁLISIS DE PUESTO Y ACOMPAÑAMIENTO LABORAL (2 COLUMNAS)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -161,7 +182,9 @@ fun QueHacemosScreenMediana(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 4. Fila 3: Accesibilidad Universal y Políticas/Hunting
+        // =========================================================================
+        // 4. FILA 3: ACCESIBILIDAD UNIVERSAL Y POLÍTICAS/HUNTING (2 COLUMNAS)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -215,7 +238,9 @@ fun QueHacemosScreenMediana(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 5. Botón alineado a la derecha
+        // =========================================================================
+        // 5. BOTÓN PRINCIPAL DE LLAMADO A LA ACCIÓN (ALINEADO A LA DERECHA)
+        // =========================================================================
         Button(
             onClick = onContactoClick,
             modifier = Modifier.align(Alignment.End)
@@ -225,7 +250,9 @@ fun QueHacemosScreenMediana(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // 6. Footer Informativo
+        // =========================================================================
+        // 6. PIE DE PÁGINA INFORMATIVO INSTITUCIONAL
+        // =========================================================================
         FooterInformativo()
     }
 }

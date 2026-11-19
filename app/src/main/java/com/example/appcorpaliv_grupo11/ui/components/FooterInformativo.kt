@@ -13,10 +13,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * COMPONENTE REUTILIZABLE DE PIE DE PÁGINA INFORMATIVO (FOOTER)
+ *
+ * Componente visual estático de maquetación que despliega información clave sobre la institución
+ * o punto de venta (Dirección física para retiro presencial y cobertura de envíos).
+ * Utiliza una distribución equitativa basada en pesos (`Modifier.weight(1f)`) para adaptarse de forma
+ * proporcional a cualquier ancho de pantalla en smartphones o tablets.
+ *
+ * @param modifier Modificador para personalizar la maquetación externa desde la vista contenedora.
+ */
 @Composable
 fun FooterInformativo(
     modifier: Modifier = Modifier
 ) {
+    // Tarjeta contenedora elevada con bordes redondeados y opacidad aplicada a la variante de superficie
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -29,14 +40,16 @@ fun FooterInformativo(
             horizontalArrangement = Arrangement.spacedBy(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Bloque Retiro (50%)
+            // =========================================================================
+            // BLOQUE 1: DIRECCIÓN DE RETIRO PRESENCIAL (OCUPA EL 50% DEL ANCHO)
+            // =========================================================================
             Row(
                 modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
-                    contentDescription = null,
+                    contentDescription = null, // Ícono puramente decorativo
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
@@ -56,14 +69,16 @@ fun FooterInformativo(
                 }
             }
 
-            // Bloque Envíos (50%)
+            // =========================================================================
+            // BLOQUE 2: COBERTURA DE ENVÍOS (OCUPA EL 50% DEL ANCHO)
+            // =========================================================================
             Row(
                 modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = null,
+                    contentDescription = null, // Ícono puramente decorativo
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )

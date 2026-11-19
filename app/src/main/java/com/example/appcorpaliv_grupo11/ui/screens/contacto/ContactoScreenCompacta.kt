@@ -19,11 +19,24 @@ import androidx.compose.ui.unit.dp
 import com.example.appcorpaliv_grupo11.ui.components.*
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 
+/**
+ * PANTALLA DE FORMULARIO DE CONTACTO EN FORMATO COMPACTO (SMARTPHONES PORTRAIT)
+ *
+ * Sub-vista adaptativa para smartphones en formato vertical. Reúne en un único flujo
+ * desplazable ([rememberScrollState]) la tarjeta de canales de contacto, el formulario
+ * dinámico de captura con validación en tiempo real y retroalimentación de estado asíncrono
+ * mediante [ContactoViewModel], [TarjetaExitoAnimada] y [FooterInformativo].
+ *
+ * @param viewModel Instancia del ViewModel [ContactoViewModel] que gestiona los estados del formulario y Room.
+ */
 @Composable
 fun ContactoScreenCompacta(viewModel: ContactoViewModel) {
+    // Estado mutable de desplazamiento vertical para evitar colisiones con el teclado virtual
     val scrollState = rememberScrollState()
+
+    // Suscripción reactiva a los estados expuestos por el StateFlow del ViewModel
     val isSubmitted by viewModel.isSubmitted.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState() // <-- Observamos el estado de carga
+    val isLoading by viewModel.isLoading.collectAsState() // Observa el estado de persistencia asíncrona
 
     Column(
         modifier = Modifier
@@ -31,23 +44,30 @@ fun ContactoScreenCompacta(viewModel: ContactoViewModel) {
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
     ) {
-        // 1. Tarjeta superior de información
+        // =========================================================================
+        // 1. TARJETA SUPERIOR DE INFORMACIÓN INSTITUCIONAL DE CONTACTO
+        // =========================================================================
         TarjetaInfoContacto(
             modifier = Modifier.padding(16.dp)
         )
 
-        // 2. Formulario / Éxito
+        // =========================================================================
+        // 2. CONTENEDOR DE FORMULARIO / TARJETA DE ÉXITO ANIMADA
+        // =========================================================================
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 8.dp)
         ) {
+            // Notificación animada que se despliega automáticamente tras un envío exitoso
             TarjetaExitoAnimada(
                 mostrarExito = isSubmitted,
                 onEnviarOtroMensaje = { viewModel.reiniciarFormulario() }
             )
 
+            // Renderizado condicional: Muestra los campos del formulario solo si no se ha enviado con éxito
             if (!isSubmitted) {
+                // Campo 1: Nombre completo
                 CampoTextoInput(
                     value = viewModel.nombre,
                     onValueChange = { viewModel.onNombreChanged(it) },
@@ -58,6 +78,7 @@ fun ContactoScreenCompacta(viewModel: ContactoViewModel) {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // Campo 2: Correo electrónico con validación de tipo de teclado
                 CampoTextoInput(
                     value = viewModel.email,
                     onValueChange = { viewModel.onEmailChanged(it) },
@@ -69,6 +90,7 @@ fun ContactoScreenCompacta(viewModel: ContactoViewModel) {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // Campo 3: Teléfono formateado a 9 dígitos
                 CampoTextoInput(
                     value = viewModel.telefono,
                     onValueChange = { viewModel.onTelefonoChanged(it) },
@@ -80,6 +102,7 @@ fun ContactoScreenCompacta(viewModel: ContactoViewModel) {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // Campo 4: Menú desplegable para selección de asunto
                 CampoDropdownInput(
                     value = viewModel.asunto,
                     onValueChange = { viewModel.onAsuntoChanged(it) },
@@ -90,6 +113,7 @@ fun ContactoScreenCompacta(viewModel: ContactoViewModel) {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // Campo 5: Mensaje multilínea con límites visuales
                 CampoTextoInput(
                     value = viewModel.mensaje,
                     onValueChange = { viewModel.onMensajeChanged(it) },
@@ -102,7 +126,7 @@ fun ContactoScreenCompacta(viewModel: ContactoViewModel) {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // Pasamos `cargando = isLoading`
+                // Botón principal de acción con soporte para indicador de carga (cargando = isLoading)
                 BotonPrimario(
                     texto = "ENVIAR MENSAJE",
                     cargando = isLoading,
@@ -113,6 +137,9 @@ fun ContactoScreenCompacta(viewModel: ContactoViewModel) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // =========================================================================
+        // 3. PIE DE PÁGINA INFORMATIVO
+        // =========================================================================
         FooterInformativo()
     }
 }

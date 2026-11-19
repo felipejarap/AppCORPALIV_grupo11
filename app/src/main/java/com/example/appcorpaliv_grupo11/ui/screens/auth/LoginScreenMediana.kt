@@ -23,14 +23,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.appcorpaliv_grupo11.viewModel.AuthViewModel
 
+/**
+ * PANTALLA DE LOGIN EN FORMATO MEDIANO (TABLETS PORTRAIT / SMARTPHONES APASIONADOS)
+ *
+ * Sub-vista adaptativa optimizada para dispositivos con un ancho de pantalla entre 600 dp y 839 dp.
+ * Implementa una disposición en dos columnas equilibradas dentro de un contenedor [Row]
+ * restringido a un ancho máximo de 720 dp y con una altura uniforme basada en [IntrinsicSize.Min].
+ *
+ * @param authViewModel Instancia del ViewModel que gestiona el estado de credenciales y autenticación.
+ * @param onLoginSuccess Callback a ejecutar cuando la autenticación resulta exitosa.
+ */
 @Composable
 fun LoginScreenMediana(
     authViewModel: AuthViewModel,
     onLoginSuccess: () -> Unit = {}
 ) {
+    // Suscripción reactiva al estado de error expuesto por el StateFlow del ViewModel
     val loginError by authViewModel.loginError.collectAsState()
+
+    // Estado mutable de desplazamiento vertical para evitar desbordamientos
     val scrollState = rememberScrollState()
 
+    // Contenedor centrado con padding intermedio de 32 dp
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -39,6 +53,7 @@ fun LoginScreenMediana(
             .padding(32.dp),
         contentAlignment = Alignment.Center
     ) {
+        // Tarjeta contenedora principal con ancho máximo ajustado a 720 dp
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -49,12 +64,15 @@ fun LoginScreenMediana(
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             shape = RoundedCornerShape(24.dp)
         ) {
+            // Fila contenedora de dos secciones ajustada a la altura mínima intrínseca
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
             ) {
-                // Banner Institucional Izquierdo
+                // =========================================================================
+                // COLUMNA 1: BANNER INSTITUCIONAL DE IDENTIDAD (IZQUIERDA)
+                // =========================================================================
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -66,7 +84,7 @@ fun LoginScreenMediana(
                     Column(horizontalAlignment = Alignment.Start) {
                         Icon(
                             imageVector = Icons.Default.Shield,
-                            contentDescription = null,
+                            contentDescription = null, // Ícono decorativo
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.size(48.dp)
                         )
@@ -86,7 +104,9 @@ fun LoginScreenMediana(
                     }
                 }
 
-                // Formulario Derecho
+                // =========================================================================
+                // COLUMNA 2: FORMULARIO DE INGRESO DE CREDENCIALES (DERECHA)
+                // =========================================================================
                 Column(
                     modifier = Modifier
                         .weight(1.2f)
@@ -102,6 +122,7 @@ fun LoginScreenMediana(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
+                    // Campo 1: Nombre de usuario
                     OutlinedTextField(
                         value = authViewModel.usuarioInput,
                         onValueChange = { authViewModel.onUsuarioChanged(it) },
@@ -120,6 +141,7 @@ fun LoginScreenMediana(
 
                     Spacer(modifier = Modifier.height(14.dp))
 
+                    // Campo 2: Contraseña con transformación de seguridad
                     OutlinedTextField(
                         value = authViewModel.passwordInput,
                         onValueChange = { authViewModel.onPasswordChanged(it) },
@@ -138,6 +160,7 @@ fun LoginScreenMediana(
                         shape = RoundedCornerShape(12.dp)
                     )
 
+                    // Mensaje de error renderizado condicionalmente desde el ViewModel
                     if (loginError != null) {
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
@@ -149,6 +172,7 @@ fun LoginScreenMediana(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
+                    // Botón de confirmación e inicio de sesión
                     Button(
                         onClick = { authViewModel.iniciarSesion(onSuccess = onLoginSuccess) },
                         modifier = Modifier

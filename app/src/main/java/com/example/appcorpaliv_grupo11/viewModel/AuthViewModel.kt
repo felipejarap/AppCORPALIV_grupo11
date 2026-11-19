@@ -9,8 +9,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * ViewModel encargado de la autenticación de usuarios (funcionarios/administradores),
- * gestionando el estado de la sesión, la captura de credenciales y la validación de acceso.
+ * VIEWMODEL DE AUTENTICACIÓN Y CONTROL DE SESIÓN
+ *
+ * Gestiona la lógica de negocio para el inicio y cierre de sesión de los funcionarios/administradores.
+ * Administra el estado de las credenciales de entrada (`usuarioInput`, `passwordInput`) y expone
+ * flujos observables (`StateFlow`) para notificar el estado de autenticación a la UI.
  */
 class AuthViewModel : ViewModel() {
 
@@ -20,11 +23,17 @@ class AuthViewModel : ViewModel() {
     // 'private set' garantiza encapsulación: la UI lee las variables pero no las modifica directo.
     // =========================================================================
 
-    /** Guarda el nombre de usuario ingresado en el campo de texto. */
+    /**
+     * Guarda el nombre de usuario ingresado en el campo de texto.
+     * `private set`: Evita la modificación directa desde las vistas (solo modificable mediante `onUsuarioChanged`).
+     */
     var usuarioInput by mutableStateOf("")
         private set
 
-    /** Guarda la contraseña ingresada en el campo de texto. */
+    /**
+     * Guarda la contraseña ingresada en el campo de texto.
+     * `private set`: Protege la variable para que solo se actualice mediante `onPasswordChanged`.
+     */
     var passwordInput by mutableStateOf("")
         private set
 
@@ -33,14 +42,19 @@ class AuthViewModel : ViewModel() {
     // Se utiliza StateFlow para exponer un estado observable, seguro e inmutable a las pantallas.
     // =========================================================================
 
-    /** Estado interno mutable que indica si el usuario tiene una sesión activa. */
+    /** Estado interno mutable de tipo [MutableStateFlow] que indica si el usuario tiene una sesión activa. */
     private val _isLoggedIn = MutableStateFlow(false)
-    /** Estado público observable por la UI para controlar la navegación (Pantalla de Login vs App principal). */
+
+    /**
+     * Estado público e inmutable de tipo [StateFlow] observado por la UI.
+     * `asStateFlow()` convierte el flujo mutable interno en una versión de solo lectura.
+     */
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
 
-    /** Estado interno mutable para almacenar mensajes de error durante la autenticación. */
+    /** Estado interno mutable de tipo [MutableStateFlow] para almacenar mensajes de error durante el login. */
     private val _loginError = MutableStateFlow<String?>(null)
-    /** Estado público observable por la UI para renderizar alertas de error en el formulario. */
+
+    /** Estado público observable de solo lectura para renderizar mensajes de error en la UI. */
     val loginError: StateFlow<String?> = _loginError.asStateFlow()
 
     // =========================================================================
@@ -48,8 +62,9 @@ class AuthViewModel : ViewModel() {
     // =========================================================================
 
     /**
-     * Actualiza el valor del usuario ingresado y limpia cualquier error de login activo.
-     * @param nuevoUsuario Texto ingresado por el usuario.
+     * Actualiza el valor del nombre de usuario ingresado y limpia cualquier mensaje de error activo.
+     *
+     * @param nuevoUsuario Cadena de texto recibida desde el campo de entrada de la UI.
      */
     fun onUsuarioChanged(nuevoUsuario: String) {
         usuarioInput = nuevoUsuario
@@ -57,8 +72,9 @@ class AuthViewModel : ViewModel() {
     }
 
     /**
-     * Actualiza el valor de la contraseña ingresada y limpia cualquier error de login activo.
-     * @param nuevaPass Texto ingresado en el campo de contraseña.
+     * Actualiza el valor de la contraseña ingresada y limpia cualquier mensaje de error activo.
+     *
+     * @param nuevaPass Cadena de texto recibida desde el campo de contraseña de la UI.
      */
     fun onPasswordChanged(nuevaPass: String) {
         passwordInput = nuevaPass
@@ -70,34 +86,36 @@ class AuthViewModel : ViewModel() {
     // =========================================================================
 
     /**
-     * Valida los campos e intenta iniciar sesión comparando con credenciales predefinidas.
-     * @param onSuccess Callback opcional que se ejecuta tras una autenticación exitosa (ej. navegar al menú).
+     * Valida los campos e intenta iniciar sesión comparándolos con las credenciales del sistema.
+     *
+     * @param onSuccess Función lambda / Callback opcional que se ejecuta tras una autenticación exitosa (ej. redirigir).
      */
     fun iniciarSesion(onSuccess: () -> Unit = {}) {
-        // 1. Validar que no haya campos vacíos
+        // 1. Validar que los campos no estén vacíos o contengan solo espacios en blanco
         if (usuarioInput.isBlank() || passwordInput.isBlank()) {
             _loginError.value = "Por favor ingresa usuario y contraseña."
             return
         }
 
-        // 2. Validación de credenciales fijas de prueba para funcionarios/administradores
+        // 2. Validación de credenciales fijas de prueba para funcionarios ("admin" / "1234")
         if (usuarioInput.trim().lowercase() == "admin" && passwordInput == "1234") {
             _isLoggedIn.value = true
             _loginError.value = null
 
-            // Limpiar los campos de entrada tras el ingreso exitoso por seguridad
+            // Limpieza de campos de entrada por seguridad tras un ingreso exitoso
             usuarioInput = ""
             passwordInput = ""
 
-            // Notificar éxito a la UI para realizar la navegación
+            // Invoca la función callback de éxito enviada desde la UI
             onSuccess()
         } else {
-            // Mostrar error en caso de credenciales inválidas
+            // Asigna el mensaje de error si las credenciales no coinciden
             _loginError.value = "Credenciales incorrectas. Verifica tus datos."
         }
     }
+
     /**
-     * Cierra la sesión activa del usuario y restablece las credenciales ingresadas.
+     * Cierra la sesión activa del usuario y restablece los valores del formulario.
      */
     fun cerrarSesion() {
         _isLoggedIn.value = false

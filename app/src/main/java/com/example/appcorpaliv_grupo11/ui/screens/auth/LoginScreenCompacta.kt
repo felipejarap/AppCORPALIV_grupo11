@@ -23,14 +23,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.appcorpaliv_grupo11.viewModel.AuthViewModel
 
+/**
+ * PANTALLA DE LOGIN EN FORMATO COMPACTO (SMARTPHONES PORTRAIT)
+ *
+ * Sub-vista adaptativa para teléfonos en orientación vertical. Integra interacción
+ * directa con [AuthViewModel] mediante el consumo de estados reactivos (`collectAsState`),
+ * ocultamiento seguro de contraseña ([PasswordVisualTransformation]) y desplazamiento vertical
+ * ([rememberScrollState]) para prevenir solapamientos cuando el teclado virtual está visible.
+ *
+ * @param authViewModel Instancia del ViewModel que gestiona la lógica de autenticación y estados de entrada.
+ * @param onLoginSuccess Callback a ejecutar cuando las credenciales son validadas con éxito.
+ */
 @Composable
 fun LoginScreenCompacta(
     authViewModel: AuthViewModel,
     onLoginSuccess: () -> Unit = {}
 ) {
+    // Suscripción al estado de error de inicio de sesión desde el StateFlow del ViewModel
     val loginError by authViewModel.loginError.collectAsState()
+
+    // Estado mutable de desplazamiento para permitir scroll cuando se despliega el teclado suave
     val scrollState = rememberScrollState()
 
+    // Contenedor principal centrado que ocupa todo el ancho y alto disponible
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -39,6 +54,7 @@ fun LoginScreenCompacta(
             .padding(20.dp),
         contentAlignment = Alignment.Center
     ) {
+        // Tarjeta contenedora de formulario restringida a un ancho máximo de 420 dp
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -55,6 +71,7 @@ fun LoginScreenCompacta(
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Título de acceso administrativo
                 Text(
                     text = "Acceso Funcionarios",
                     style = MaterialTheme.typography.headlineSmall,
@@ -65,6 +82,7 @@ fun LoginScreenCompacta(
 
                 Spacer(modifier = Modifier.height(6.dp))
 
+                // Descripción de propósito del módulo
                 Text(
                     text = "Inicia sesión para gestionar los mensajes y solicitudes de contacto.",
                     style = MaterialTheme.typography.bodySmall,
@@ -74,6 +92,7 @@ fun LoginScreenCompacta(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
+                // Campo 1: Nombre de usuario enlazado directamente al ViewModel
                 OutlinedTextField(
                     value = authViewModel.usuarioInput,
                     onValueChange = { authViewModel.onUsuarioChanged(it) },
@@ -92,6 +111,7 @@ fun LoginScreenCompacta(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
+                // Campo 2: Contraseña con máscara de seguridad y tipo de teclado numérico/alfanumérico
                 OutlinedTextField(
                     value = authViewModel.passwordInput,
                     onValueChange = { authViewModel.onPasswordChanged(it) },
@@ -110,6 +130,7 @@ fun LoginScreenCompacta(
                     shape = RoundedCornerShape(12.dp)
                 )
 
+                // Renderizado condicional del mensaje de error de autenticación
                 if (loginError != null) {
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
@@ -122,6 +143,7 @@ fun LoginScreenCompacta(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
+                // Botón de activación de intento de inicio de sesión
                 Button(
                     onClick = { authViewModel.iniciarSesion(onSuccess = onLoginSuccess) },
                     modifier = Modifier

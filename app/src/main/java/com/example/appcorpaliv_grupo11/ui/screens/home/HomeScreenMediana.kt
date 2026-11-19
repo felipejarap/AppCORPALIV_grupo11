@@ -20,6 +20,20 @@ import com.example.appcorpaliv_grupo11.ui.components.InsigniaMideso
 import com.example.appcorpaliv_grupo11.ui.components.TarjetaProductoItem
 import com.example.appcorpaliv_grupo11.viewModel.MainViewModel
 
+/**
+ * PANTALLA PRINCIPAL DE INICIO EN FORMATO MEDIANO (TABLETS PORTRAIT / SMARTPHONES APASIONADOS)
+ *
+ * Sub-vista adaptativa optimizada para dispositivos con un ancho de pantalla entre 600 dp y 839 dp.
+ * Reorganiza la portada del catálogo para equilibrar el espacio en pantallas intermedias mediante:
+ * 1. Cabecera dispuesta en fila ([Row]) con el título de la sección e [InsigniaMideso].
+ * 2. Banner de bienvenida e impacto social [HeroBanner] con navegación integrada hacia la sección de contacto.
+ * 3. Malla cuadrícula de 2 columnas ([LazyVerticalGrid]) para exhibición de tarjetas de productos [TarjetaProductoItem].
+ * 4. Pie de página informativo institucional con [FooterInformativo].
+ *
+ * @param navController Controlador de navegación de Jetpack Navigation para transiciones entre pantallas.
+ * @param viewModel Instancia del ViewModel [MainViewModel] preparada para suministrar los datos del catálogo.
+ */
+@Suppress("UNUSED_PARAMETER")
 @Composable
 fun HomeScreenMediana(
     navController: NavController,
@@ -31,7 +45,9 @@ fun HomeScreenMediana(
             .verticalScroll(rememberScrollState())
             .padding(24.dp)
     ) {
-        // 1. Cabecera con Insignia
+        // =========================================================================
+        // 1. CABECERA PRINCIPAL CON ALINEACIÓN HORIZONTAL (TITULAR + INSIGNIA)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -50,7 +66,9 @@ fun HomeScreenMediana(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 2. Hero Banner principal
+        // =========================================================================
+        // 2. HERO BANNER PRINCIPAL CON EVENTOS DE NAVEGACIÓN
+        // =========================================================================
         HeroBanner(
             onVerTiendaClick = { /* Acción para ver tienda */ },
             onContactoClick = { navController.navigate("contacto") }
@@ -58,7 +76,9 @@ fun HomeScreenMediana(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 3. Título sección productos
+        // =========================================================================
+        // 3. TÍTULO DE LA SECCIÓN DE PRODUCTOS DESTACADOS
+        // =========================================================================
         Text(
             text = "Nuestros Productos Destacados",
             style = MaterialTheme.typography.titleMedium,
@@ -68,7 +88,9 @@ fun HomeScreenMediana(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 4. Rejilla de productos (2 columnas)
+        // =========================================================================
+        // 4. REJILLA DE PRODUCTOS EN CUADRÍCULA (2 COLUMNAS)
+        // =========================================================================
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -89,7 +111,9 @@ fun HomeScreenMediana(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // 5. Pie informativo
+        // =========================================================================
+        // 5. PIE DE PÁGINA INFORMATIVO INSTITUCIONAL
+        // =========================================================================
         FooterInformativo()
     }
 }

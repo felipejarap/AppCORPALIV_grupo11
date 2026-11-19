@@ -13,6 +13,21 @@ import androidx.compose.ui.unit.sp
 import com.example.appcorpaliv_grupo11.ui.components.FooterInformativo
 import com.example.appcorpaliv_grupo11.ui.components.InsigniaMideso
 
+/**
+ * PANTALLA DE LEY DE INCLUSIÓN EN FORMATO EXPANDIDO (TABLETS EN LANDSCAPE / MONITORES)
+ *
+ * Sub-vista adaptativa diseñada para pantallas de más de 840 dp de ancho.
+ * Reorganiza la información normativa y la oferta de cumplimiento corporativo mediante:
+ * 1. Cabecera horizontal ([Row]) con título principal en tipografía destacada e [InsigniaMideso].
+ * 2. Distribución en 3 columnas horizontales paralelas ([Row] de [Card] con peso equitativo `weight(1f)`):
+ *    - Columna 1: Reserva del 1% (Marco Legal).
+ *    - Columna 2: Medida de Cumplimiento Alternativo (Solución Corpaliv).
+ *    - Columna 3: Retorno e Impacto Social (Talleres y Rehabilitación).
+ * 3. Botón de llamado a la acción alistado a la derecha (`Alignment.End`).
+ * 4. Pie de página informativo institucional [FooterInformativo].
+ *
+ * @param onContactarClick Callback emitido cuando el usuario solicita contacto comercial o asesoría técnica.
+ */
 @Composable
 fun LeyInclusionScreenExpandida(
     onContactarClick: () -> Unit = {}
@@ -23,6 +38,9 @@ fun LeyInclusionScreenExpandida(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 40.dp, vertical = 32.dp)
     ) {
+        // =========================================================================
+        // 1. CABECERA PRINCIPAL HORIZONTAL (TITULAR DE IMPACTO + INSIGNIA MIDESO)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -44,6 +62,7 @@ fun LeyInclusionScreenExpandida(
 
             Spacer(modifier = Modifier.width(32.dp))
 
+            // Insignia oficial MIDESO ubicada en el extremo derecho de la cabecera
             InsigniaMideso(
                 texto = "Acreditación MIDESO - Ley 21.015"
             )
@@ -51,10 +70,14 @@ fun LeyInclusionScreenExpandida(
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // =========================================================================
+        // 2. PANEL DE TRES COLUMNAS HORIZONTALES (PILARES DEL CUMPLIMIENTO)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+            // Pilar 1: Marco Legal de la Ley
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
@@ -66,6 +89,7 @@ fun LeyInclusionScreenExpandida(
                 }
             }
 
+            // Pilar 2: Medida Alternativa
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
@@ -77,6 +101,7 @@ fun LeyInclusionScreenExpandida(
                 }
             }
 
+            // Pilar 3: Retorno e Impacto Social
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
@@ -91,6 +116,9 @@ fun LeyInclusionScreenExpandida(
 
         Spacer(modifier = Modifier.height(28.dp))
 
+        // =========================================================================
+        // 3. BOTÓN DE ACCIÓN ALINEADO A LA DERECHA
+        // =========================================================================
         Button(
             onClick = onContactarClick,
             modifier = Modifier.align(Alignment.End)
@@ -100,6 +128,9 @@ fun LeyInclusionScreenExpandida(
 
         Spacer(modifier = Modifier.height(40.dp))
 
+        // =========================================================================
+        // 4. PIE DE PÁGINA INFORMATIVO INSTITUCIONAL
+        // =========================================================================
         FooterInformativo()
     }
 }

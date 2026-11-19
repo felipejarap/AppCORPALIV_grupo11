@@ -15,29 +15,43 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * COMPONENTE REUTILIZABLE DE NOTIFICACIÓN ANIMADA DE ÉXITO (ANIMATED SUCCESS CARD)
+ *
+ * Componente visual dinámico que retroalimenta al usuario tras el envío exitoso de un formulario.
+ * Incorpora animaciones de entrada y salida fluidas mediante [AnimatedVisibility] y gestiona un
+ * temporizador de auto-desaparición asíncrono a través de [LaunchedEffect].
+ *
+ * @param mostrarExito Estado booleano que controla la visibilidad y ejecución de las animaciones.
+ * @param onEnviarOtroMensaje Callback para reiniciar el formulario o cerrar la tarjeta de confirmación.
+ * @param modifier Modificador para personalizar la maquetación externa desde el composable padre (primer parámetro opcional).
+ */
 @Composable
 fun TarjetaExitoAnimada(
     mostrarExito: Boolean,
-    onEnviarOtroMensaje: () -> Unit
+    onEnviarOtroMensaje: () -> Unit,
+    modifier: Modifier = Modifier // Reordenado: Primer parámetro opcional según las guías de Compose
 ) {
-    // Auto-desaparición a los 5 segundos
+    // Efeclo secundario que temporiza la auto-desaparición a los 5 segundos
     LaunchedEffect(mostrarExito) {
         if (mostrarExito) {
-            delay(5.seconds) // Reemplaza a delay(5000) usando Duration
+            delay(5.seconds) // Pausa la corrutina durante 5 segundos de forma limpia usando Duration API
             onEnviarOtroMensaje()
         }
     }
 
+    // Envoltorio de animación declarativa para la entrada y salida de la tarjeta
     AnimatedVisibility(
         visible = mostrarExito,
-        // Transición de Entrada: Desliza desde abajo + Fade + Leve aumento de tamaño (Pop)
+        modifier = modifier,
+        // Transición de Entrada: Desliza desde abajo (Spring) + Fade + Leve aumento de escala
         enter = fadeIn(animationSpec = tween(durationMillis = 400)) +
                 slideInVertically(
                     initialOffsetY = { fullHeight -> fullHeight / 3 },
                     animationSpec = spring()
                 ) +
                 scaleIn(initialScale = 0.9f),
-        // Transición de Salida: Desliza hacia arriba + Fade
+        // Transición de Salida: Desliza hacia arriba + Fade + Contracción de escala
         exit = fadeOut(animationSpec = tween(durationMillis = 300)) +
                 slideOutVertically(
                     targetOffsetY = { fullHeight -> -fullHeight / 3 },
