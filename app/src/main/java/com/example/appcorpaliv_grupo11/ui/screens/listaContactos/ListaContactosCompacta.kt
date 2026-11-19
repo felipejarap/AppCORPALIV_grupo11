@@ -11,34 +11,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-
 import com.example.appcorpaliv_grupo11.model.ContactoEntity
+import com.example.appcorpaliv_grupo11.ui.components.BannerEstadoRed
+import com.example.appcorpaliv_grupo11.ui.components.DialogoEditarContacto
 import com.example.appcorpaliv_grupo11.ui.components.TarjetaMensajeItem
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 
-/**
- * PANTALLA DE LISTA DE CONTACTOS EN FORMATO COMPACTO (SMARTPHONES PORTRAIT)
- *
- * Sub-vista adaptativa diseñada para dispositivos móviles con ancho de pantalla menor a 600 dp.
- * Renderiza el listado de solicitudes recibidas en una sola columna vertical optimizada ([LazyColumn]):
- * 1. Encabezado principal del panel de administración.
- * 2. Barra deslizable de chips de filtrado ([FilterChip] en [LazyRow]) por estado ("Todos", "Pendientes", "Contestados", "Rechazados").
- * 3. Filtrado eficiente en memoria recalculado reactivamente mediante [remember].
- * 4. Estado vacío informativo cuando la lista filtrada no arroje coincidencias.
- * 5. Tarjetas interactivas [TarjetaMensajeItem] para gestionar el estado de los registros en la base de datos Room.
- *
- * @param viewModel Instancia de [ContactoViewModel] para administrar la lectura y actualización de los estados.
- */
 @Composable
 fun ListaContactosCompacta(viewModel: ContactoViewModel) {
-    // Observación reactiva de la lista completa de contactos desde el StateFlow del ViewModel
     val listaContactos by viewModel.listaContactos.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
-    // Filtro actualmente seleccionado en la interfaz
     val filtroActual = viewModel.filtroActual
     val filtros = listOf("Todos", "Pendientes", "Contestados", "Rechazados")
 
-    // Cálculo optimizado del filtrado en memoria reactivo para evitar recomputaciones innecesarias
+    var contactoAEditar by remember { mutableStateOf<ContactoEntity?>(null) }
+    var contactoAEliminar by remember { mutableStateOf<ContactoEntity?>(null) }
+
     val mensajesFiltrados = remember(filtroActual, listaContactos) {
         when (filtroActual) {
             "Pendientes" -> listaContactos.filter { it.estado.equals("Pendiente", ignoreCase = true) }
@@ -54,9 +44,6 @@ fun ListaContactosCompacta(viewModel: ContactoViewModel) {
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
-        // =========================================================================
-        // 1. ENCABEZADO DE LA SECCIÓN ADMINISTRATIVA
-        // =========================================================================
         Text(
             text = "Gestión de Mensajes",
             style = MaterialTheme.typography.headlineSmall,
@@ -66,9 +53,6 @@ fun ListaContactosCompacta(viewModel: ContactoViewModel) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // =========================================================================
-        // 2. BARRA HORIZONTAL DE FILTROS MEDIANTE CHIPS (LAZYROW)
-        // =========================================================================
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(filtros) { filtro ->
                 FilterChip(
@@ -79,38 +63,101 @@ fun ListaContactosCompacta(viewModel: ContactoViewModel) {
             }
         }
 
+        // Aviso seguro de red / servicio no disponible con botón de reintento
+        if (errorMessage != null) {
+            Spacer(modifier = Modifier.height(12.dp))
+            BannerEstadoRed(
+                mensaje = errorMessage!!,
+                onRetry = { viewModel.sincronizarContactos() }
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        // =========================================================================
-        // 3. RENDERIZADO CONDICIONAL: ESTADO VACÍO VS LISTA DE MENSAJES (LAZYCOLUMN)
-        // =========================================================================
-        if (mensajesFiltrados.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "No hay mensajes en '$filtroActual'.",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+        when {
+            isLoading && mensajesFiltrados.isEmpty() -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
-        } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(
-                    items = mensajesFiltrados,
-                    key = { item: ContactoEntity -> item.id }
-                ) { item ->
-                    TarjetaMensajeItem(
-                        contacto = item,
-                        onCambiarEstado = { contacto, nuevoEstado ->
-                            viewModel.cambiarEstadoContacto(contacto, nuevoEstado)
-                        }
+            mensajesFiltrados.isEmpty() -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (errorMessage != null) {
+                            "No se pudieron cargar los mensajes."
+                        } else {
+                            "No hay mensajes en '$filtroActual'."
+                        },
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
+            else -> {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(
+                        items = mensajesFiltrados,
+                        key = { item: ContactoEntity -> "${item.id}_${item.email}_${item.mensaje.hashCode()}" }
+                    ) { item ->
+                        TarjetaMensajeItem(
+                            contacto = item,
+                            onCambiarEstado = { contacto, nuevoEstado ->
+                                viewModel.cambiarEstadoContacto(contacto, nuevoEstado)
+                            },
+                            onEditar = { contacto -> contactoAEditar = contacto },
+                            onEliminar = { contacto -> contactoAEliminar = contacto }
+                        )
+                    }
+                }
+            }
         }
+    }
+
+    // Pop-up de edición (PUT)
+    contactoAEditar?.let { contacto ->
+        DialogoEditarContacto(
+            contacto = contacto,
+            opcionesAsunto = viewModel.opcionesAsunto,
+            onDismiss = { contactoAEditar = null },
+            onGuardar = { contactoActualizado ->
+                viewModel.actualizarContacto(contactoActualizado)
+                contactoAEditar = null
+            }
+        )
+    }
+
+    // Pop-up de confirmación de borrado (DELETE)
+    contactoAEliminar?.let { contacto ->
+        AlertDialog(
+            onDismissRequest = { contactoAEliminar = null },
+            title = { Text("Eliminar mensaje") },
+            text = { Text("¿Seguro que deseas eliminar el mensaje de ${contacto.nombre}?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.eliminarContacto(contacto)
+                        contactoAEliminar = null
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Eliminar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { contactoAEliminar = null }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }

@@ -27,7 +27,7 @@ import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
  * 1. Panel Izquierdo (40% - weight 1f): Tarjeta con la información institucional de contacto.
  * 2. Panel Derecho (60% - weight 1.5f): Formulario interactivo de captura con validación en tiempo real.
  *
- * @param viewModel Instancia del ViewModel [ContactoViewModel] que gestiona los estados del formulario y la persistencia en Room.
+ * @param viewModel Instancia del ViewModel [ContactoViewModel] que gestiona los estados del formulario y la API.
  */
 @Composable
 fun ContactoScreenExpandida(viewModel: ContactoViewModel) {
@@ -37,6 +37,7 @@ fun ContactoScreenExpandida(viewModel: ContactoViewModel) {
     // Observación reactiva de los estados expuestos desde el StateFlow del ViewModel
     val isSubmitted by viewModel.isSubmitted.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     Column(
         modifier = Modifier
@@ -127,6 +128,15 @@ fun ContactoScreenExpandida(viewModel: ContactoViewModel) {
                         maxLines = 6,
                         error = viewModel.mensajeError
                     )
+
+                    // Aviso seguro de red / servicio no disponible si el backend no responde
+                    if (errorMessage != null) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        BannerEstadoRed(
+                            mensaje = errorMessage!!,
+                            onRetry = { viewModel.enviarFormulario {} }
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(20.dp))
 

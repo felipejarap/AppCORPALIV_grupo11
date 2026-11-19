@@ -20,14 +20,14 @@ import com.example.appcorpaliv_grupo11.ui.components.*
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 
 /**
- * PANTALLA DE FORMULARIO DE CONTACTO EN FORMATO MEDIANO (TABLETS PORTRAIT / SMARTPHONES APAPAISADOS)
+ * PANTALLA DE FORMULARIO DE CONTACTO EN FORMATO MEDIANO (TABLETS PORTRAIT / SMARTPHONES APAISADOS)
  *
  * Sub-vista adaptativa optimizada para dispositivos con un ancho de pantalla entre 600 dp y 839 dp.
  * Organiza la vista en un contenedor horizontal [Row] de dos columnas paralelas equilibradas:
  * 1. Panel Izquierdo (45% - weight 1f): Tarjeta de información institucional [TarjetaInfoContacto].
  * 2. Panel Derecho (55% - weight 1.2f): Formulario interactivo o tarjeta de éxito [TarjetaExitoAnimada].
  *
- * @param viewModel Instancia del ViewModel [ContactoViewModel] que gestiona la lógica de validación y la persistencia en Room.
+ * @param viewModel Instancia del ViewModel [ContactoViewModel] que gestiona la lógica de validación y la API.
  */
 @Composable
 fun ContactoScreenMediana(viewModel: ContactoViewModel) {
@@ -37,6 +37,7 @@ fun ContactoScreenMediana(viewModel: ContactoViewModel) {
     // Suscripción reactiva a los estados expuestos desde el StateFlow del ViewModel
     val isSubmitted by viewModel.isSubmitted.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     Column(
         modifier = Modifier
@@ -127,6 +128,15 @@ fun ContactoScreenMediana(viewModel: ContactoViewModel) {
                         maxLines = 6,
                         error = viewModel.mensajeError
                     )
+
+                    // Aviso seguro de red / servicio no disponible si el backend no responde
+                    if (errorMessage != null) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        BannerEstadoRed(
+                            mensaje = errorMessage!!,
+                            onRetry = { viewModel.enviarFormulario {} }
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(20.dp))
 

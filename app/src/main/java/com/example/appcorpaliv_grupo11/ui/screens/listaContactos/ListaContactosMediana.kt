@@ -11,8 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-
 import com.example.appcorpaliv_grupo11.model.ContactoEntity
+import com.example.appcorpaliv_grupo11.ui.components.BannerEstadoRed
+import com.example.appcorpaliv_grupo11.ui.components.DialogoEditarContacto
 import com.example.appcorpaliv_grupo11.ui.components.TarjetaMensajeItem
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 
@@ -21,22 +22,28 @@ import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
  *
  * Sub-vista adaptativa diseñada para dispositivos de formato intermedio (ancho entre 600 dp y 839 dp).
  * Reorganiza el panel administrativo de mensajes manteniendo proporciones equilibradas:
- * 1. Encabezado principal en estilo MaterialTheme.typography.headlineMedium.
- * 2. Barra horizontal de filtros dinámicos mediante FilterChip en LazyRow.
- * 3. Filtrado eficiente en memoria mediante remember recalculado ante cambios en el StateFlow de Room.
- * 4. Estado vacío centrado cuando la consulta no retorne coincidencias.
- * 5. Listado vertical optimizado (LazyColumn) con tarjetas TarjetaMensajeItem y separación de 12 dp.
+ * - Encabezado principal en estilo MaterialTheme.typography.headlineMedium.
+ * - Barra horizontal de filtros dinámicos mediante FilterChip en LazyRow.
+ * - Banner seguro de estado de red con opción de reintento ante caídas del backend.
+ * - Filtrado eficiente en memoria mediante remember recalculado ante cambios en el StateFlow.
+ * - Listado vertical optimizado (LazyColumn) con tarjetas TarjetaMensajeItem y separación de 12 dp.
  *
- * @param viewModel Instancia de [ContactoViewModel] para administrar la lectura y actualización de estados en Room.
+ * @param viewModel Instancia de [ContactoViewModel] para administrar la lectura, edición y eliminación de registros.
  */
 @Composable
 fun ListaContactosMediana(viewModel: ContactoViewModel) {
-    // Suscripción reactiva al StateFlow del ViewModel para sincronizar cambios persistidos en Room
+    // Suscripción reactiva a los StateFlows expuestos por el ViewModel
     val listaContactos by viewModel.listaContactos.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     // Estado del filtro de búsqueda seleccionado
     val filtroActual = viewModel.filtroActual
     val filtros = listOf("Todos", "Pendientes", "Contestados", "Rechazados")
+
+    // Estados para los pop-ups de edición (PUT) y eliminación (DELETE)
+    var contactoAEditar by remember { mutableStateOf<ContactoEntity?>(null) }
+    var contactoAEliminar by remember { mutableStateOf<ContactoEntity?>(null) }
 
     // Cálculo optimizado del filtrado en memoria reactivo
     val mensajesFiltrados = remember(filtroActual, listaContactos) {
@@ -79,38 +86,104 @@ fun ListaContactosMediana(viewModel: ContactoViewModel) {
             }
         }
 
+        // Aviso seguro de red / servicio no disponible con botón de reintento
+        if (errorMessage != null) {
+            Spacer(modifier = Modifier.height(12.dp))
+            BannerEstadoRed(
+                mensaje = errorMessage!!,
+                onRetry = { viewModel.sincronizarContactos() }
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         // =========================================================================
-        // 3. RENDERIZADO DE LA LISTA O ESTADO VACÍO (LAZYCOLUMN)
+        // 3. RENDERIZADO DE LA LISTA, CARGA O ESTADO VACÍO (LAZYCOLUMN)
         // =========================================================================
-        if (mensajesFiltrados.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "No hay mensajes en '$filtroActual'.",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+        when {
+            isLoading && mensajesFiltrados.isEmpty() -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
-        } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(
-                    items = mensajesFiltrados,
-                    key = { item: ContactoEntity -> item.id }
-                ) { item ->
-                    TarjetaMensajeItem(
-                        contacto = item,
-                        onCambiarEstado = { contacto, nuevoEstado ->
-                            viewModel.cambiarEstadoContacto(contacto, nuevoEstado)
-                        }
+            mensajesFiltrados.isEmpty() -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (errorMessage != null) {
+                            "No se pudieron cargar los mensajes."
+                        } else {
+                            "No hay mensajes en '$filtroActual'."
+                        },
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
+            else -> {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(
+                        items = mensajesFiltrados,
+                        key = { item: ContactoEntity -> "${item.id}_${item.email}_${item.mensaje.hashCode()}" }
+                    ) { item ->
+                        TarjetaMensajeItem(
+                            contacto = item,
+                            onCambiarEstado = { contacto, nuevoEstado ->
+                                viewModel.cambiarEstadoContacto(contacto, nuevoEstado)
+                            },
+                            onEditar = { contacto -> contactoAEditar = contacto },
+                            onEliminar = { contacto -> contactoAEliminar = contacto }
+                        )
+                    }
+                }
+            }
         }
+    }
+
+    // Pop-up de edición (PUT) reutilizando el componente compartido
+    contactoAEditar?.let { contacto ->
+        DialogoEditarContacto(
+            contacto = contacto,
+            opcionesAsunto = viewModel.opcionesAsunto,
+            onDismiss = { contactoAEditar = null },
+            onGuardar = { contactoActualizado ->
+                viewModel.actualizarContacto(contactoActualizado)
+                contactoAEditar = null
+            }
+        )
+    }
+
+    // Pop-up de confirmación de borrado (DELETE)
+    contactoAEliminar?.let { contacto ->
+        AlertDialog(
+            onDismissRequest = { contactoAEliminar = null },
+            title = { Text("Eliminar mensaje") },
+            text = { Text("¿Seguro que deseas eliminar el mensaje de ${contacto.nombre}?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.eliminarContacto(contacto)
+                        contactoAEliminar = null
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Eliminar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { contactoAEliminar = null }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }

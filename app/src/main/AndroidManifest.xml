@@ -5,7 +5,7 @@
     <!-- Permite a la aplicación abrir conexiones de red hacia servidores externos (HTTP/HTTPS) -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Permite consultar el estado activo de las redes (Wi-Fi, datos móviles, Ethernet) -->
+    <!-- Permite consultar el estado activo de las redes (wifi, datos móviles, Ethernet) -->
     <!-- Necesario para la función 'isInternetAvailable()' en ConnectivityManager -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -17,7 +17,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCORPALIV_grupo11">
+        android:theme="@style/Theme.AppCORPALIV_grupo11"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"

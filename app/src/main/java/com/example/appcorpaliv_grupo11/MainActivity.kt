@@ -1,5 +1,10 @@
 package com.example.appcorpaliv_grupo11
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,61 +27,78 @@ import com.example.appcorpaliv_grupo11.viewModel.MainViewModel
  * Es la única Actividad de Android en el proyecto (`ComponentActivity`). Actúa como el contenedor host
  * para la interfaz declarativa construida con Jetpack Compose.
  * Inicializa el tema global (Modo Oscuro/Claro), gestiona la inyección inicial del `MainViewModel`
- * y evalúa la disponibilidad de red para alternar entre el flujo de navegación principal o la pantalla offline.
+ * y monitorea en tiempo real la disponibilidad de red para alternar entre la navegación principal
+ * y la pantalla de contingencia offline (`NoInternetScreen`).
  */
 class MainActivity : ComponentActivity() {
 
-    /**
-     * Punto de inicio del ciclo de vida de la Actividad.
-     *
-     * @param savedInstanceState Estado previamente guardado de la Actividad en caso de recreación por el sistema.
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Asigna el bloque de composición declarativa de Compose como vista raíz de la pantalla
         setContent {
-            // =========================================================================
-            // INICIALIZACIÓN DE VIEWMODEL Y ESTADOS GLOBALES
-            // =========================================================================
-
-            /** Instancia del ViewModel global para la gestión del tema y la navegación desacoplada. */
             val mainViewModel: MainViewModel = viewModel()
-
-            /** Estado observable que rastrea reactivamente si el Modo Oscuro está activo. */
             val isDarkTheme by mainViewModel.isDarkTheme.collectAsState()
 
-            // Envoltorio del tema de la aplicación que aplica la paleta de colores según el estado `isDarkTheme`
             AppCORPALIV_grupo11Theme(darkTheme = isDarkTheme) {
-
-                // Obtiene el contexto actual de la aplicación necesario para acceder a los servicios de red
                 val context = LocalContext.current
 
-                /**
-                 * Estado mutable local que almacena si el dispositivo tiene acceso a Internet.
-                 * Se inicializa mediante la función utilitaria [isInternetAvailable].
-                 */
+                // Estado inicial de conectividad
                 var hasInternet by remember { mutableStateOf(isInternetAvailable(context)) }
 
-                // =========================================================================
-                // ESTRUCTURA VISUAL PRINCIPAL (SURFACE CONTAINER)
-                // =========================================================================
+                // Escucha en tiempo real si el dispositivo pierde o recupera internet mientras usa la app
+                DisposableEffect(context) {
+                    val connectivityManager =
+                        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+                    val networkCallback = object : ConnectivityManager.NetworkCallback() {
+                        override fun onAvailable(network: Network) {
+                            hasInternet = true
+                        }
+
+                        override fun onLost(network: Network) {
+                            hasInternet = isInternetAvailable(context)
+                        }
+
+                        override fun onCapabilitiesChanged(
+                            network: Network,
+                            networkCapabilities: NetworkCapabilities
+                        ) {
+                            hasInternet = networkCapabilities.hasCapability(
+                                NetworkCapabilities.NET_CAPABILITY_INTERNET
+                            )
+                        }
+                    }
+
+                    val request = NetworkRequest.Builder()
+                        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                        .build()
+
+                    try {
+                        connectivityManager.registerNetworkCallback(request, networkCallback)
+                    } catch (e: Exception) {
+                        hasInternet = isInternetAvailable(context)
+                    }
+
+                    onDispose {
+                        try {
+                            connectivityManager.unregisterNetworkCallback(networkCallback)
+                        } catch (_: Exception) {
+                        }
+                    }
+                }
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // Evaluación condicional de conectividad a la red
                     if (hasInternet) {
-                        // Renderiza el orquestador principal de pantallas y barras de navegación
                         AppNavigation(
                             isDarkTheme = isDarkTheme,
                             onToggleTheme = { mainViewModel.toggleTheme() }
                         )
                     } else {
-                        // Despliega la pantalla de alerta por falta de conectividad con botón de reintento
                         NoInternetScreen(
                             onRetry = {
-                                // Vuelve a consultar el gestor de conectividad al presionar el botón "Reintentar"
                                 hasInternet = isInternetAvailable(context)
                             }
                         )

@@ -27,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -40,11 +39,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.appcorpaliv_grupo11.R
-import com.example.appcorpaliv_grupo11.data.AppDatabase
 import com.example.appcorpaliv_grupo11.repository.ContactoRepository
-import com.example.appcorpaliv_grupo11.ui.screens.home.HomeScreen
 import com.example.appcorpaliv_grupo11.ui.screens.auth.LoginScreen
 import com.example.appcorpaliv_grupo11.ui.screens.contacto.ContactoScreen
+import com.example.appcorpaliv_grupo11.ui.screens.home.HomeScreen
 import com.example.appcorpaliv_grupo11.ui.screens.leyInclusion.LeyInclusionScreen
 import com.example.appcorpaliv_grupo11.ui.screens.listaContactos.ListaContactosScreen
 import com.example.appcorpaliv_grupo11.ui.screens.queHacemos.QueHacemosScreen
@@ -82,9 +80,10 @@ fun AppNavigation(
     // Controla si el panel lateral expandible en tablets/escritorio está abierto o contraído
     var isMenuExpanded by remember { mutableStateOf(false) }
 
-    // Instanciación de ViewModels requeridos para la navegación global y sesión
+    // Instanciación de ViewModels y repositorio compartido (100% microservicio)
     val mainViewModel: MainViewModel = viewModel()
     val authViewModel: AuthViewModel = viewModel()
+    val contactoRepository = remember { ContactoRepository() }
 
     // Observa el estado de sesión autenticada en tiempo real
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
@@ -556,28 +555,24 @@ fun AppNavigation(
                         )
                     }
                     // Ruta: Quiénes Somos
-                    composable(route = Screen.QuienesSomos.route){
+                    composable(route = Screen.QuienesSomos.route) {
                         QuienesSomosScreen(
                             onContactoClick = { navegarA(Screen.Contacto.route) }
                         )
                     }
                     // Ruta: Qué Hacemos
-                    composable(route = Screen.QueHacemos.route){
+                    composable(route = Screen.QueHacemos.route) {
                         QueHacemosScreen(
                             onContactoClick = { navegarA(Screen.Contacto.route) }
                         )
                     }
                     // Ruta: Formulario de Contacto (Construye dinámicamente el ViewModel inyectando el Repositorio)
                     composable(route = Screen.Contacto.route) {
-                        val context = LocalContext.current
-                        val database = AppDatabase.getDatabase(context)
-                        val repository = ContactoRepository(database.contactoDao())
-
                         val contactoViewModel: ContactoViewModel = viewModel(
                             factory = object : ViewModelProvider.Factory {
                                 @Suppress("UNCHECKED_CAST")
                                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                                    return ContactoViewModel(repository) as T
+                                    return ContactoViewModel(contactoRepository) as T
                                 }
                             }
                         )
@@ -598,30 +593,22 @@ fun AppNavigation(
                     // Ruta: Panel Privado de Mensajes (Protegido por autenticación)
                     composable(route = Screen.ListaContactos.route) {
                         if (isLoggedIn) {
-                            val context = LocalContext.current
-                            val database = AppDatabase.getDatabase(context)
-                            val repository = ContactoRepository(database.contactoDao())
-
                             val contactoViewModel: ContactoViewModel = viewModel(
                                 factory = object : ViewModelProvider.Factory {
                                     @Suppress("UNCHECKED_CAST")
                                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                                        return ContactoViewModel(repository) as T
+                                        return ContactoViewModel(contactoRepository) as T
                                     }
                                 }
                             )
 
                             ListaContactosScreen(viewModel = contactoViewModel)
                         } else {
-                            // Redirecciona al Login si intenta ingresar sin estar autenticado
-                            LoginScreen(
-                                authViewModel = authViewModel,
-                                onLoginSuccess = {
-                                    navController.navigate(Screen.ListaContactos.route) {
-                                        popUpTo(Screen.Home.route)
-                                    }
+                            LaunchedEffect(Unit) {
+                                navController.navigate(Screen.Login.route) {
+                                    popUpTo(Screen.ListaContactos.route) { inclusive = true }
                                 }
-                            )
+                            }
                         }
                     }
                 }
@@ -631,15 +618,12 @@ fun AppNavigation(
 }
 
 /**
- * FUNCIÓN UTILITARIA AUXILIAR DE DISEÑO RESPONSIVO
- *
- * Determina en tiempo real si el ancho disponible de pantalla corresponde a un dispositivo compacto.
- *
- * @return `true` si la pantalla tiene un ancho inferior a 600 dp (Smartphones),
- *         `false` para pantallas medianas o anchas (Tablets/Desktops).
+ * Determina si el dispositivo actual posee un ancho de pantalla compacto (menor a 600 dp,
+ * típico de smartphones en orientación vertical) para adaptar la navegación entre
+ * BottomBar/Drawer móvil y el panel lateral expansible de tablets/escritorio.
  */
 @Composable
-private fun esPantallaCompacta(): Boolean {
+fun esPantallaCompacta(): Boolean {
     val configuration = LocalConfiguration.current
     return configuration.screenWidthDp < 600
 }

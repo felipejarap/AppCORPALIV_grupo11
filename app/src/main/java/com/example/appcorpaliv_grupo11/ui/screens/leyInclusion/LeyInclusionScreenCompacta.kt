@@ -2,54 +2,48 @@ package com.example.appcorpaliv_grupo11.ui.screens.leyInclusion
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.BusinessCenter
+import androidx.compose.material.icons.outlined.Gavel
+import androidx.compose.material.icons.rounded.SupportAgent
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.appcorpaliv_grupo11.ui.components.FooterInformativo
 import com.example.appcorpaliv_grupo11.ui.components.InsigniaMideso
+import com.example.appcorpaliv_grupo11.ui.components.TarjetaIndicadoresEconomicos
+import com.example.appcorpaliv_grupo11.viewModel.IndicadoresViewModel
 
-/**
- * PANTALLA DE LEY DE INCLUSIÓN EN FORMATO COMPACTO (SMARTPHONES PORTRAIT)
- *
- * Sub-vista adaptativa diseñada para teléfonos móviles en formato vertical.
- * Presenta el marco regulatorio de la Ley N° 21.015 y los mecanismos de cumplimiento alternativo
- * en un flujo continuo de una sola columna mediante [rememberScrollState]:
- * 1. Insignia de acreditación oficial MIDESO [InsigniaMideso].
- * 2. Encabezado principal del módulo.
- * 3. Tarjeta explicativa del marco legal [Card] con estilo de superficie variada.
- * 4. Tarjeta destacada de medida de cumplimiento alternativo mediante servicios Corpaliv.
- * 5. Botón primario de acción para solicitar asesoría técnica e iniciar el contacto.
- * 6. Pie de página informativo institucional [FooterInformativo].
- *
- * @param onContactarClick Callback emitido cuando el usuario presiona el botón de solicitud de asesoría.
- */
 @Composable
 fun LeyInclusionScreenCompacta(
-    onContactarClick: () -> Unit = {}
+    onContactarClick: () -> Unit = {},
+    indicadoresViewModel: IndicadoresViewModel = viewModel()
 ) {
-    // Contenedor principal vertical desplazable para garantizar legibilidad en pantallas reducidas
+    val indicadores by indicadoresViewModel.indicadores.collectAsState()
+    val isLoading by indicadoresViewModel.isLoading.collectAsState()
+    val errorMessage by indicadoresViewModel.errorMessage.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // =========================================================================
-        // 1. INSIGNIA DE ACREDITACIÓN INSTITUCIONAL MIDESO
-        // =========================================================================
+        // 1. Insignia oficial MIDESO
         InsigniaMideso(
             texto = "Acreditación MIDESO - Ley N° 21.015"
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // =========================================================================
-        // 2. TÍTULO PRINCIPAL DEL MÓDULO INFORMATIVO
-        // =========================================================================
+        // 2. Título principal del módulo
         Text(
             text = "Cumplimiento de Ley de Inclusión Laboral",
             style = MaterialTheme.typography.headlineSmall,
@@ -57,77 +51,112 @@ fun LeyInclusionScreenCompacta(
             color = MaterialTheme.colorScheme.onBackground
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // =========================================================================
-        // 3. TARJETA INFORMATIVA: MARCO LEGAL REGULATORIO DE LA LEY 21.015
-        // =========================================================================
+        // 3. Tarjeta marco legal Ley 21.015
         Card(
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.65f)
             )
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = "¿En qué consiste la Ley 21.015?",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Gavel,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = "¿En qué consiste la Ley 21.015?",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
                 Text(
                     text = "Incentiva la inclusión de personas con discapacidad al mundo laboral, exigiendo a empresas con 100 o más trabajadores reservar al menos el 1% de sus puestos.",
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // =========================================================================
-        // 4. TARJETA DESTACADA: MEDIDA DE CUMPLIMIENTO ALTERNATIVO (CORPALIV)
-        // =========================================================================
+        // 4. Tarjeta medida de cumplimiento alternativo
         Card(
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
             )
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = "Medida de Cumplimiento Alternativo",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.BusinessCenter,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = "Medida de Cumplimiento Alternativo",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
                 Text(
                     text = "Las empresas pueden cumplir celebrando contratos de prestación de servicios o compra de productos con instituciones acreditadas como Corpaliv.",
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        // 5. Tarjeta de indicadores económicos en vivo (sin doble borde)
+        TarjetaIndicadoresEconomicos(
+            indicadores = indicadores,
+            isLoading = isLoading,
+            errorMessage = errorMessage,
+            onRecargar = { indicadoresViewModel.cargarIndicadores() }
+        )
 
-        // =========================================================================
-        // 5. BOTÓN PRINCIPAL DE LLAMADO A LA ACCIÓN (SOLICITUD DE ASESORÍA)
-        // =========================================================================
+        // 6. Botón primario de llamado a la acción
         Button(
             onClick = onContactarClick,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Solicitar Asesoría para Cumplimiento")
+            Icon(
+                imageVector = Icons.Rounded.SupportAgent,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Solicitar Asesoría para Cumplimiento",
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold
+            )
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        // =========================================================================
-        // 6. PIE DE PÁGINA INFORMATIVO INSTITUCIONAL
-        // =========================================================================
+        // 7. Pie de página institucional
         FooterInformativo()
     }
 }

@@ -1,6 +1,7 @@
 package com.example.appcorpaliv_grupo11.ui.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
@@ -25,7 +26,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun NoInternetScreen(
     onRetry: () -> Unit,
-    modifier: Modifier = Modifier // Reordenado: Primer parámetro opcional según las guías de Compose
+    modifier: Modifier = Modifier
 ) {
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -38,7 +39,6 @@ fun NoInternetScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Ícono de advertencia destacado de gran tamaño (80 dp) en color de error
             Icon(
                 imageVector = Icons.Default.Warning,
                 contentDescription = "Sin conexión",
@@ -48,7 +48,6 @@ fun NoInternetScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Título principal de aviso de estado
             Text(
                 text = "¡Sin Conexión a Internet!",
                 style = MaterialTheme.typography.headlineSmall,
@@ -59,7 +58,6 @@ fun NoInternetScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Mensaje explicativo sobre la necesidad de datos móviles o wifi
             Text(
                 text = "Esta aplicación requiere una conexión activa a internet para funcionar. Por favor, conéctate a una red Wi-Fi o datos móviles.",
                 style = MaterialTheme.typography.bodyMedium,
@@ -69,7 +67,6 @@ fun NoInternetScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Botón de reintento de conexión ajustado al 70% del ancho
             Button(
                 onClick = onRetry,
                 modifier = Modifier.fillMaxWidth(0.7f)
@@ -81,8 +78,56 @@ fun NoInternetScreen(
 }
 
 /**
+ * BANNER COMPACTO DE ESTADO DE RED / SERVICIO NO DISPONIBLE
+ *
+ * Muestra un aviso visual seguro dentro de pantallas con contenido mixto
+ * (ej. ContactoScreen o ListaContactosScreen) cuando el backend no responde,
+ * permitiendo reintentar la operación sin perder los datos ingresados.
+ */
+@Composable
+fun BannerEstadoRed(
+    mensaje: String = "Servicio temporalmente no disponible. Verifica tu conexión e intenta nuevamente.",
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = "Aviso de conexión",
+                tint = MaterialTheme.colorScheme.onErrorContainer
+            )
+            Text(
+                text = mensaje,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                modifier = Modifier.weight(1f)
+            )
+            TextButton(onClick = onRetry) {
+                Text(
+                    text = "Reintentar",
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onErrorContainer
+                )
+            }
+        }
+    }
+}
+
+/**
  * PREVISUALIZACIÓN DE LA PANTALLA SIN CONEXIÓN
- * Permite visualizar el diseño de la interfaz directamente en el canvas de Android Studio.
  */
 @Preview(showBackground = true)
 @Composable

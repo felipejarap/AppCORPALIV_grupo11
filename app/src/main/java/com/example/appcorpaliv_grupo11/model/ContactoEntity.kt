@@ -1,27 +1,18 @@
 package com.example.appcorpaliv_grupo11.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
 /**
- * CLASE DE ENTIDAD (MODELO DE DATOS ROOM)
+ * MODELO DE DOMINIO DE CONTACTO
  *
- * Esta clase mapea directamente una tabla en la base de datos local SQLite llamada 'contactos'.
- * Se define como una `data class` de Kotlin para garantizar la inmutabilidad y ofrecer métodos
- * automáticos como `copy()`, `equals()` y `toString()`.
+ * Representa un mensaje o consulta gestionada a través del microservicio Spring Boot + MySQL.
+ * Se define como una `data class` inmutable de Kotlin para garantizar seguridad de estado
+ * en Jetpack Compose y facilitar métodos como `copy()`, `equals()` y `toString()`.
  */
-@Entity(tableName = "contactos")
 data class ContactoEntity(
 
     /**
-     * Clave Primaria (Primary Key) única para cada registro de contacto.
-     *
-     * - @PrimaryKey(autoGenerate = true): Le indica a Room que genere e incremente
-     *   automáticamente el valor entero del ID (1, 2, 3...) al insertar un nuevo registro.
-     * - val id: Int = 0: Se inicializa en 0 por defecto para que Room sepa que es un registro
-     *   nuevo y asigne el ID correspondiente en la base de datos.
+     * Identificador único asignado por la base de datos MySQL en el backend.
+     * Se inicializa en 0 antes de enviarse por POST al microservicio.
      */
-    @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
     /** Nombre completo del remitente ingresado en el formulario. */
@@ -32,7 +23,7 @@ data class ContactoEntity(
 
     /**
      * Teléfono móvil del remitente (formato de 9 dígitos).
-     * Se asigna una cadena vacía ("") por defecto en caso de que sea un campo opcional.
+     * Se asigna una cadena vacía ("") por defecto en caso de no estar informado.
      */
     val telefono: String = "",
 
@@ -44,10 +35,7 @@ data class ContactoEntity(
 
     /**
      * Estado administrativo del mensaje.
-     *
-     * - Valores posibles en la app: "Pendiente", "Contestado", "Rechazado".
-     * - Se inicializa con "Pendiente" por defecto al crearse un nuevo registro.
-     * - Determina el color dinámico de la tarjeta en la interfaz (Naranja, Verde o Rojo).
+     * Valores posibles: "Pendiente", "Contestado", "Rechazado".
      */
     val estado: String = "Pendiente"
 )

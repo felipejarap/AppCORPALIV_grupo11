@@ -25,9 +25,9 @@ import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
  * Sub-vista adaptativa para smartphones en formato vertical. Reúne en un único flujo
  * desplazable ([rememberScrollState]) la tarjeta de canales de contacto, el formulario
  * dinámico de captura con validación en tiempo real y retroalimentación de estado asíncrono
- * mediante [ContactoViewModel], [TarjetaExitoAnimada] y [FooterInformativo].
+ * mediante [ContactoViewModel], [TarjetaExitoAnimada], [BannerEstadoRed] y [FooterInformativo].
  *
- * @param viewModel Instancia del ViewModel [ContactoViewModel] que gestiona los estados del formulario y Room.
+ * @param viewModel Instancia del ViewModel [ContactoViewModel] que gestiona los estados del formulario y la API.
  */
 @Composable
 fun ContactoScreenCompacta(viewModel: ContactoViewModel) {
@@ -36,7 +36,8 @@ fun ContactoScreenCompacta(viewModel: ContactoViewModel) {
 
     // Suscripción reactiva a los estados expuestos por el StateFlow del ViewModel
     val isSubmitted by viewModel.isSubmitted.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState() // Observa el estado de persistencia asíncrona
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     Column(
         modifier = Modifier
@@ -123,6 +124,15 @@ fun ContactoScreenCompacta(viewModel: ContactoViewModel) {
                     maxLines = 6,
                     error = viewModel.mensajeError
                 )
+
+                // Aviso seguro de red / servicio no disponible si el backend no responde
+                if (errorMessage != null) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    BannerEstadoRed(
+                        mensaje = errorMessage!!,
+                        onRetry = { viewModel.enviarFormulario {} }
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
