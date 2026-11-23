@@ -1,37 +1,41 @@
 package com.example.appcorpaliv_grupo11.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
 /**
- * Entidad de datos que representa un registro de mensaje de contacto en la base de datos Room.
- * Mapea directamente sus atributos a columnas de la tabla 'contactos' en SQLite.
+ * MODELO DE DOMINIO DE CONTACTO
+ *
+ * Representa un mensaje o consulta gestionada a través del microservicio Spring Boot + MySQL.
+ * Se define como una `data class` inmutable de Kotlin para garantizar seguridad de estado
+ * en Jetpack Compose y facilitar métodos como `copy()`, `equals()` y `toString()`.
  */
-@Entity(tableName = "contactos") // Define el nombre explícito de la tabla en SQLite
 data class ContactoEntity(
 
     /**
-     * Identificador único y clave primaria (Primary Key) del mensaje.
-     * 'autoGenerate = true' delega a SQLite la generación automática incremental de IDs únicos.
+     * Identificador único asignado por la base de datos MySQL en el backend.
+     * Se inicializa en 0 antes de enviarse por POST al microservicio.
      */
-    @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    /** Nombre completo del remitente que envió el mensaje. */
+    /** Nombre completo del remitente ingresado en el formulario. */
     val nombre: String,
 
-    /** Correo electrónico de contacto del remitente. */
+    /** Correo electrónico del remitente utilizado para respuestas vía Email. */
     val email: String,
 
-    /** Asunto o título descriptivo del mensaje. */
+    /**
+     * Teléfono móvil del remitente (formato de 9 dígitos).
+     * Se asigna una cadena vacía ("") por defecto en caso de no estar informado.
+     */
+    val telefono: String = "",
+
+    /** Asunto o categoría temática seleccionada en el formulario. */
     val asunto: String,
 
-    /** Cuerpo del mensaje o consulta enviada. */
+    /** Contenido textual completo del mensaje o consulta enviada. */
     val mensaje: String,
 
     /**
-     * Estado actual del mensaje en la plataforma ("Pendiente", "Contestado", "Rechazado").
-     * Si no se especifica al instanciar el objeto, tomará "Pendiente" por defecto.
+     * Estado administrativo del mensaje.
+     * Valores posibles: "Pendiente", "Contestado", "Rechazado".
      */
     val estado: String = "Pendiente"
 )

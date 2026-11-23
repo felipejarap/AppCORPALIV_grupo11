@@ -13,6 +13,21 @@ import androidx.compose.ui.unit.sp
 import com.example.appcorpaliv_grupo11.ui.components.FooterInformativo
 import com.example.appcorpaliv_grupo11.ui.components.InsigniaMideso
 
+/**
+ * PANTALLA DE QUIÉNES SOMOS EN FORMATO EXPANDIDO (TABLETS EN LANDSCAPE / MONITORES)
+ *
+ * Sub-vista adaptativa diseñada para pantallas de gran formato (ancho mayor a 840 dp).
+ * Reorganiza la historia, misión y equipo institucional de Corpaliv en un panel horizontal de 3 columnas:
+ * 1. Cabecera en fila (Row) con titular en estilo MaterialTheme.typography.headlineLarge, subtítulo e InsigniaMideso.
+ * 2. Distribución en 3 columnas paralelas horizontales (Row de Card con peso equitativo weight(1f)):
+ *    - Columna 1: Reseña e historia de Corpaliv (surfaceVariant).
+ *    - Columna 2: Nuestra Misión institucional (primaryContainer).
+ *    - Columna 3: Nuestro Equipo multidisciplinario (secondaryContainer).
+ * 3. Botón primario de acción alineado al extremo derecho (Alignment.End).
+ * 4. Pie de página informativo institucional (FooterInformativo).
+ *
+ * @param onContactoClick Callback emitido cuando el usuario solicita mayor información o contacto directo.
+ */
 @Composable
 fun QuienesSomosScreenExpandida(
     onContactoClick: () -> Unit = {}
@@ -23,7 +38,9 @@ fun QuienesSomosScreenExpandida(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 40.dp, vertical = 32.dp)
     ) {
-        // 1. Encabezado en Row con Título, Subtítulo e Insignia
+        // =========================================================================
+        // 1. CABECERA PRINCIPAL HORIZONTAL (TITULAR DESTACADO + INSIGNIA MIDESO)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -45,6 +62,7 @@ fun QuienesSomosScreenExpandida(
 
             Spacer(modifier = Modifier.width(32.dp))
 
+            // Insignia oficial de acreditación MIDESO
             InsigniaMideso(
                 texto = "Acreditación MIDESO - Corpaliv"
             )
@@ -52,12 +70,14 @@ fun QuienesSomosScreenExpandida(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // 2. Disposición en 3 columnas paralelas para pantallas grandes
+        // =========================================================================
+        // 2. PANEL DE TRES COLUMNAS PARALELAS (IDENTIDAD INSTITUCIONAL)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // Tarjeta 1: Sobre Corpaliv
+            // Tarjeta 1: Sobre Corpaliv (Estilo surfaceVariant)
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(
@@ -80,7 +100,7 @@ fun QuienesSomosScreenExpandida(
                 }
             }
 
-            // Tarjeta 2: Nuestra Misión
+            // Tarjeta 2: Nuestra Misión (Estilo primaryContainer)
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(
@@ -103,7 +123,7 @@ fun QuienesSomosScreenExpandida(
                 }
             }
 
-            // Tarjeta 3: Nuestro Equipo
+            // Tarjeta 3: Nuestro Equipo (Estilo secondaryContainer)
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(
@@ -129,7 +149,9 @@ fun QuienesSomosScreenExpandida(
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        // 3. Botón de acción alineado a la derecha
+        // =========================================================================
+        // 3. BOTÓN PRINCIPAL DE LLAMADO A LA ACCIÓN (ALINEADO A LA DERECHA)
+        // =========================================================================
         Button(
             onClick = onContactoClick,
             modifier = Modifier.align(Alignment.End)
@@ -139,7 +161,9 @@ fun QuienesSomosScreenExpandida(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // 4. Footer Informativo
+        // =========================================================================
+        // 4. PIE DE PÁGINA INFORMATIVO INSTITUCIONAL
+        // =========================================================================
         FooterInformativo()
     }
 }

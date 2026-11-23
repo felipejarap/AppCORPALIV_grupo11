@@ -23,14 +23,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.appcorpaliv_grupo11.viewModel.AuthViewModel
 
+/**
+ * PANTALLA DE LOGIN EN FORMATO EXPANDIDO (TABLETS EN LANDSCAPE / PANTALLAS ANCHAS)
+ *
+ * Sub-vista adaptativa diseñada para pantallas de más de 840 dp de ancho.
+ * Aprovecha el espacio horizontal estructurando el contenido en dos columnas paralelas
+ * mediante un [Row] de proporciones ponderadas (`weight`):
+ * 1. Columna Izquierda (45% - weight 1f): Banner de marca institucional.
+ * 2. Columna Derecha (55% - weight 1.2f): Formulario interactivo enlazado al [AuthViewModel].
+ *
+ * @param authViewModel Instancia del ViewModel que gestiona la lógica de autenticación y estados de entrada.
+ * @param onLoginSuccess Callback a ejecutar cuando las credenciales son validadas con éxito.
+ */
 @Composable
 fun LoginScreenExpandida(
     authViewModel: AuthViewModel,
     onLoginSuccess: () -> Unit = {}
 ) {
+    // Suscripción al estado de error de inicio de sesión desde el StateFlow del ViewModel
     val loginError by authViewModel.loginError.collectAsState()
+
+    // Estado mutable de desplazamiento para prevenir desbordamientos
     val scrollState = rememberScrollState()
 
+    // Contenedor principal con margen amplio (48 dp) y alineación centrada
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -39,6 +55,7 @@ fun LoginScreenExpandida(
             .padding(48.dp),
         contentAlignment = Alignment.Center
     ) {
+        // Tarjeta contenedora de dos columnas con ancho máximo de 900 dp
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -49,12 +66,15 @@ fun LoginScreenExpandida(
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             shape = RoundedCornerShape(28.dp)
         ) {
+            // Contenedor horizontal ajustado a la altura intrínseca mínima de sus componentes
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
             ) {
-                // Banner Institucional Izquierdo
+                // =========================================================================
+                // COLUMNA 1: BANNER INSTITUCIONAL DE BIENVENIDA (IZQUIERDA)
+                // =========================================================================
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -66,7 +86,7 @@ fun LoginScreenExpandida(
                     Column(horizontalAlignment = Alignment.Start) {
                         Icon(
                             imageVector = Icons.Default.VerifiedUser,
-                            contentDescription = null,
+                            contentDescription = null, // Ícono decorativo
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.size(56.dp)
                         )
@@ -86,7 +106,9 @@ fun LoginScreenExpandida(
                     }
                 }
 
-                // Formulario Derecho
+                // =========================================================================
+                // COLUMNA 2: FORMULARIO DE INGRESO DE CREDENCIALES (DERECHA)
+                // =========================================================================
                 Column(
                     modifier = Modifier
                         .weight(1.2f)
@@ -110,6 +132,7 @@ fun LoginScreenExpandida(
 
                     Spacer(modifier = Modifier.height(28.dp))
 
+                    // Campo 1: Usuario o correo institucional
                     OutlinedTextField(
                         value = authViewModel.usuarioInput,
                         onValueChange = { authViewModel.onUsuarioChanged(it) },
@@ -128,6 +151,7 @@ fun LoginScreenExpandida(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Campo 2: Contraseña con máscara de seguridad
                     OutlinedTextField(
                         value = authViewModel.passwordInput,
                         onValueChange = { authViewModel.onPasswordChanged(it) },
@@ -146,6 +170,7 @@ fun LoginScreenExpandida(
                         shape = RoundedCornerShape(12.dp)
                     )
 
+                    // Renderizado condicional del mensaje de error
                     if (loginError != null) {
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
@@ -157,6 +182,7 @@ fun LoginScreenExpandida(
 
                     Spacer(modifier = Modifier.height(28.dp))
 
+                    // Botón de activación de inicio de sesión
                     Button(
                         onClick = { authViewModel.iniciarSesion(onSuccess = onLoginSuccess) },
                         modifier = Modifier

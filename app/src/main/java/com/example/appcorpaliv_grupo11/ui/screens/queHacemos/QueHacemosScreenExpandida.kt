@@ -13,6 +13,25 @@ import androidx.compose.ui.unit.sp
 import com.example.appcorpaliv_grupo11.ui.components.FooterInformativo
 import com.example.appcorpaliv_grupo11.ui.components.InsigniaMideso
 
+/**
+ * PANTALLA DE QUÉ HACEMOS EN FORMATO EXPANDIDO (TABLETS EN LANDSCAPE / MONITORES)
+ *
+ * Sub-vista adaptativa diseñada para pantallas de gran formato (ancho mayor a 840 dp).
+ * Reorganiza el catálogo de servicios corporativos y oferta institucional en una matriz de 2x3:
+ * 1. Cabecera principal en fila (Row) con titular en estilo MaterialTheme.typography.headlineLarge e InsigniaMideso.
+ * 2. Primera fila de 3 tarjetas de servicios distribuidas con peso equitativo (weight(1f)):
+ *    - Capacitaciones de Inclusión.
+ *    - Experiencias de Inclusión (Destacado).
+ *    - Análisis de Puesto de Trabajo.
+ * 3. Segunda fila de 3 tarjetas de servicios distribuidas con peso equitativo (weight(1f)):
+ *    - Acompañamiento de Inserción.
+ *    - Accesibilidad Universal.
+ *    - Políticas y Hunting Inclusivo (Destacado).
+ * 4. Botón primario de acción alineado al extremo derecho (Alignment.End).
+ * 5. Pie de página informativo institucional (FooterInformativo).
+ *
+ * @param onContactoClick Callback emitido cuando el usuario solicita mayor información o contacto directo.
+ */
 @Composable
 fun QueHacemosScreenExpandida(
     onContactoClick: () -> Unit = {}
@@ -23,7 +42,9 @@ fun QueHacemosScreenExpandida(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 40.dp, vertical = 32.dp)
     ) {
-        // 1. Encabezado en Row con Título, Subtítulo e Insignia
+        // =========================================================================
+        // 1. CABECERA PRINCIPAL HORIZONTAL (TITULAR DESTACADO + INSIGNIA MIDESO)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -46,6 +67,7 @@ fun QueHacemosScreenExpandida(
 
             Spacer(modifier = Modifier.width(32.dp))
 
+            // Insignia oficial de acreditación MIDESO
             InsigniaMideso(
                 texto = "Acreditación MIDESO - Corpaliv"
             )
@@ -53,7 +75,9 @@ fun QueHacemosScreenExpandida(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // 2. Fila 1: Primeros 3 servicios en paralelo
+        // =========================================================================
+        // 2. FILA 1: MATRIZ DE SERVICIOS EN PARALELO (SERVICIOS 1 A 3)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(20.dp)
@@ -81,7 +105,7 @@ fun QueHacemosScreenExpandida(
                 }
             }
 
-            // Tarjeta 2: Experiencias (Destacado)
+            // Tarjeta 2: Experiencias (Destacado con PrimaryContainer)
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(
@@ -130,7 +154,9 @@ fun QueHacemosScreenExpandida(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 3. Fila 2: Siguientes 3 servicios en paralelo
+        // =========================================================================
+        // 3. FILA 2: MATRIZ DE SERVICIOS EN PARALELO (SERVICIOS 4 A 6)
+        // =========================================================================
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(20.dp)
@@ -181,7 +207,7 @@ fun QueHacemosScreenExpandida(
                 }
             }
 
-            // Tarjeta 6: Políticas & Hunting (Destacado)
+            // Tarjeta 6: Políticas & Hunting (Destacado con PrimaryContainer)
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(
@@ -207,7 +233,9 @@ fun QueHacemosScreenExpandida(
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        // 4. Botón de acción alineado a la derecha
+        // =========================================================================
+        // 4. BOTÓN PRINCIPAL DE LLAMADO A LA ACCIÓN (ALINEADO A LA DERECHA)
+        // =========================================================================
         Button(
             onClick = onContactoClick,
             modifier = Modifier.align(Alignment.End)
@@ -217,7 +245,9 @@ fun QueHacemosScreenExpandida(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // 5. Footer Informativo
+        // =========================================================================
+        // 5. PIE DE PÁGINA INFORMATIVO INSTITUCIONAL
+        // =========================================================================
         FooterInformativo()
     }
 }
