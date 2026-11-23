@@ -38,6 +38,7 @@ android {
     buildFeatures {
         compose = true
     }
+
     kotlinOptions {
         jvmTarget = "17"
     }
@@ -75,22 +76,32 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
 
-    // Retrofit y Gson (Conexión con Backend Spring Boot)
+
+=======
+ // Retrofit y Gson (Conexión con Backend Spring Boot)
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
-    // Pruebas Unitarias (JUnit + MockK + Coroutines Test)
-    testImplementation(libs.junit)
-    testImplementation("io.mockk:mockk:1.13.10")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-
-    // Pruebas Instrumentadas y UI
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 
     // Herramientas de depuración
     debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.5")
+
+    // Pruebas unitarias en src/test (Kotest + JUnit 5 + MockK + Coroutines Test)
+    testImplementation("io.kotest:kotest-runner-junit5:5.8.0")
+    testImplementation("io.kotest:kotest-assertions-core:5.8.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testImplementation("io.mockk:mockk:1.13.10")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+
+    // Pruebas de UI en src/androidTest (JUnit4 + Espresso + Compose UI Test)
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.5")
+}
+
+// Obligatorio para ejecutar tests de Kotest / JUnit 5 en JVM[cite: 3]
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }
