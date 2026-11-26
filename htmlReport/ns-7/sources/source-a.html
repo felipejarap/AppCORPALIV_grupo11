@@ -1,0 +1,301 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > TarjetaExitoAnimadaKt</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.appcorpaliv_grupo11.ui.components</a>
+</div>
+
+<h1>Coverage Summary for Class: TarjetaExitoAnimadaKt (com.example.appcorpaliv_grupo11.ui.components)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TarjetaExitoAnimadaKt</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">TarjetaExitoAnimadaKt$TarjetaExitoAnimada$1$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">TarjetaExitoAnimadaKt$TarjetaExitoAnimada$4</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">TarjetaExitoAnimadaKt$TarjetaExitoAnimada$4$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/51)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.appcorpaliv_grupo11.ui.components
+&nbsp;
+&nbsp;import androidx.compose.animation.*
+&nbsp;import androidx.compose.animation.core.spring
+&nbsp;import androidx.compose.animation.core.tween
+&nbsp;import androidx.compose.foundation.layout.*
+&nbsp;import androidx.compose.foundation.shape.RoundedCornerShape
+&nbsp;import androidx.compose.material3.*
+&nbsp;import androidx.compose.runtime.*
+&nbsp;import androidx.compose.ui.Alignment
+&nbsp;import androidx.compose.ui.Modifier
+&nbsp;import androidx.compose.ui.text.font.FontWeight
+&nbsp;import androidx.compose.ui.text.style.TextAlign
+&nbsp;import androidx.compose.ui.unit.dp
+&nbsp;import kotlinx.coroutines.delay
+&nbsp;import kotlin.time.Duration.Companion.seconds
+&nbsp;
+&nbsp;/**
+&nbsp; * COMPONENTE REUTILIZABLE DE NOTIFICACIÓN ANIMADA DE ÉXITO (ANIMATED SUCCESS CARD)
+&nbsp; *
+&nbsp; * Componente visual dinámico que retroalimenta al usuario tras el envío exitoso de un formulario.
+&nbsp; * Incorpora animaciones de entrada y salida fluidas mediante [AnimatedVisibility] y gestiona un
+&nbsp; * temporizador de auto-desaparición asíncrono a través de [LaunchedEffect].
+&nbsp; *
+&nbsp; * @param mostrarExito Estado booleano que controla la visibilidad y ejecución de las animaciones.
+&nbsp; * @param onEnviarOtroMensaje Callback para reiniciar el formulario o cerrar la tarjeta de confirmación.
+&nbsp; * @param modifier Modificador para personalizar la maquetación externa desde el composable padre (primer parámetro opcional).
+&nbsp; */
+&nbsp;@Composable
+&nbsp;fun TarjetaExitoAnimada(
+&nbsp;    mostrarExito: Boolean,
+&nbsp;    onEnviarOtroMensaje: () -&gt; Unit,
+<b class="nc">&nbsp;    modifier: Modifier = Modifier // Reordenado: Primer parámetro opcional según las guías de Compose</b>
+<b class="nc">&nbsp;) {</b>
+&nbsp;    // Efeclo secundario que temporiza la auto-desaparición a los 5 segundos
+<b class="nc">&nbsp;    LaunchedEffect(mostrarExito) {</b>
+<b class="nc">&nbsp;        if (mostrarExito) {</b>
+<b class="nc">&nbsp;            delay(5.seconds) // Pausa la corrutina durante 5 segundos de forma limpia usando Duration API</b>
+<b class="nc">&nbsp;            onEnviarOtroMensaje()</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Envoltorio de animación declarativa para la entrada y salida de la tarjeta
+<b class="nc">&nbsp;    AnimatedVisibility(</b>
+<b class="nc">&nbsp;        visible = mostrarExito,</b>
+<b class="nc">&nbsp;        modifier = modifier,</b>
+&nbsp;        // Transición de Entrada: Desliza desde abajo (Spring) + Fade + Leve aumento de escala
+<b class="nc">&nbsp;        enter = fadeIn(animationSpec = tween(durationMillis = 400)) +</b>
+<b class="nc">&nbsp;                slideInVertically(</b>
+<b class="nc">&nbsp;                    initialOffsetY = { fullHeight -&gt; fullHeight / 3 },</b>
+<b class="nc">&nbsp;                    animationSpec = spring()</b>
+&nbsp;                ) +
+<b class="nc">&nbsp;                scaleIn(initialScale = 0.9f),</b>
+&nbsp;        // Transición de Salida: Desliza hacia arriba + Fade + Contracción de escala
+<b class="nc">&nbsp;        exit = fadeOut(animationSpec = tween(durationMillis = 300)) +</b>
+<b class="nc">&nbsp;                slideOutVertically(</b>
+<b class="nc">&nbsp;                    targetOffsetY = { fullHeight -&gt; -fullHeight / 3 },</b>
+<b class="nc">&nbsp;                    animationSpec = tween(durationMillis = 300)</b>
+&nbsp;                ) +
+<b class="nc">&nbsp;                scaleOut(targetScale = 0.95f)</b>
+<b class="nc">&nbsp;    ) {</b>
+<b class="nc">&nbsp;        Card(</b>
+<b class="nc">&nbsp;            modifier = Modifier</b>
+<b class="nc">&nbsp;                .fillMaxWidth()</b>
+<b class="nc">&nbsp;                .padding(vertical = 12.dp),</b>
+<b class="nc">&nbsp;            shape = RoundedCornerShape(24.dp),</b>
+<b class="nc">&nbsp;            colors = CardDefaults.cardColors(</b>
+<b class="nc">&nbsp;                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)</b>
+&nbsp;            )
+<b class="nc">&nbsp;        ) {</b>
+<b class="nc">&nbsp;            Column(</b>
+<b class="nc">&nbsp;                modifier = Modifier</b>
+<b class="nc">&nbsp;                    .fillMaxWidth()</b>
+<b class="nc">&nbsp;                    .padding(24.dp),</b>
+<b class="nc">&nbsp;                horizontalAlignment = Alignment.CenterHorizontally</b>
+&nbsp;            ) {
+<b class="nc">&nbsp;                Text(</b>
+<b class="nc">&nbsp;                    text = &quot;¡Mensaje Enviado!&quot;,</b>
+<b class="nc">&nbsp;                    style = MaterialTheme.typography.titleLarge,</b>
+<b class="nc">&nbsp;                    fontWeight = FontWeight.Bold,</b>
+<b class="nc">&nbsp;                    color = MaterialTheme.colorScheme.primary,</b>
+<b class="nc">&nbsp;                    textAlign = TextAlign.Center</b>
+&nbsp;                )
+&nbsp;
+<b class="nc">&nbsp;                Spacer(modifier = Modifier.height(8.dp))</b>
+&nbsp;
+<b class="nc">&nbsp;                Text(</b>
+<b class="nc">&nbsp;                    text = &quot;Gracias por contactarte con Corpaliv / Alba Lab.\nTe responderemos a la brevedad.&quot;,</b>
+<b class="nc">&nbsp;                    style = MaterialTheme.typography.bodyMedium,</b>
+<b class="nc">&nbsp;                    color = MaterialTheme.colorScheme.onSurfaceVariant,</b>
+<b class="nc">&nbsp;                    textAlign = TextAlign.Center</b>
+&nbsp;                )
+&nbsp;
+<b class="nc">&nbsp;                Spacer(modifier = Modifier.height(16.dp))</b>
+&nbsp;
+<b class="nc">&nbsp;                Button(</b>
+<b class="nc">&nbsp;                    onClick = onEnviarOtroMensaje,</b>
+<b class="nc">&nbsp;                    shape = RoundedCornerShape(12.dp)</b>
+&nbsp;                ) {
+&nbsp;                    Text(&quot;Enviar otro mensaje&quot;)
+&nbsp;                }
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;    }
+<b class="nc">&nbsp;}</b>
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-26 15:38</div>
+</div>
+</body>
+</html>

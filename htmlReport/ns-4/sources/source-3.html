@@ -1,0 +1,277 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Screen</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.appcorpaliv_grupo11.navigation</a>
+</div>
+
+<h1>Coverage Summary for Class: Screen (com.example.appcorpaliv_grupo11.navigation)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Screen</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Screen$Contacto</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Screen$Home</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Screen$LeyInclusion</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Screen$ListaContactos</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Screen$Login</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Screen$QueHacemos</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Screen$QuienesSomos</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.appcorpaliv_grupo11.navigation
+&nbsp;
+&nbsp;/**
+&nbsp; * CLASE SELLADA DE RUTAS DE NAVEGACIÓN (SEALED CLASS)
+&nbsp; *
+&nbsp; * Centraliza y define de manera segura (Type-Safe) todas las rutas de navegación de la aplicación.
+&nbsp; * Previene errores de escritura en cadenas de texto (typos) al navegar entre pantallas con Jetpack Compose Navigation.
+&nbsp; *
+&nbsp; * @property route Cadena de texto única que identifica la pantalla en el NavHost.
+&nbsp; */
+<b class="nc">&nbsp;sealed class Screen(val route: String) {</b>
+&nbsp;
+&nbsp;    /** Pantalla principal o de bienvenida de la aplicación. */
+<b class="nc">&nbsp;    data object Home : Screen(route = &quot;home_page&quot;)</b>
+&nbsp;
+&nbsp;    /** Pantalla del formulario de contacto público. */
+<b class="nc">&nbsp;    data object Contacto : Screen(route = &quot;contacto&quot;)</b>
+&nbsp;
+&nbsp;    /** Pantalla de administración y gestión de la lista de mensajes (requiere autenticación). */
+<b class="nc">&nbsp;    data object ListaContactos : Screen(route = &quot;lista_contactos&quot;)</b>
+&nbsp;
+&nbsp;    /** Pantalla informativa sobre la Ley de Inclusión Laboral y Social. */
+<b class="nc">&nbsp;    data object LeyInclusion : Screen(route = &quot;ley_inclusion&quot;)</b>
+&nbsp;
+&nbsp;    /** Pantalla con información institucional sobre la organización (&quot;Quiénes Somos&quot;). */
+<b class="nc">&nbsp;    data object QuienesSomos : Screen(&quot;quienes_somos&quot;)</b>
+&nbsp;
+&nbsp;    /** Pantalla descriptiva sobre las actividades y proyectos de la organización (&quot;Qué Hacemos&quot;). */
+<b class="nc">&nbsp;    data object QueHacemos : Screen(&quot;que_hacemos&quot;)</b>
+&nbsp;
+&nbsp;    /** Pantalla de autenticación/login para funcionarios y administradores. */
+<b class="nc">&nbsp;    data object Login : Screen(route = &quot;login&quot;)</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-26 15:38</div>
+</div>
+</body>
+</html>

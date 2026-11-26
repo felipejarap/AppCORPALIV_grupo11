@@ -1,0 +1,217 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BotonPrimarioKt</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.appcorpaliv_grupo11.ui.components</a>
+</div>
+
+<h1>Coverage Summary for Class: BotonPrimarioKt (com.example.appcorpaliv_grupo11.ui.components)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BotonPrimarioKt</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BotonPrimarioKt$BotonPrimario$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/23)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.appcorpaliv_grupo11.ui.components
+&nbsp;
+&nbsp;import androidx.compose.foundation.layout.*
+&nbsp;import androidx.compose.foundation.shape.RoundedCornerShape
+&nbsp;import androidx.compose.material3.*
+&nbsp;import androidx.compose.runtime.Composable
+&nbsp;import androidx.compose.ui.Modifier
+&nbsp;import androidx.compose.ui.text.font.FontWeight
+&nbsp;import androidx.compose.ui.unit.dp
+&nbsp;import androidx.compose.ui.unit.sp
+&nbsp;
+&nbsp;/**
+&nbsp; * COMPONENTE REUTILIZABLE DE BOTÓN PRIMARIO
+&nbsp; *
+&nbsp; * Componente de interfaz de usuario desacoplado que encapsula un botón de estilo Material 3.
+&nbsp; * Soporta estados de carga asíncrona mediante un indicador de progreso circular (`CircularProgressIndicator`)
+&nbsp; * y deshabilitación dinámica para evitar múltiples toques accidentales por parte del usuario.
+&nbsp; *
+&nbsp; * @param texto Cadena de texto que se mostrará dentro del botón cuando no esté cargando.
+&nbsp; * @param onClick Acción o evento lambda a ejecutar al presionar el botón.
+&nbsp; * @param modifier Modificador de Compose para personalizar la maquetación externa desde la vista padre.
+&nbsp; * @param cargando Bandera booleana que activa la animación de carga en lugar del texto.
+&nbsp; * @param habilitado Bandera booleana que controla si el botón puede ser presionado.
+&nbsp; */
+&nbsp;@Composable
+&nbsp;fun BotonPrimario(
+&nbsp;    texto: String,
+&nbsp;    onClick: () -&gt; Unit,
+<b class="nc">&nbsp;    modifier: Modifier = Modifier,</b>
+<b class="nc">&nbsp;    cargando: Boolean = false,</b>
+<b class="nc">&nbsp;    habilitado: Boolean = true</b>
+<b class="nc">&nbsp;) {</b>
+&nbsp;    // Componente base de botón con elevación y estilos estándar de Material 3
+<b class="nc">&nbsp;    Button(</b>
+<b class="nc">&nbsp;        onClick = onClick,</b>
+<b class="nc">&nbsp;        modifier = modifier</b>
+<b class="nc">&nbsp;            .fillMaxWidth() // Ocupa todo el ancho horizontal disponible por defecto</b>
+<b class="nc">&nbsp;            .height(50.dp), // Define una altura accesible y estándar de 50 dp para interacción táctil</b>
+<b class="nc">&nbsp;        enabled = habilitado &amp;&amp; !cargando, // El botón se inhabilita mientras esté cargando o deshabilitado explícitamente</b>
+<b class="nc">&nbsp;        shape = RoundedCornerShape(12.dp) // Define bordes suavemente redondeados de 12 dp</b>
+<b class="nc">&nbsp;    ) {</b>
+&nbsp;        // Evaluación condicional para alternar entre el indicador de carga y el contenido textual
+<b class="nc">&nbsp;        if (cargando) {</b>
+&nbsp;            // Indicador de progreso circular desplegado durante operaciones asíncronas
+<b class="nc">&nbsp;            CircularProgressIndicator(</b>
+<b class="nc">&nbsp;                modifier = Modifier.size(24.dp),</b>
+<b class="nc">&nbsp;                color = MaterialTheme.colorScheme.onPrimary, // Utiliza el color de contraste sobre el fondo primario</b>
+<b class="nc">&nbsp;                strokeWidth = 2.5.dp</b>
+&nbsp;            )
+<b class="nc">&nbsp;        } else {</b>
+&nbsp;            // Texto principal del botón en estado normal
+<b class="nc">&nbsp;            Text(</b>
+<b class="nc">&nbsp;                text = texto,</b>
+<b class="nc">&nbsp;                fontWeight = FontWeight.Bold,</b>
+<b class="nc">&nbsp;                fontSize = 16.sp</b>
+&nbsp;            )
+&nbsp;        }
+&nbsp;    }
+<b class="nc">&nbsp;}</b>
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-26 15:38</div>
+</div>
+</body>
+</html>

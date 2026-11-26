@@ -1,0 +1,552 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ContactoViewModel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.appcorpaliv_grupo11.viewModel</a>
+</div>
+
+<h1>Coverage Summary for Class: ContactoViewModel (com.example.appcorpaliv_grupo11.viewModel)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ContactoViewModel</td>
+<td class="coverageStat">
+  <span class="percent">
+    94,4%
+  </span>
+  <span class="absValue">
+    (17/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    55,6%
+  </span>
+  <span class="absValue">
+    (10/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    89%
+  </span>
+  <span class="absValue">
+    (89/100)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ContactoViewModel$actualizarContacto$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ContactoViewModel$eliminarContacto$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ContactoViewModel$enviarFormulario$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ContactoViewModel$listaContactos$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ContactoViewModel$sincronizarContactos$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ContactoViewModel$special$$inlined$CoroutineExceptionHandler$1</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    87%
+  </span>
+  <span class="absValue">
+    (20/23)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    55,6%
+  </span>
+  <span class="absValue">
+    (10/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    78,9%
+  </span>
+  <span class="absValue">
+    (101/128)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.appcorpaliv_grupo11.viewModel
+&nbsp;
+&nbsp;import android.util.Log
+&nbsp;import androidx.compose.runtime.getValue
+&nbsp;import androidx.compose.runtime.mutableStateOf
+&nbsp;import androidx.compose.runtime.setValue
+&nbsp;import androidx.lifecycle.ViewModel
+&nbsp;import androidx.lifecycle.viewModelScope
+&nbsp;import com.example.appcorpaliv_grupo11.model.ContactoEntity
+&nbsp;import com.example.appcorpaliv_grupo11.repository.ContactoRepository
+&nbsp;import kotlinx.coroutines.CoroutineExceptionHandler
+&nbsp;import kotlinx.coroutines.flow.MutableStateFlow
+&nbsp;import kotlinx.coroutines.flow.SharingStarted
+&nbsp;import kotlinx.coroutines.flow.StateFlow
+&nbsp;import kotlinx.coroutines.flow.asStateFlow
+&nbsp;import kotlinx.coroutines.flow.catch
+&nbsp;import kotlinx.coroutines.flow.stateIn
+&nbsp;import kotlinx.coroutines.launch
+&nbsp;
+&nbsp;/**
+&nbsp; * VIEWMODEL DE CONTACTO Y ADMINISTRACIÓN DE MENSAJES
+&nbsp; *
+&nbsp; * Gestiona la lógica de negocio y el estado reactivo para las pantallas de Contacto y Lista de Contactos.
+&nbsp; * Actúa como intermediario entre las vistas Compose y la API REST (Spring Boot + MySQL) a través de ContactoRepository.
+&nbsp; *
+&nbsp; * @property repository Instancia del repositorio para realizar operaciones CRUD contra el microservicio.
+&nbsp; */
+<b class="fc">&nbsp;class ContactoViewModel(private val repository: ContactoRepository) : ViewModel() {</b>
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // ESTADOS DEL FORMULARIO DE CONTACTO (CAMPOS DE TEXTO Y DROPDOWN)
+&nbsp;    // =========================================================================
+&nbsp;
+<b class="fc">&nbsp;    var nombre by mutableStateOf(&quot;&quot;)</b>
+&nbsp;        private set
+&nbsp;
+<b class="fc">&nbsp;    var email by mutableStateOf(&quot;&quot;)</b>
+&nbsp;        private set
+&nbsp;
+<b class="fc">&nbsp;    var telefono by mutableStateOf(&quot;&quot;)</b>
+&nbsp;        private set
+&nbsp;
+<b class="fc">&nbsp;    var asunto by mutableStateOf(&quot;&quot;)</b>
+&nbsp;        private set
+&nbsp;
+<b class="fc">&nbsp;    var mensaje by mutableStateOf(&quot;&quot;)</b>
+&nbsp;        private set
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // OPCIONES PREDEFINIDAS PARA EL COMBOBOX / DROPDOWN DE ASUNTOS
+&nbsp;    // =========================================================================
+&nbsp;
+<b class="fc">&nbsp;    val opcionesAsunto = listOf(</b>
+<b class="fc">&nbsp;        &quot;Programa de Intermediación Laboral&quot;,</b>
+<b class="fc">&nbsp;        &quot;Programa Taller Sociolaboral&quot;,</b>
+<b class="fc">&nbsp;        &quot;Quiero colaborar&quot;,</b>
+<b class="fc">&nbsp;        &quot;Ley de Inclusión Laboral&quot;</b>
+&nbsp;    )
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // ERRORES DE VALIDACIÓN INDIVIDUALES POR CAMPO
+&nbsp;    // =========================================================================
+&nbsp;
+<b class="fc">&nbsp;    var nombreError by mutableStateOf&lt;String?&gt;(null)</b>
+&nbsp;        private set
+&nbsp;
+<b class="fc">&nbsp;    var emailError by mutableStateOf&lt;String?&gt;(null)</b>
+&nbsp;        private set
+&nbsp;
+<b class="fc">&nbsp;    var telefonoError by mutableStateOf&lt;String?&gt;(null)</b>
+&nbsp;        private set
+&nbsp;
+<b class="fc">&nbsp;    var asuntoError by mutableStateOf&lt;String?&gt;(null)</b>
+&nbsp;        private set
+&nbsp;
+<b class="fc">&nbsp;    var mensajeError by mutableStateOf&lt;String?&gt;(null)</b>
+&nbsp;        private set
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // ESTADO DE FILTRADO (LISTA DE MENSAJES DE ADMINISTRACIÓN)
+&nbsp;    // =========================================================================
+&nbsp;
+<b class="fc">&nbsp;    var filtroActual by mutableStateOf(&quot;Todos&quot;)</b>
+&nbsp;        private set
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // ESTADOS DE FLUJO DE LA INTERFAZ (UI STATE, LOADING Y ERROR GENERAL)
+&nbsp;    // =========================================================================
+&nbsp;
+<b class="fc">&nbsp;    private val _isLoading = MutableStateFlow(false)</b>
+<b class="fc">&nbsp;    val isLoading: StateFlow&lt;Boolean&gt; = _isLoading.asStateFlow()</b>
+&nbsp;
+<b class="fc">&nbsp;    private val _isSubmitted = MutableStateFlow(false)</b>
+<b class="fc">&nbsp;    val isSubmitted: StateFlow&lt;Boolean&gt; = _isSubmitted.asStateFlow()</b>
+&nbsp;
+<b class="fc">&nbsp;    private val _errorMessage = MutableStateFlow&lt;String?&gt;(null)</b>
+<b class="fc">&nbsp;    val errorMessage: StateFlow&lt;String?&gt; = _errorMessage.asStateFlow()</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Escudo global contra cierres inesperados (crashes) en cualquier corrutina del ViewModel.
+&nbsp;     * Mantiene los detalles técnicos únicamente en el Log interno.
+&nbsp;     */
+<b class="fc">&nbsp;    private val exceptionHandler = CoroutineExceptionHandler { _, throwable -&gt;</b>
+<b class="nc">&nbsp;        Log.e(&quot;ContactoViewModel&quot;, &quot;Error controlado en corrutina&quot;, throwable)</b>
+<b class="nc">&nbsp;        _isLoading.value = false</b>
+<b class="nc">&nbsp;        _errorMessage.value = &quot;El servicio no está disponible en este momento. Intenta nuevamente.&quot;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // LECTURA DE DATOS EN TIEMPO REAL (STATEFLOW DESDE REPOSITORY)
+&nbsp;    // =========================================================================
+&nbsp;
+<b class="fc">&nbsp;    val listaContactos: StateFlow&lt;List&lt;ContactoEntity&gt;&gt; = repository.listaContactos</b>
+<b class="fc">&nbsp;        .catch { throwable -&gt;</b>
+<b class="nc">&nbsp;            Log.e(&quot;ContactoViewModel&quot;, &quot;Error en flujo de contactos&quot;, throwable)</b>
+<b class="nc">&nbsp;            _errorMessage.value = &quot;No pudimos cargar los mensajes. Revisa tu conexión e intenta nuevamente.&quot;</b>
+<b class="nc">&nbsp;            emit(emptyList())</b>
+&nbsp;        }
+<b class="fc">&nbsp;        .stateIn(</b>
+<b class="fc">&nbsp;            scope = viewModelScope,</b>
+<b class="fc">&nbsp;            started = SharingStarted.WhileSubscribed(5000),</b>
+<b class="fc">&nbsp;            initialValue = emptyList()</b>
+&nbsp;        )
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // INICIALIZACIÓN Y SINCRONIZACIÓN CON BACKEND
+&nbsp;    // =========================================================================
+&nbsp;
+<b class="fc">&nbsp;    init {</b>
+<b class="fc">&nbsp;        sincronizarContactos()</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    /** Descarga los contactos desde el backend. */
+&nbsp;    fun sincronizarContactos() {
+<b class="fc">&nbsp;        viewModelScope.launch(exceptionHandler) {</b>
+<b class="fc">&nbsp;            _isLoading.value = true</b>
+<b class="fc">&nbsp;            _errorMessage.value = null</b>
+&nbsp;            try {
+<b class="fc">&nbsp;                repository.sincronizarDesdeServidor()</b>
+&nbsp;            } catch (e: Exception) {
+<b class="fc">&nbsp;                Log.w(&quot;ContactoViewModel&quot;, &quot;Error de conexión al sincronizar&quot;, e)</b>
+<b class="fc">&nbsp;                _errorMessage.value = &quot;Servicio temporalmente no disponible. Verifica tu conexión e intenta nuevamente.&quot;</b>
+&nbsp;            } finally {
+<b class="fc">&nbsp;                _isLoading.value = false</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // FUNCIONES DE ACTUALIZACIÓN DE CAMPOS DEL FORMULARIO
+&nbsp;    // =========================================================================
+&nbsp;
+&nbsp;    fun onNombreChanged(nuevoNombre: String) {
+<b class="fc">&nbsp;        nombre = nuevoNombre</b>
+<b class="fc">&nbsp;        nombreError = null</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    fun onEmailChanged(nuevoEmail: String) {
+<b class="fc">&nbsp;        email = nuevoEmail</b>
+<b class="fc">&nbsp;        emailError = null</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    fun onTelefonoChanged(nuevoTelefono: String) {
+<b class="fc">&nbsp;        val filtrado = nuevoTelefono.filter { it.isDigit() }.take(9)</b>
+<b class="fc">&nbsp;        telefono = filtrado</b>
+<b class="fc">&nbsp;        telefonoError = null</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    fun onAsuntoChanged(nuevoAsunto: String) {
+<b class="fc">&nbsp;        asunto = nuevoAsunto</b>
+<b class="fc">&nbsp;        asuntoError = null</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    fun onMensajeChanged(nuevoMensaje: String) {
+<b class="fc">&nbsp;        mensaje = nuevoMensaje</b>
+<b class="fc">&nbsp;        mensajeError = null</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    fun cambiarFiltro(nuevoFiltro: String) {
+<b class="fc">&nbsp;        filtroActual = nuevoFiltro</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    fun limpiarError() {
+<b class="fc">&nbsp;        _errorMessage.value = null</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // VALIDACIONES INDIVIDUALES DEL FORMULARIO
+&nbsp;    // =========================================================================
+&nbsp;
+&nbsp;    private fun validarCampos(): Boolean {
+<b class="fc">&nbsp;        var esValido = true</b>
+&nbsp;
+<b class="fc">&nbsp;        if (nombre.isBlank()) {</b>
+<b class="fc">&nbsp;            nombreError = &quot;El nombre es obligatorio *&quot;</b>
+<b class="fc">&nbsp;            esValido = false</b>
+&nbsp;        }
+&nbsp;
+<b class="pc">&nbsp;        if (email.isBlank()) {</b>
+<b class="fc">&nbsp;            emailError = &quot;El correo electrónico es obligatorio *&quot;</b>
+<b class="fc">&nbsp;            esValido = false</b>
+<b class="nc">&nbsp;        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {</b>
+<b class="nc">&nbsp;            emailError = &quot;Ingresa un correo electrónico válido.&quot;</b>
+<b class="nc">&nbsp;            esValido = false</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if (telefono.isBlank()) {</b>
+<b class="fc">&nbsp;            telefonoError = &quot;El teléfono es obligatorio *&quot;</b>
+<b class="fc">&nbsp;            esValido = false</b>
+<b class="pc">&nbsp;        } else if (telefono.length != 9 || !telefono.startsWith(&quot;9&quot;)) {</b>
+<b class="fc">&nbsp;            telefonoError = &quot;Debe ingresar 9 dígitos comenzando con 9 (Ej: 912345678).&quot;</b>
+<b class="fc">&nbsp;            esValido = false</b>
+&nbsp;        }
+&nbsp;
+<b class="pc">&nbsp;        if (asunto.isBlank()) {</b>
+<b class="fc">&nbsp;            asuntoError = &quot;Por favor selecciona un asunto *&quot;</b>
+<b class="fc">&nbsp;            esValido = false</b>
+&nbsp;        }
+&nbsp;
+<b class="pc">&nbsp;        if (mensaje.isBlank()) {</b>
+<b class="fc">&nbsp;            mensajeError = &quot;El mensaje no puede estar vacío *&quot;</b>
+<b class="fc">&nbsp;            esValido = false</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return esValido</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // CREACIÓN Y PERSISTENCIA (ENVÍO DEL FORMULARIO AL MICROSERVICIO)
+&nbsp;    // =========================================================================
+&nbsp;
+<b class="fc">&nbsp;    fun enviarFormulario(onSuccess: () -&gt; Unit = {}) {</b>
+<b class="pc">&nbsp;        if (!validarCampos()) return</b>
+&nbsp;
+<b class="nc">&nbsp;        _errorMessage.value = null</b>
+&nbsp;
+<b class="nc">&nbsp;        viewModelScope.launch(exceptionHandler) {</b>
+<b class="nc">&nbsp;            _isLoading.value = true</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                val nuevoContacto = ContactoEntity(</b>
+<b class="nc">&nbsp;                    nombre = nombre.trim(),</b>
+<b class="nc">&nbsp;                    email = email.trim(),</b>
+<b class="nc">&nbsp;                    telefono = telefono.trim(),</b>
+<b class="nc">&nbsp;                    asunto = asunto.trim(),</b>
+<b class="nc">&nbsp;                    mensaje = mensaje.trim()</b>
+&nbsp;                )
+<b class="nc">&nbsp;                repository.guardarContacto(nuevoContacto)</b>
+&nbsp;
+<b class="nc">&nbsp;                _isSubmitted.value = true</b>
+<b class="nc">&nbsp;                onSuccess()</b>
+&nbsp;            } catch (e: Exception) {
+<b class="nc">&nbsp;                Log.e(&quot;ContactoViewModel&quot;, &quot;Error al guardar contacto&quot;, e)</b>
+<b class="nc">&nbsp;                _errorMessage.value = &quot;No pudimos enviar tu mensaje en este momento. Intenta más tarde.&quot;</b>
+&nbsp;            } finally {
+<b class="nc">&nbsp;                _isLoading.value = false</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // CONSULTA POR ID, ACTUALIZACIÓN (UPDATE) Y ELIMINACIÓN (DELETE)
+&nbsp;    // =========================================================================
+&nbsp;
+&nbsp;    fun buscarPorId(id: Int): ContactoEntity? {
+&nbsp;        return try {
+<b class="fc">&nbsp;            repository.obtenerPorId(id)</b>
+&nbsp;        } catch (e: Exception) {
+<b class="nc">&nbsp;            Log.e(&quot;ContactoViewModel&quot;, &quot;Error al buscar contacto&quot;, e)</b>
+<b class="nc">&nbsp;            _errorMessage.value = &quot;No fue posible consultar el registro solicitado.&quot;</b>
+<b class="fc">&nbsp;            null</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    fun actualizarContacto(contacto: ContactoEntity) {
+<b class="fc">&nbsp;        _errorMessage.value = null</b>
+<b class="fc">&nbsp;        viewModelScope.launch(exceptionHandler) {</b>
+&nbsp;            try {
+<b class="fc">&nbsp;                repository.actualizarContacto(contacto)</b>
+&nbsp;            } catch (e: Exception) {
+<b class="fc">&nbsp;                Log.e(&quot;ContactoViewModel&quot;, &quot;Error al actualizar contacto&quot;, e)</b>
+<b class="fc">&nbsp;                _errorMessage.value = &quot;No se pudo actualizar el estado en este momento. Intenta nuevamente.&quot;</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    fun cambiarEstadoContacto(contacto: ContactoEntity, nuevoEstado: String) {
+<b class="fc">&nbsp;        actualizarContacto(contacto.copy(estado = nuevoEstado))</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    fun eliminarContacto(contacto: ContactoEntity) {
+<b class="fc">&nbsp;        _errorMessage.value = null</b>
+<b class="fc">&nbsp;        viewModelScope.launch(exceptionHandler) {</b>
+&nbsp;            try {
+<b class="fc">&nbsp;                repository.eliminarContacto(contacto)</b>
+&nbsp;            } catch (e: Exception) {
+<b class="fc">&nbsp;                Log.e(&quot;ContactoViewModel&quot;, &quot;Error al eliminar contacto&quot;, e)</b>
+<b class="fc">&nbsp;                _errorMessage.value = &quot;No se pudo eliminar el mensaje en este momento. Intenta nuevamente.&quot;</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // RESTABLECIMIENTO DEL FORMULARIO
+&nbsp;    // =========================================================================
+&nbsp;
+&nbsp;    fun reiniciarFormulario() {
+<b class="fc">&nbsp;        nombre = &quot;&quot;</b>
+<b class="fc">&nbsp;        email = &quot;&quot;</b>
+<b class="fc">&nbsp;        telefono = &quot;&quot;</b>
+<b class="fc">&nbsp;        asunto = &quot;&quot;</b>
+<b class="fc">&nbsp;        mensaje = &quot;&quot;</b>
+&nbsp;
+<b class="fc">&nbsp;        nombreError = null</b>
+<b class="fc">&nbsp;        emailError = null</b>
+<b class="fc">&nbsp;        telefonoError = null</b>
+<b class="fc">&nbsp;        asuntoError = null</b>
+<b class="fc">&nbsp;        mensajeError = null</b>
+&nbsp;
+<b class="fc">&nbsp;        _isLoading.value = false</b>
+<b class="fc">&nbsp;        _isSubmitted.value = false</b>
+<b class="fc">&nbsp;        _errorMessage.value = null</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-26 15:38</div>
+</div>
+</body>
+</html>

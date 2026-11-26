@@ -1,0 +1,185 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > InsigniaMidesoKt</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.appcorpaliv_grupo11.ui.components</a>
+</div>
+
+<h1>Coverage Summary for Class: InsigniaMidesoKt (com.example.appcorpaliv_grupo11.ui.components)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">InsigniaMidesoKt</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">InsigniaMidesoKt$InsigniaMideso$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/23)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.appcorpaliv_grupo11.ui.components
+&nbsp;
+&nbsp;import androidx.compose.foundation.layout.*
+&nbsp;import androidx.compose.foundation.shape.RoundedCornerShape
+&nbsp;import androidx.compose.material.icons.Icons
+&nbsp;import androidx.compose.material.icons.filled.Verified
+&nbsp;import androidx.compose.material3.*
+&nbsp;import androidx.compose.runtime.Composable
+&nbsp;import androidx.compose.ui.Alignment
+&nbsp;import androidx.compose.ui.Modifier
+&nbsp;import androidx.compose.ui.text.font.FontWeight
+&nbsp;import androidx.compose.ui.unit.dp
+&nbsp;import androidx.compose.ui.unit.sp
+&nbsp;
+&nbsp;/**
+&nbsp; * COMPONENTE REUTILIZABLE DE INSIGNIA DE ACREDITACIÓN (BADGE / CHIP INFORMATIVO)
+&nbsp; *
+&nbsp; * Componente visual desacoplado en forma de píldora que destaca la acreditación institucional
+&nbsp; * ante el Ministerio de Desarrollo Social (MIDESO) bajo el marco de la Ley 21.015 de inclusión laboral.
+&nbsp; *
+&nbsp; * @param texto Mensaje de la acreditación (por defecto &quot;Acreditación MIDESO - Ley 21.015&quot;).
+&nbsp; * @param modifier Modificador para personalizar la maquetación externa desde el composable padre (primer parámetro opcional).
+&nbsp; */
+&nbsp;@Composable
+&nbsp;fun InsigniaMideso(
+<b class="nc">&nbsp;    modifier: Modifier = Modifier, // Reordenado: Primer parámetro opcional según las guías de Compose</b>
+<b class="nc">&nbsp;    texto: String = &quot;Acreditación MIDESO - Ley 21.015&quot;</b>
+<b class="nc">&nbsp;) {</b>
+&nbsp;    // Contenedor elíptico (píldora) con bordes redondeados al máximo (50 dp)
+<b class="nc">&nbsp;    Surface(</b>
+<b class="nc">&nbsp;        shape = RoundedCornerShape(50.dp),</b>
+<b class="nc">&nbsp;        color = MaterialTheme.colorScheme.primary,</b>
+<b class="nc">&nbsp;        contentColor = MaterialTheme.colorScheme.onPrimary,</b>
+<b class="nc">&nbsp;        modifier = modifier</b>
+<b class="nc">&nbsp;    ) {</b>
+<b class="nc">&nbsp;        Row(</b>
+<b class="nc">&nbsp;            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),</b>
+<b class="nc">&nbsp;            verticalAlignment = Alignment.CenterVertically</b>
+&nbsp;        ) {
+&nbsp;            // Ícono de verificación/aprobación oficial
+<b class="nc">&nbsp;            Icon(</b>
+<b class="nc">&nbsp;                imageVector = Icons.Default.Verified,</b>
+<b class="nc">&nbsp;                contentDescription = null, // Ícono puramente decorativo</b>
+<b class="nc">&nbsp;                modifier = Modifier.size(16.dp)</b>
+&nbsp;            )
+<b class="nc">&nbsp;            Spacer(modifier = Modifier.width(6.dp))</b>
+&nbsp;            // Texto informativo de la norma o ley
+<b class="nc">&nbsp;            Text(</b>
+<b class="nc">&nbsp;                text = texto,</b>
+<b class="nc">&nbsp;                fontSize = 11.sp,</b>
+<b class="nc">&nbsp;                fontWeight = FontWeight.Bold</b>
+&nbsp;            )
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+<b class="nc">&nbsp;}</b>
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-26 15:38</div>
+</div>
+</body>
+</html>

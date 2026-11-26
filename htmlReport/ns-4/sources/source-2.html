@@ -1,0 +1,200 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > NavigationEvent</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.appcorpaliv_grupo11.navigation</a>
+</div>
+
+<h1>Coverage Summary for Class: NavigationEvent (com.example.appcorpaliv_grupo11.navigation)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">NavigationEvent</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">NavigationEvent$NavigateTo</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">NavigationEvent$NavigateUp</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">NavigationEvent$PopBackStack</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.appcorpaliv_grupo11.navigation
+&nbsp;
+&nbsp;/**
+&nbsp; * CLASE SELLADA PARA EVENTOS DE NAVEGACIÓN (SEALED CLASS)
+&nbsp; *
+&nbsp; * Representa los eventos discretos (&quot;one-shot events&quot;) de navegación por los ViewModels
+&nbsp; * y consumidos por la capa de interfaz de usuario.
+&nbsp; * Desacopla completamente la lógica de negocio del ViewModel de la instancia concreta del [NavigationEvent].
+&nbsp; */
+<b class="nc">&nbsp;sealed class NavigationEvent {</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Solicitud para navegar hacia una nueva pantalla ([route]).
+&nbsp;     *
+&nbsp;     * @property route Objeto de destino definido en la clase sellada [Screen].
+&nbsp;     * @property popupToRoute Pantalla opcional hasta la cual se limpiará la pila de navegación (backstack).
+&nbsp;     * @property inclusive Si es `true`, la pantalla especificada en [popupToRoute] también será removida de la pila.
+&nbsp;     * @property singleTop Si es `true`, evita crear instancias duplicadas de la pantalla de destino si ya está en la cima de la pila.
+&nbsp;     */
+&nbsp;    data class NavigateTo(
+<b class="nc">&nbsp;        val route: Screen,</b>
+<b class="nc">&nbsp;        val popupToRoute: Screen? = null,</b>
+<b class="nc">&nbsp;        val inclusive: Boolean = false,</b>
+<b class="nc">&nbsp;        val singleTop: Boolean = false</b>
+<b class="nc">&nbsp;    ) : NavigationEvent()</b>
+&nbsp;
+&nbsp;    /** Solicitud para remover la pantalla actual y retornar a la pantalla inmediatamente anterior en la pila. */
+<b class="nc">&nbsp;    data object PopBackStack : NavigationEvent()</b>
+&nbsp;
+&nbsp;    /** Solicitud para realizar un desplazamiento hacia arriba en la jerarquía de navegación. */
+<b class="nc">&nbsp;    data object NavigateUp : NavigationEvent()</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-26 15:38</div>
+</div>
+</body>
+</html>

@@ -1,169 +1,226 @@
 package com.example.appcorpaliv_grupo11.viewModel
 
-import com.example.appcorpaliv_grupo11.data.ContactoDao
+import android.util.Log
+import android.util.Patterns
 import com.example.appcorpaliv_grupo11.model.ContactoEntity
 import com.example.appcorpaliv_grupo11.repository.ContactoRepository
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkAll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
+import java.util.regex.Pattern
+
+private fun asegurarPatternsEmailAddress() {
+    val patternValido: Pattern = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
+    val field: Field = Patterns::class.java.getDeclaredField("EMAIL_ADDRESS")
+    field.isAccessible = true
+
+    val asignadoDirecto: Boolean = runCatching<Boolean> {
+        field.set(null, patternValido)
+        true
+    }.getOrDefault(false)
+
+    if (asignadoDirecto) return
+
+    val asignadoConModifiers: Boolean = runCatching<Boolean> {
+        val modifiersField: Field = Field::class.java.getDeclaredField("modifiers")
+        modifiersField.isAccessible = true
+        modifiersField.setInt(field, field.modifiers and Modifier.FINAL.inv())
+        field.set(null, patternValido)
+        true
+    }.getOrDefault(false)
+
+    if (asignadoConModifiers) return
+
+    val unsafeClass: Class<*> = Class.forName("sun.misc.Unsafe")
+    val unsafeField: Field = unsafeClass.getDeclaredField("theUnsafe")
+    unsafeField.isAccessible = true
+    val unsafe: Any = unsafeField.get(null)
+    val staticFieldBase: Any = unsafeClass
+        .getMethod("staticFieldBase", Field::class.java)
+        .invoke(unsafe, field)
+    val staticFieldOffset: Long = unsafeClass
+        .getMethod("staticFieldOffset", Field::class.java)
+        .invoke(unsafe, field) as Long
+
+    unsafeClass
+        .getMethod(
+            "putObject",
+            Any::class.java,
+            Long::class.javaPrimitiveType,
+            Any::class.java
+        )
+        .invoke(unsafe, staticFieldBase, staticFieldOffset, patternValido)
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ContactoViewModelTest : StringSpec({
 
-    val dispatcher = StandardTestDispatcher()
+    val dispatcher = UnconfinedTestDispatcher()
+    var repository: ContactoRepository = mockk(relaxed = true)
+    var contactosFlow: MutableStateFlow<List<ContactoEntity>> = MutableStateFlow(emptyList())
 
     beforeSpec {
         Dispatchers.setMain(dispatcher)
+        mockkStatic(Log::class)
+        every { Log.e(any<String>(), any<String>(), any<Throwable>()) } returns 0
+        every { Log.e(any<String>(), any<String>()) } returns 0
+        every { Log.w(any<String>(), any<String>(), any<Throwable>()) } returns 0
+        every { Log.w(any<String>(), any<String>()) } returns 0
+        every { Log.w(any<String>(), any<Throwable>()) } returns 0
+
+        asegurarPatternsEmailAddress()
     }
 
     afterSpec {
+        unmockkAll()
         Dispatchers.resetMain()
     }
 
-    fun crearViewModel(daoMock: ContactoDao = mockk(relaxed = true)): ContactoViewModel {
-        every { daoMock.obtenerTodosLosContactos() } returns emptyFlow()
-        val repository = ContactoRepository(daoMock)
-        return ContactoViewModel(repository)
-    }
-
-    "debe inicializar campos vacios, filtro en Todos y sin errores ni envio" {
-        runTest(dispatcher) {
-            val viewModel = crearViewModel()
-
-            viewModel.nombre shouldBe ""
-            viewModel.email shouldBe ""
-            viewModel.asunto shouldBe ""
-            viewModel.mensaje shouldBe ""
-            viewModel.filtroActual shouldBe "Todos"
-            viewModel.isSubmitted.value shouldBe false
-            viewModel.errorMessage.value shouldBe null
+    beforeEach {
+        contactosFlow = MutableStateFlow(emptyList())
+        repository = mockk(relaxed = true) {
+            every { listaContactos } returns contactosFlow
+            coEvery { sincronizarDesdeServidor() } returns Unit
+            coEvery { guardarContacto(any()) } returns Unit
+            coEvery { actualizarContacto(any()) } returns Unit
+            coEvery { eliminarContacto(any()) } returns Unit
+            every { obtenerPorId(any()) } returns null
         }
     }
 
-    "debe actualizar campos del formulario y limpiar error previo" {
-        runTest(dispatcher) {
-            val viewModel = crearViewModel()
+    "debe filtrar telefono solo a digitos y maximo 9 caracteres y limpiar error" {
+        val vm = ContactoViewModel(repository)
+        vm.enviarFormulario()
+        vm.telefonoError shouldBe "El teléfono es obligatorio *"
 
-            viewModel.onNombreChanged("Valentina Rojas")
-            viewModel.onEmailChanged("valentina@correo.cl")
-            viewModel.onAsuntoChanged("Consulta")
-            viewModel.onMensajeChanged("Necesito informacion")
-
-            viewModel.nombre shouldBe "Valentina Rojas"
-            viewModel.email shouldBe "valentina@correo.cl"
-            viewModel.asunto shouldBe "Consulta"
-            viewModel.mensaje shouldBe "Necesito informacion"
-            viewModel.errorMessage.value shouldBe null
-        }
+        vm.onTelefonoChanged("9a1b2c3d4e5f6g7h8i9j0")
+        vm.telefono shouldBe "912345678"
+        vm.telefonoError shouldBe null
     }
 
-    "debe cambiar el filtro activo" {
-        runTest(dispatcher) {
-            val viewModel = crearViewModel()
+    "debe validar email invalido y telefono que no empieza con 9 o no tiene 9 digitos" {
+        val vm = ContactoViewModel(repository)
+        vm.onNombreChanged("Ana")
+        vm.onEmailChanged("correo-no-valido")
+        vm.onTelefonoChanged("812345678")
+        vm.onAsuntoChanged("Quiero colaborar")
+        vm.onMensajeChanged("Hola")
 
-            viewModel.cambiarFiltro("Pendientes")
-            viewModel.filtroActual shouldBe "Pendientes"
+        vm.enviarFormulario()
 
-            viewModel.cambiarFiltro("Contestados")
-            viewModel.filtroActual shouldBe "Contestados"
-        }
+        vm.emailError shouldBe "Ingresa un correo electrónico válido."
+        vm.telefonoError shouldBe "Debe ingresar 9 dígitos comenzando con 9 (Ej: 912345678)."
+        coVerify(exactly = 0) { repository.guardarContacto(any()) }
     }
 
-    "debe mostrar error si faltan campos obligatorios al enviar formulario" {
-        runTest(dispatcher) {
-            val daoMock = mockk<ContactoDao>(relaxed = true)
-            val viewModel = crearViewModel(daoMock)
+    "debe enviar formulario valido, guardar contacto y marcar isSubmitted" {
+        val vm = ContactoViewModel(repository)
+        var exitoEjecutado = false
 
-            viewModel.onNombreChanged("Carlos")
-            viewModel.enviarFormulario()
+        runTest(dispatcher) {
+            vm.onNombreChanged("Ana Pérez")
+            vm.onEmailChanged("ana@correo.cl")
+            vm.onTelefonoChanged("987654321")
+            vm.onAsuntoChanged("Quiero colaborar")
+            vm.onMensajeChanged("Consulta de prueba")
+
+            vm.enviarFormulario { exitoEjecutado = true }
             advanceUntilIdle()
-
-            viewModel.errorMessage.value shouldBe "Por favor completa los campos obligatorios (*)."
-            viewModel.isSubmitted.value shouldBe false
-            coVerify(exactly = 0) { daoMock.guardarContacto(any()) }
         }
-    }
 
-    "debe cambiar el estado de un contacto llamando a actualizarContacto en el DAO" {
-        runTest(dispatcher) {
-            val daoMock = mockk<ContactoDao>(relaxed = true)
-            val viewModel = crearViewModel(daoMock)
-            val contacto = ContactoEntity(
-                id = 3,
-                nombre = "Pedro",
-                email = "pedro@correo.cl",
-                asunto = "Estado",
-                mensaje = "Revisar",
-                estado = "Pendiente"
+        vm.isSubmitted.value shouldBe true
+        exitoEjecutado shouldBe true
+        coVerify(exactly = 1) {
+            repository.guardarContacto(
+                match {
+                    it.nombre == "Ana Pérez" &&
+                            it.email == "ana@correo.cl" &&
+                            it.telefono == "987654321" &&
+                            it.asunto == "Quiero colaborar" &&
+                            it.mensaje == "Consulta de prueba"
+                }
             )
-
-            viewModel.cambiarEstadoContacto(contacto, "Contestado")
-            advanceUntilIdle()
-
-            coVerify(exactly = 1) {
-                daoMock.actualizarContacto(
-                    match { it.id == 3 && it.estado == "Contestado" }
-                )
-            }
         }
     }
 
-    "debe actualizar directamente un contacto llamando a actualizarContacto en el DAO" {
+    "debe manejar error al guardar contacto en enviarFormulario" {
+        coEvery { repository.guardarContacto(any()) } throws RuntimeException("Error red")
+        val vm = ContactoViewModel(repository)
+
         runTest(dispatcher) {
-            val daoMock = mockk<ContactoDao>(relaxed = true)
-            val viewModel = crearViewModel(daoMock)
-            val contactoActualizado = ContactoEntity(
-                id = 4,
-                nombre = "Mateo",
-                email = "mateo@correo.cl",
-                asunto = "Actualizacion",
-                mensaje = "Texto editado",
-                estado = "Contestado"
-            )
+            vm.onNombreChanged("Ana")
+            vm.onEmailChanged("ana@correo.cl")
+            vm.onTelefonoChanged("987654321")
+            vm.onAsuntoChanged("Quiero colaborar")
+            vm.onMensajeChanged("Hola")
 
-            viewModel.actualizarContacto(contactoActualizado)
+            vm.enviarFormulario()
             advanceUntilIdle()
-
-            coVerify(exactly = 1) { daoMock.actualizarContacto(contactoActualizado) }
         }
+
+        vm.errorMessage.value shouldBe "No pudimos enviar tu mensaje en este momento. Intenta más tarde."
+        vm.isLoading.value shouldBe false
     }
 
-    "debe eliminar un contacto y reiniciar el formulario correctamente" {
+    "debe cambiar filtro, limpiar error y reiniciar formulario" {
+        val vm = ContactoViewModel(repository)
+        vm.cambiarFiltro("Pendiente")
+        vm.filtroActual shouldBe "Pendiente"
+
+        vm.onNombreChanged("Ana")
+        vm.onEmailChanged("ana@correo.cl")
+        vm.onTelefonoChanged("987654321")
+        vm.onAsuntoChanged("Quiero colaborar")
+        vm.onMensajeChanged("Mensaje")
+        vm.limpiarError()
+        vm.errorMessage.value shouldBe null
+
+        vm.reiniciarFormulario()
+        vm.nombre shouldBe ""
+        vm.email shouldBe ""
+        vm.telefono shouldBe ""
+        vm.asunto shouldBe ""
+        vm.mensaje shouldBe ""
+        vm.isSubmitted.value shouldBe false
+    }
+
+    "debe buscar por id, actualizar estado y eliminar contacto" {
+        val contacto = ContactoEntity(
+            id = 7,
+            nombre = "Luis",
+            email = "luis@correo.cl",
+            telefono = "911223344",
+            asunto = "Ley de Inclusión Laboral",
+            mensaje = "Consulta",
+            estado = "Pendiente"
+        )
+        every { repository.obtenerPorId(7) } returns contacto
+        val vm = ContactoViewModel(repository)
+
+        vm.buscarPorId(7) shouldBe contacto
+
         runTest(dispatcher) {
-            val daoMock = mockk<ContactoDao>(relaxed = true)
-            val viewModel = crearViewModel(daoMock)
-            val contacto = ContactoEntity(
-                id = 7,
-                nombre = "Laura",
-                email = "laura@correo.cl",
-                asunto = "Borrar",
-                mensaje = "Texto"
-            )
-
-            viewModel.onNombreChanged("Laura")
-            viewModel.onEmailChanged("laura@correo.cl")
-            viewModel.onMensajeChanged("Texto")
-            viewModel.eliminarContacto(contacto)
-            viewModel.reiniciarFormulario()
+            vm.cambiarEstadoContacto(contacto, "Contestado")
+            vm.eliminarContacto(contacto)
             advanceUntilIdle()
-
-            coVerify(exactly = 1) { daoMock.eliminarContacto(contacto) }
-            viewModel.nombre shouldBe ""
-            viewModel.email shouldBe ""
-            viewModel.asunto shouldBe ""
-            viewModel.mensaje shouldBe ""
-            viewModel.isSubmitted.value shouldBe false
-            viewModel.errorMessage.value shouldBe null
         }
+
+        coVerify { repository.actualizarContacto(contacto.copy(estado = "Contestado")) }
+        coVerify { repository.eliminarContacto(contacto) }
     }
 })

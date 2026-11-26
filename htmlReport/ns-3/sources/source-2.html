@@ -1,0 +1,133 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ContactoErrores</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.appcorpaliv_grupo11.model</a>
+</div>
+
+<h1>Coverage Summary for Class: ContactoErrores (com.example.appcorpaliv_grupo11.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ContactoErrores</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.appcorpaliv_grupo11.model
+&nbsp;
+&nbsp;/**
+&nbsp; * MODELO DE ERRORES DE VALIDACIÓN (DATA CLASS)
+&nbsp; *
+&nbsp; * Contiene los mensajes de error para cada campo del formulario.
+&nbsp; * Si un campo es válido, la propiedad conserva su valor por defecto `null`.
+&nbsp; * Si el campo falla en la validación, la propiedad recibe el texto explicativo del error.
+&nbsp; */
+&nbsp;data class ContactoErrores(
+&nbsp;
+&nbsp;    /** Mensaje de error específico para el campo del nombre completo. */
+<b class="nc">&nbsp;    val nombreError: String? = null,</b>
+&nbsp;
+&nbsp;    /** Mensaje de error específico para el campo de correo electrónico. */
+<b class="nc">&nbsp;    val emailError: String? = null,</b>
+&nbsp;
+&nbsp;    /** Mensaje de error específico para el campo de teléfono (9 dígitos). */
+<b class="nc">&nbsp;    val telefonoError: String? = null,</b>
+&nbsp;
+&nbsp;    /** Mensaje de error específico para el campo o selector de asunto. */
+<b class="nc">&nbsp;    val asuntoError: String? = null,</b>
+&nbsp;
+&nbsp;    /** Mensaje de error específico para el cuerpo o contenido del mensaje. */
+<b class="nc">&nbsp;    val mensajeError: String? = null,</b>
+&nbsp;
+&nbsp;    /** Mensaje de error de ámbito general (para fallos no ligados a un campo específico). */
+<b class="nc">&nbsp;    val generalError: String? = null</b>
+&nbsp;)
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-26 15:38</div>
+</div>
+</body>
+</html>

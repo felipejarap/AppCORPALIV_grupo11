@@ -1,0 +1,168 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ContactoScreenKt</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.appcorpaliv_grupo11.ui.screens.contacto</a>
+</div>
+
+<h1>Coverage Summary for Class: ContactoScreenKt (com.example.appcorpaliv_grupo11.ui.screens.contacto)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ContactoScreenKt</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.appcorpaliv_grupo11.ui.screens.contacto
+&nbsp;
+&nbsp;import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+&nbsp;import androidx.compose.runtime.Composable
+&nbsp;import androidx.compose.ui.platform.LocalConfiguration
+&nbsp;import androidx.lifecycle.viewmodel.compose.viewModel
+&nbsp;import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
+&nbsp;
+&nbsp;/**
+&nbsp; * PANTALLA PRINCIPAL DE CONTACTO (CONTENEDOR ADAPTATIVO RAÍZ)
+&nbsp; *
+&nbsp; * Evalúa dinámicamente el ancho disponible en el dispositivo mediante la categoría
+&nbsp; * WindowWidthSizeClass y delega la maquetación a la sub-vista correspondiente
+&nbsp; * (ContactoScreenCompacta, ContactoScreenMediana o ContactoScreenExpandida).
+&nbsp; *
+&nbsp; * @param windowSizeClass Clasificación del ancho de pantalla (calculada por defecto según el dispositivo).
+&nbsp; * @param viewModel Instancia del ViewModel ContactoViewModel obtenida mediante la fábrica de Compose.
+&nbsp; */
+&nbsp;@Composable
+&nbsp;fun ContactoScreen(
+<b class="nc">&nbsp;    windowSizeClass: WindowWidthSizeClass = obtenerWindowWidthSizeClass(),</b>
+<b class="nc">&nbsp;    viewModel: ContactoViewModel = viewModel()</b>
+<b class="nc">&nbsp;) {</b>
+&nbsp;    // Selección declarativa del diseño según el factor de forma del dispositivo
+<b class="nc">&nbsp;    when (windowSizeClass) {</b>
+<b class="nc">&nbsp;        WindowWidthSizeClass.Compact -&gt; ContactoScreenCompacta(viewModel)</b>
+<b class="nc">&nbsp;        WindowWidthSizeClass.Medium -&gt; ContactoScreenMediana(viewModel)</b>
+<b class="nc">&nbsp;        WindowWidthSizeClass.Expanded -&gt; ContactoScreenExpandida(viewModel)</b>
+<b class="nc">&nbsp;        else -&gt; ContactoScreenCompacta(viewModel)</b>
+&nbsp;    }
+<b class="nc">&nbsp;}</b>
+&nbsp;
+&nbsp;/**
+&nbsp; * CÁLCULO DINÁMICO DE CLASIFICACIÓN DE ANCHO DE VENTANA
+&nbsp; *
+&nbsp; * Obtiene la categoría de ancho WindowWidthSizeClass analizando los dp disponibles
+&nbsp; * en la configuración local mediante LocalConfiguration.current.
+&nbsp; *
+&nbsp; * Puntos de quiebre (Breakpoints) estándar:
+&nbsp; * - &lt; 600 dp: Compact (Smartphones portrait)
+&nbsp; * - 600 dp a 839 dp: Medium (Tablets portrait / Smartphones landscape)
+&nbsp; * - &gt;= 840 dp: Expanded (Tablets landscape / Monitores / Desktops)
+&nbsp; */
+&nbsp;@Composable
+&nbsp;private fun obtenerWindowWidthSizeClass(): WindowWidthSizeClass {
+<b class="nc">&nbsp;    val configuration = LocalConfiguration.current</b>
+<b class="nc">&nbsp;    return when {</b>
+<b class="nc">&nbsp;        configuration.screenWidthDp &lt; 600 -&gt; WindowWidthSizeClass.Compact</b>
+<b class="nc">&nbsp;        configuration.screenWidthDp &lt; 840 -&gt; WindowWidthSizeClass.Medium</b>
+<b class="nc">&nbsp;        else -&gt; WindowWidthSizeClass.Expanded</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-26 15:38</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,122 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ExternalIndicadoresApi</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.appcorpaliv_grupo11.network</a>
+</div>
+
+<h1>Coverage Summary for Class: ExternalIndicadoresApi (com.example.appcorpaliv_grupo11.network)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">ExternalIndicadoresApi$Subclass2</td>
+  </tr>
+  <tr>
+    <td class="name">ExternalIndicadoresApi$Subclass2$auxiliary$1Ui7CWhA</td>
+  </tr>
+  <tr>
+    <td class="name">ExternalIndicadoresApi$Subclass2$auxiliary$FZCaqswv</td>
+  </tr>
+  <tr>
+    <td class="name">ExternalIndicadoresApi$Subclass2$auxiliary$JY82w71M</td>
+  </tr>
+  <tr>
+    <td class="name">ExternalIndicadoresApi$Subclass2$auxiliary$Vpl8FU5b</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.appcorpaliv_grupo11.network
+&nbsp;
+&nbsp;import okhttp3.OkHttpClient
+&nbsp;import retrofit2.Response
+&nbsp;import retrofit2.Retrofit
+&nbsp;import retrofit2.converter.gson.GsonConverterFactory
+&nbsp;import retrofit2.http.GET
+&nbsp;import retrofit2.http.Url
+&nbsp;import java.util.concurrent.TimeUnit
+&nbsp;
+&nbsp;interface ExternalIndicadoresApi {
+&nbsp;    @GET(&quot;api&quot;)
+&nbsp;    suspend fun obtenerIndicadoresDiarios(): Response&lt;IndicadoresResponse&gt;
+&nbsp;
+&nbsp;    @GET
+&nbsp;    suspend fun obtenerIndicadoresDesdeUrl(@Url url: String): Response&lt;IndicadoresResponse&gt;
+&nbsp;}
+&nbsp;
+&nbsp;object ExternalIndicadoresClient {
+&nbsp;    private const val PRIMARY_BASE_URL = &quot;https://mindicador.cl/&quot;
+&nbsp;    const val FALLBACK_URL = &quot;https://findic.cl/api&quot;
+&nbsp;
+&nbsp;    private val okHttpClient: OkHttpClient by lazy {
+&nbsp;        OkHttpClient.Builder()
+&nbsp;            .connectTimeout(10, TimeUnit.SECONDS)
+&nbsp;            .readTimeout(15, TimeUnit.SECONDS)
+&nbsp;            .writeTimeout(10, TimeUnit.SECONDS)
+&nbsp;            .build()
+&nbsp;    }
+&nbsp;
+&nbsp;    val api: ExternalIndicadoresApi by lazy {
+&nbsp;        Retrofit.Builder()
+&nbsp;            .baseUrl(PRIMARY_BASE_URL)
+&nbsp;            .client(okHttpClient)
+&nbsp;            .addConverterFactory(GsonConverterFactory.create())
+&nbsp;            .build()
+&nbsp;            .create(ExternalIndicadoresApi::class.java)
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-26 15:38</div>
+</div>
+</body>
+</html>

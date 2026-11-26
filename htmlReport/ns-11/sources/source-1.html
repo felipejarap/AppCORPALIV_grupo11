@@ -1,0 +1,241 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AuthViewModel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.appcorpaliv_grupo11.viewModel</a>
+</div>
+
+<h1>Coverage Summary for Class: AuthViewModel (com.example.appcorpaliv_grupo11.viewModel)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AuthViewModel</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    87,5%
+  </span>
+  <span class="absValue">
+    (7/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (24/24)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.appcorpaliv_grupo11.viewModel
+&nbsp;
+&nbsp;import androidx.compose.runtime.getValue
+&nbsp;import androidx.compose.runtime.mutableStateOf
+&nbsp;import androidx.compose.runtime.setValue
+&nbsp;import androidx.lifecycle.ViewModel
+&nbsp;import kotlinx.coroutines.flow.MutableStateFlow
+&nbsp;import kotlinx.coroutines.flow.StateFlow
+&nbsp;import kotlinx.coroutines.flow.asStateFlow
+&nbsp;
+&nbsp;/**
+&nbsp; * VIEWMODEL DE AUTENTICACIÓN Y CONTROL DE SESIÓN
+&nbsp; *
+&nbsp; * Gestiona la lógica de negocio para el inicio y cierre de sesión de los funcionarios/administradores.
+&nbsp; * Administra el estado de las credenciales de entrada (`usuarioInput`, `passwordInput`) y expone
+&nbsp; * flujos observables (`StateFlow`) para notificar el estado de autenticación a la UI.
+&nbsp; */
+<b class="fc">&nbsp;class AuthViewModel : ViewModel() {</b>
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // ESTADOS DEL FORMULARIO DE LOGIN (CAMPOS DE ENTRADA)
+&nbsp;    // Se utiliza mutableStateOf para vincular reactivamente los campos de texto en Compose.
+&nbsp;    // &#39;private set&#39; garantiza encapsulación: la UI lee las variables pero no las modifica directo.
+&nbsp;    // =========================================================================
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Guarda el nombre de usuario ingresado en el campo de texto.
+&nbsp;     * `private set`: Evita la modificación directa desde las vistas (solo modificable mediante `onUsuarioChanged`).
+&nbsp;     */
+<b class="fc">&nbsp;    var usuarioInput by mutableStateOf(&quot;&quot;)</b>
+&nbsp;        private set
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Guarda la contraseña ingresada en el campo de texto.
+&nbsp;     * `private set`: Protege la variable para que solo se actualice mediante `onPasswordChanged`.
+&nbsp;     */
+<b class="fc">&nbsp;    var passwordInput by mutableStateOf(&quot;&quot;)</b>
+&nbsp;        private set
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // ESTADOS DE SESIÓN Y ERRORES (UI STATE Y CONTROL DE FLUJO)
+&nbsp;    // Se utiliza StateFlow para exponer un estado observable, seguro e inmutable a las pantallas.
+&nbsp;    // =========================================================================
+&nbsp;
+&nbsp;    /** Estado interno mutable de tipo [MutableStateFlow] que indica si el usuario tiene una sesión activa. */
+<b class="fc">&nbsp;    private val _isLoggedIn = MutableStateFlow(false)</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Estado público e inmutable de tipo [StateFlow] observado por la UI.
+&nbsp;     * `asStateFlow()` convierte el flujo mutable interno en una versión de solo lectura.
+&nbsp;     */
+<b class="fc">&nbsp;    val isLoggedIn: StateFlow&lt;Boolean&gt; = _isLoggedIn.asStateFlow()</b>
+&nbsp;
+&nbsp;    /** Estado interno mutable de tipo [MutableStateFlow] para almacenar mensajes de error durante el login. */
+<b class="fc">&nbsp;    private val _loginError = MutableStateFlow&lt;String?&gt;(null)</b>
+&nbsp;
+&nbsp;    /** Estado público observable de solo lectura para renderizar mensajes de error en la UI. */
+<b class="fc">&nbsp;    val loginError: StateFlow&lt;String?&gt; = _loginError.asStateFlow()</b>
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // FUNCIONES DE ACTUALIZACIÓN DE CAMPOS
+&nbsp;    // =========================================================================
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Actualiza el valor del nombre de usuario ingresado y limpia cualquier mensaje de error activo.
+&nbsp;     *
+&nbsp;     * @param nuevoUsuario Cadena de texto recibida desde el campo de entrada de la UI.
+&nbsp;     */
+&nbsp;    fun onUsuarioChanged(nuevoUsuario: String) {
+<b class="fc">&nbsp;        usuarioInput = nuevoUsuario</b>
+<b class="fc">&nbsp;        _loginError.value = null</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Actualiza el valor de la contraseña ingresada y limpia cualquier mensaje de error activo.
+&nbsp;     *
+&nbsp;     * @param nuevaPass Cadena de texto recibida desde el campo de contraseña de la UI.
+&nbsp;     */
+&nbsp;    fun onPasswordChanged(nuevaPass: String) {
+<b class="fc">&nbsp;        passwordInput = nuevaPass</b>
+<b class="fc">&nbsp;        _loginError.value = null</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // =========================================================================
+&nbsp;    // LÓGICA DE AUTENTICACIÓN (INICIO Y CIERRE DE SESIÓN)
+&nbsp;    // =========================================================================
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Valida los campos e intenta iniciar sesión comparándolos con las credenciales del sistema.
+&nbsp;     *
+&nbsp;     * @param onSuccess Función lambda / Callback opcional que se ejecuta tras una autenticación exitosa (ej. redirigir).
+&nbsp;     */
+<b class="fc">&nbsp;    fun iniciarSesion(onSuccess: () -&gt; Unit = {}) {</b>
+&nbsp;        // 1. Validar que los campos no estén vacíos o contengan solo espacios en blanco
+<b class="fc">&nbsp;        if (usuarioInput.isBlank() || passwordInput.isBlank()) {</b>
+<b class="fc">&nbsp;            _loginError.value = &quot;Por favor ingresa usuario y contraseña.&quot;</b>
+&nbsp;            return
+&nbsp;        }
+&nbsp;
+&nbsp;        // 2. Validación de credenciales fijas de prueba para funcionarios (&quot;admin&quot; / &quot;1234&quot;)
+<b class="pc">&nbsp;        if (usuarioInput.trim().lowercase() == &quot;admin&quot; &amp;&amp; passwordInput == &quot;1234&quot;) {</b>
+<b class="fc">&nbsp;            _isLoggedIn.value = true</b>
+<b class="fc">&nbsp;            _loginError.value = null</b>
+&nbsp;
+&nbsp;            // Limpieza de campos de entrada por seguridad tras un ingreso exitoso
+<b class="fc">&nbsp;            usuarioInput = &quot;&quot;</b>
+<b class="fc">&nbsp;            passwordInput = &quot;&quot;</b>
+&nbsp;
+&nbsp;            // Invoca la función callback de éxito enviada desde la UI
+<b class="fc">&nbsp;            onSuccess()</b>
+&nbsp;        } else {
+&nbsp;            // Asigna el mensaje de error si las credenciales no coinciden
+<b class="fc">&nbsp;            _loginError.value = &quot;Credenciales incorrectas. Verifica tus datos.&quot;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cierra la sesión activa del usuario y restablece los valores del formulario.
+&nbsp;     */
+&nbsp;    fun cerrarSesion() {
+<b class="fc">&nbsp;        _isLoggedIn.value = false</b>
+<b class="fc">&nbsp;        usuarioInput = &quot;&quot;</b>
+<b class="fc">&nbsp;        passwordInput = &quot;&quot;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-26 15:38</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ContactoApiService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.appcorpaliv_grupo11.network</a>
+</div>
+
+<h1>Coverage Summary for Class: ContactoApiService (com.example.appcorpaliv_grupo11.network)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">ContactoApiService$Subclass0</td>
+  </tr>
+  <tr>
+    <td class="name">ContactoApiService$Subclass0$auxiliary$17tbR1SB</td>
+  </tr>
+  <tr>
+    <td class="name">ContactoApiService$Subclass0$auxiliary$GFB5tVZT</td>
+  </tr>
+  <tr>
+    <td class="name">ContactoApiService$Subclass0$auxiliary$m5r0gPFS</td>
+  </tr>
+  <tr>
+    <td class="name">ContactoApiService$Subclass0$auxiliary$qQl4cVKu</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.appcorpaliv_grupo11.network
+&nbsp;
+&nbsp;import retrofit2.Response
+&nbsp;import retrofit2.http.*
+&nbsp;
+&nbsp;interface ContactoApiService {
+&nbsp;
+&nbsp;    @GET(&quot;api/contactos&quot;)
+&nbsp;    suspend fun obtenerTodos(): Response&lt;List&lt;ContactoDto&gt;&gt;
+&nbsp;
+&nbsp;    @POST(&quot;api/contactos&quot;)
+&nbsp;    suspend fun crearContacto(@Body contacto: ContactoDto): Response&lt;ContactoDto&gt;
+&nbsp;
+&nbsp;    @PUT(&quot;api/contactos/{id}&quot;)
+&nbsp;    suspend fun actualizarContacto(
+&nbsp;        @Path(&quot;id&quot;) id: Int,
+&nbsp;        @Body contacto: ContactoDto
+&nbsp;    ): Response&lt;ContactoDto&gt;
+&nbsp;
+&nbsp;    @DELETE(&quot;api/contactos/{id}&quot;)
+&nbsp;    suspend fun eliminarContacto(@Path(&quot;id&quot;) id: Int): Response&lt;Unit&gt;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-26 15:38</div>
+</div>
+</body>
+</html>

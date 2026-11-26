@@ -6,10 +6,6 @@
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="Pantalla Celular Vertical - Compact - PreviewHomeCompacta">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DialogSelection />
-      </SelectionState>
       <SelectionState runConfigName="3. Tablet - Expanded - PreviewMainUnicoExpandida">
         <option name="selectionMode" value="DROPDOWN" />
         <DialogSelection />

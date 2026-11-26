@@ -1,0 +1,271 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ContactoScreenCompactaKt</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.appcorpaliv_grupo11.ui.screens.contacto</a>
+</div>
+
+<h1>Coverage Summary for Class: ContactoScreenCompactaKt (com.example.appcorpaliv_grupo11.ui.screens.contacto)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ContactoScreenCompactaKt</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/73)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.appcorpaliv_grupo11.ui.screens.contacto
+&nbsp;
+&nbsp;import androidx.compose.foundation.background
+&nbsp;import androidx.compose.foundation.layout.*
+&nbsp;import androidx.compose.foundation.rememberScrollState
+&nbsp;import androidx.compose.foundation.verticalScroll
+&nbsp;import androidx.compose.material.icons.Icons
+&nbsp;import androidx.compose.material.icons.filled.Email
+&nbsp;import androidx.compose.material.icons.filled.Person
+&nbsp;import androidx.compose.material.icons.filled.Phone
+&nbsp;import androidx.compose.material3.*
+&nbsp;import androidx.compose.runtime.Composable
+&nbsp;import androidx.compose.runtime.collectAsState
+&nbsp;import androidx.compose.runtime.getValue
+&nbsp;import androidx.compose.ui.Modifier
+&nbsp;import androidx.compose.ui.text.input.KeyboardType
+&nbsp;import androidx.compose.ui.unit.dp
+&nbsp;
+&nbsp;import com.example.appcorpaliv_grupo11.ui.components.*
+&nbsp;import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
+&nbsp;
+&nbsp;/**
+&nbsp; * PANTALLA DE FORMULARIO DE CONTACTO EN FORMATO COMPACTO (SMARTPHONES PORTRAIT)
+&nbsp; *
+&nbsp; * Sub-vista adaptativa para smartphones en formato vertical. Reúne en un único flujo
+&nbsp; * desplazable ([rememberScrollState]) la tarjeta de canales de contacto, el formulario
+&nbsp; * dinámico de captura con validación en tiempo real y retroalimentación de estado asíncrono
+&nbsp; * mediante [ContactoViewModel], [TarjetaExitoAnimada], [BannerEstadoRed] y [FooterInformativo].
+&nbsp; *
+&nbsp; * @param viewModel Instancia del ViewModel [ContactoViewModel] que gestiona los estados del formulario y la API.
+&nbsp; */
+&nbsp;@Composable
+<b class="nc">&nbsp;fun ContactoScreenCompacta(viewModel: ContactoViewModel) {</b>
+&nbsp;    // Estado mutable de desplazamiento vertical para evitar colisiones con el teclado virtual
+<b class="nc">&nbsp;    val scrollState = rememberScrollState()</b>
+&nbsp;
+&nbsp;    // Suscripción reactiva a los estados expuestos por el StateFlow del ViewModel
+<b class="nc">&nbsp;    val isSubmitted by viewModel.isSubmitted.collectAsState()</b>
+<b class="nc">&nbsp;    val isLoading by viewModel.isLoading.collectAsState()</b>
+<b class="nc">&nbsp;    val errorMessage by viewModel.errorMessage.collectAsState()</b>
+&nbsp;
+<b class="nc">&nbsp;    Column(</b>
+<b class="nc">&nbsp;        modifier = Modifier</b>
+<b class="nc">&nbsp;            .fillMaxSize()</b>
+<b class="nc">&nbsp;            .background(MaterialTheme.colorScheme.background)</b>
+<b class="nc">&nbsp;            .verticalScroll(scrollState)</b>
+&nbsp;    ) {
+&nbsp;        // =========================================================================
+&nbsp;        // 1. TARJETA SUPERIOR DE INFORMACIÓN INSTITUCIONAL DE CONTACTO
+&nbsp;        // =========================================================================
+<b class="nc">&nbsp;        TarjetaInfoContacto(</b>
+<b class="nc">&nbsp;            modifier = Modifier.padding(16.dp)</b>
+&nbsp;        )
+&nbsp;
+&nbsp;        // =========================================================================
+&nbsp;        // 2. CONTENEDOR DE FORMULARIO / TARJETA DE ÉXITO ANIMADA
+&nbsp;        // =========================================================================
+<b class="nc">&nbsp;        Column(</b>
+<b class="nc">&nbsp;            modifier = Modifier</b>
+<b class="nc">&nbsp;                .fillMaxWidth()</b>
+<b class="nc">&nbsp;                .padding(horizontal = 20.dp, vertical = 8.dp)</b>
+&nbsp;        ) {
+&nbsp;            // Notificación animada que se despliega automáticamente tras un envío exitoso
+<b class="nc">&nbsp;            TarjetaExitoAnimada(</b>
+<b class="nc">&nbsp;                mostrarExito = isSubmitted,</b>
+<b class="nc">&nbsp;                onEnviarOtroMensaje = { viewModel.reiniciarFormulario() }</b>
+&nbsp;            )
+&nbsp;
+&nbsp;            // Renderizado condicional: Muestra los campos del formulario solo si no se ha enviado con éxito
+<b class="nc">&nbsp;            if (!isSubmitted) {</b>
+&nbsp;                // Campo 1: Nombre completo
+<b class="nc">&nbsp;                CampoTextoInput(</b>
+<b class="nc">&nbsp;                    value = viewModel.nombre,</b>
+<b class="nc">&nbsp;                    onValueChange = { viewModel.onNombreChanged(it) },</b>
+<b class="nc">&nbsp;                    label = &quot;Nombre *&quot;,</b>
+<b class="nc">&nbsp;                    icon = Icons.Default.Person,</b>
+<b class="nc">&nbsp;                    error = viewModel.nombreError</b>
+&nbsp;                )
+&nbsp;
+<b class="nc">&nbsp;                Spacer(modifier = Modifier.height(12.dp))</b>
+&nbsp;
+&nbsp;                // Campo 2: Correo electrónico con validación de tipo de teclado
+<b class="nc">&nbsp;                CampoTextoInput(</b>
+<b class="nc">&nbsp;                    value = viewModel.email,</b>
+<b class="nc">&nbsp;                    onValueChange = { viewModel.onEmailChanged(it) },</b>
+<b class="nc">&nbsp;                    label = &quot;Correo electrónico *&quot;,</b>
+<b class="nc">&nbsp;                    icon = Icons.Default.Email,</b>
+<b class="nc">&nbsp;                    keyboardType = KeyboardType.Email,</b>
+<b class="nc">&nbsp;                    error = viewModel.emailError</b>
+&nbsp;                )
+&nbsp;
+<b class="nc">&nbsp;                Spacer(modifier = Modifier.height(12.dp))</b>
+&nbsp;
+&nbsp;                // Campo 3: Teléfono formateado a 9 dígitos
+<b class="nc">&nbsp;                CampoTextoInput(</b>
+<b class="nc">&nbsp;                    value = viewModel.telefono,</b>
+<b class="nc">&nbsp;                    onValueChange = { viewModel.onTelefonoChanged(it) },</b>
+<b class="nc">&nbsp;                    label = &quot;Teléfono (9 dígitos) *&quot;,</b>
+<b class="nc">&nbsp;                    icon = Icons.Default.Phone,</b>
+<b class="nc">&nbsp;                    keyboardType = KeyboardType.Number,</b>
+<b class="nc">&nbsp;                    error = viewModel.telefonoError</b>
+&nbsp;                )
+&nbsp;
+<b class="nc">&nbsp;                Spacer(modifier = Modifier.height(12.dp))</b>
+&nbsp;
+&nbsp;                // Campo 4: Menú desplegable para selección de asunto
+<b class="nc">&nbsp;                CampoDropdownInput(</b>
+<b class="nc">&nbsp;                    value = viewModel.asunto,</b>
+<b class="nc">&nbsp;                    onValueChange = { viewModel.onAsuntoChanged(it) },</b>
+<b class="nc">&nbsp;                    label = &quot;Asunto *&quot;,</b>
+<b class="nc">&nbsp;                    opciones = viewModel.opcionesAsunto,</b>
+<b class="nc">&nbsp;                    error = viewModel.asuntoError</b>
+&nbsp;                )
+&nbsp;
+<b class="nc">&nbsp;                Spacer(modifier = Modifier.height(12.dp))</b>
+&nbsp;
+&nbsp;                // Campo 5: Mensaje multilínea con límites visuales
+<b class="nc">&nbsp;                CampoTextoInput(</b>
+<b class="nc">&nbsp;                    value = viewModel.mensaje,</b>
+<b class="nc">&nbsp;                    onValueChange = { viewModel.onMensajeChanged(it) },</b>
+<b class="nc">&nbsp;                    label = &quot;Mensaje *&quot;,</b>
+<b class="nc">&nbsp;                    singleLine = false,</b>
+<b class="nc">&nbsp;                    minLines = 4,</b>
+<b class="nc">&nbsp;                    maxLines = 6,</b>
+<b class="nc">&nbsp;                    error = viewModel.mensajeError</b>
+&nbsp;                )
+&nbsp;
+&nbsp;                // Aviso seguro de red / servicio no disponible si el backend no responde
+<b class="nc">&nbsp;                if (errorMessage != null) {</b>
+<b class="nc">&nbsp;                    Spacer(modifier = Modifier.height(16.dp))</b>
+<b class="nc">&nbsp;                    BannerEstadoRed(</b>
+<b class="nc">&nbsp;                        mensaje = errorMessage!!,</b>
+<b class="nc">&nbsp;                        onRetry = { viewModel.enviarFormulario {} }</b>
+&nbsp;                    )
+&nbsp;                }
+&nbsp;
+<b class="nc">&nbsp;                Spacer(modifier = Modifier.height(20.dp))</b>
+&nbsp;
+&nbsp;                // Botón principal de acción con soporte para indicador de carga (cargando = isLoading)
+<b class="nc">&nbsp;                BotonPrimario(</b>
+<b class="nc">&nbsp;                    texto = &quot;ENVIAR MENSAJE&quot;,</b>
+<b class="nc">&nbsp;                    cargando = isLoading,</b>
+<b class="nc">&nbsp;                    onClick = { viewModel.enviarFormulario {} }</b>
+&nbsp;                )
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+<b class="nc">&nbsp;        Spacer(modifier = Modifier.height(16.dp))</b>
+&nbsp;
+&nbsp;        // =========================================================================
+&nbsp;        // 3. PIE DE PÁGINA INFORMATIVO
+&nbsp;        // =========================================================================
+<b class="nc">&nbsp;        FooterInformativo()</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;}</b>
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-11-26 15:38</div>
+</div>
+</body>
+</html>
