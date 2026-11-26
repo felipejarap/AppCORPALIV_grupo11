@@ -1,58 +1,96 @@
 package com.example.appcorpaliv_grupo11.repository
 
-import com.example.appcorpaliv_grupo11.data.ContactoDao
+import android.util.Log
 import com.example.appcorpaliv_grupo11.model.ContactoEntity
-import kotlinx.coroutines.flow.Flow
+import com.example.appcorpaliv_grupo11.network.RetrofitClient
+import com.example.appcorpaliv_grupo11.network.toDto
+import com.example.appcorpaliv_grupo11.network.toEntity
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
- * Repositorio encargados de gestionar las operaciones de datos de los mensajes de contacto.
- * Actúa como punto único de acceso a los datos (Single Source of Truth), intermediando entre
- * el DAO de Room ([ContactoDao]) y los ViewModels de la aplicación.
+ * REPOSITORIO DE CONTACTO (100% MICROSERVICIO SPRING BOOT + MYSQL)
  *
- * @property contactoDao Objeto de acceso a datos para ejecutar operaciones SQLite sobre la entidad Contacto.
+ * Gestiona las operaciones CRUD directamente contra la API REST mediante Retrofit
+ * y mantiene el estado reactivo en memoria para la interfaz Compose.
  */
-class ContactoRepository(private val contactoDao: ContactoDao) {
+class ContactoRepository {
+
+    private val api = RetrofitClient.apiService
+
+    private val _listaContactos = MutableStateFlow<List<ContactoEntity>>(emptyList())
+    val listaContactos: StateFlow<List<ContactoEntity>> = _listaContactos.asStateFlow()
 
     /**
-     * Flujo reactivo continuo que emite la lista completa de mensajes guardados en Room.
-     * Cualquier modificación en la tabla de la base de datos actualizará automáticamente este [Flow].
+     * Descarga todos los registros desde el backend y actualiza el flujo en memoria.
      */
-    val listaContactos: Flow<List<ContactoEntity>> = contactoDao.obtenerTodosLosContactos()
+    suspend fun sincronizarDesdeServidor() {
+        val response = api.obtenerTodos()
+        if (response.isSuccessful) {
+            val listaRemota = response.body()
+                ?.map { it.toEntity() }
+                ?.sortedByDescending { it.id }
+                ?: emptyList()
+            _listaContactos.value = listaRemota
+        } else {
+            Log.e("ContactoRepository", "Error GET HTTP ${response.code()}")
+            throw Exception("No se pudo obtener la información solicitada.")
+        }
+    }
 
     /**
-     * Inserta o reemplaza un mensaje de contacto en la base de datos local de forma asíncrona.
-     *
-     * @param contacto Registro [ContactoEntity] a persistir.
+     * Envía un nuevo contacto al backend (POST) y agrega la entidad devuelta.
      */
     suspend fun guardarContacto(contacto: ContactoEntity) {
-        contactoDao.guardarContacto(contacto)
+        val response = api.crearContacto(contacto.toDto(incluirId = false))
+        if (response.isSuccessful && response.body() != null) {
+            val creado = response.body()!!.toEntity()
+            _listaContactos.update { listaActual ->
+                listOf(creado) + listaActual
+            }
+        } else {
+            Log.e("ContactoRepository", "Error POST HTTP ${response.code()}")
+            throw Exception("No se pudo registrar la información.")
+        }
     }
 
     /**
-     * Actualiza la información de un contacto existente en Room de forma asíncrona.
-     *
-     * @param contacto Registro [ContactoEntity] modificado.
+     * Actualiza un contacto existente en el backend (PUT) y refresca el ítem en memoria.
      */
     suspend fun actualizarContacto(contacto: ContactoEntity) {
-        contactoDao.actualizarContacto(contacto)
+        val response = api.actualizarContacto(contacto.id, contacto.toDto(incluirId = true))
+        if (response.isSuccessful && response.body() != null) {
+            val actualizado = response.body()!!.toEntity()
+            _listaContactos.update { listaActual ->
+                listaActual.map { if (it.id == actualizado.id) actualizado else it }
+            }
+        } else {
+            Log.e("ContactoRepository", "Error PUT HTTP ${response.code()}")
+            throw Exception("No se pudo actualizar la información.")
+        }
     }
 
     /**
-     * Remueve permanentemente un mensaje de contacto de la base de datos.
-     *
-     * @param contacto Registro [ContactoEntity] a eliminar.
+     * Elimina el contacto en el backend (DELETE) y lo remueve de la lista en memoria.
      */
     suspend fun eliminarContacto(contacto: ContactoEntity) {
-        contactoDao.eliminarContacto(contacto)
+        val response = api.eliminarContacto(contacto.id)
+        if (response.isSuccessful) {
+            _listaContactos.update { listaActual ->
+                listaActual.filterNot { it.id == contacto.id }
+            }
+        } else {
+            Log.e("ContactoRepository", "Error DELETE HTTP ${response.code()}")
+            throw Exception("No se pudo eliminar el registro.")
+        }
     }
 
     /**
-     * Busca y obtiene un contacto específico según su ID único.
-     *
-     * @param id Identificador numérico del contacto.
-     * @return El [ContactoEntity] correspondiente o `null` si no existe.
+     * Busca un contacto por su ID en la lista cargada desde el backend.
      */
-    suspend fun obtenerPorId(id: Int): ContactoEntity? {
-        return contactoDao.obtenerContactoPorId(id)
+    fun obtenerPorId(id: Int): ContactoEntity? {
+        return _listaContactos.value.find { it.id == id }
     }
 }

@@ -3,154 +3,156 @@ package com.example.appcorpaliv_grupo11.ui.screens.contacto
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Subject
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
-import com.example.appcorpaliv_grupo11.ui.components.BotonPrimario
-import com.example.appcorpaliv_grupo11.ui.components.CampoTextoInput
-import com.example.appcorpaliv_grupo11.ui.components.FooterInformativo
-import com.example.appcorpaliv_grupo11.ui.components.TarjetaInfoContacto
+import com.example.appcorpaliv_grupo11.ui.components.*
 import com.example.appcorpaliv_grupo11.viewModel.ContactoViewModel
 
+/**
+ * PANTALLA DE FORMULARIO DE CONTACTO EN FORMATO EXPANDIDO (TABLETS EN LANDSCAPE / MONITORES)
+ *
+ * Sub-vista adaptativa diseñada para pantallas de más de 840 dp de ancho.
+ * Distribuye el módulo de contacto en dos paneles horizontales simétricos mediante un [Row]:
+ * 1. Panel Izquierdo (40% - weight 1f): Tarjeta con la información institucional de contacto.
+ * 2. Panel Derecho (60% - weight 1.5f): Formulario interactivo de captura con validación en tiempo real.
+ *
+ * @param viewModel Instancia del ViewModel [ContactoViewModel] que gestiona los estados del formulario y la API.
+ */
 @Composable
 fun ContactoScreenExpandida(viewModel: ContactoViewModel) {
+    // Estado mutable para habilitar desplazamiento vertical en monitores o con pantalla dividida
     val scrollState = rememberScrollState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
+
+    // Observación reactiva de los estados expuestos desde el StateFlow del ViewModel
     val isSubmitted by viewModel.isSubmitted.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
+            .padding(32.dp)
     ) {
+        // Estructura en dos columnas horizontales paralelas con espaciado de 32 dp
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(32.dp),
-            horizontalArrangement = Arrangement.spacedBy(32.dp),
-            verticalAlignment = Alignment.Top
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(32.dp)
         ) {
-            // Columna Izquierda: Tarjeta de Contacto
-            Column(
+            // =========================================================================
+            // COLUMNA 1: INFORMACIÓN INSTITUCIONAL DE CONTACTO (PANEL IZQUIERDO)
+            // =========================================================================
+            TarjetaInfoContacto(
                 modifier = Modifier.weight(1f)
-            ) {
-                TarjetaInfoContacto()
-            }
+            )
 
-            // Columna Derecha: Formulario de Entrada
+            // =========================================================================
+            // COLUMNA 2: FORMULARIO INTERACTIVO / CONFIRMACIÓN DE ÉXITO (PANEL DERECHO)
+            // =========================================================================
             Column(
-                modifier = Modifier.weight(1.2f)
+                modifier = Modifier.weight(1.5f)
             ) {
-                if (isSubmitted) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
-                        ),
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(32.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "¡Mensaje Enviado!",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 22.sp,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "Gracias por contactarte con Corpaliv / Alba Lab. Te responderemos a la brevedad.",
-                                fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Button(
-                                onClick = { viewModel.reiniciarFormulario() },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
-                                )
-                            ) {
-                                Text("Enviar otro mensaje")
-                            }
-                        }
-                    }
-                } else {
+                // Notificación animada que se activa tras el envío exitoso
+                TarjetaExitoAnimada(
+                    mostrarExito = isSubmitted,
+                    onEnviarOtroMensaje = { viewModel.reiniciarFormulario() }
+                )
+
+                // Renderizado condicional del formulario de entrada
+                if (!isSubmitted) {
+                    // Campo 1: Nombre
                     CampoTextoInput(
                         value = viewModel.nombre,
                         onValueChange = { viewModel.onNombreChanged(it) },
                         label = "Nombre *",
-                        icon = Icons.Default.Person
+                        icon = Icons.Default.Person,
+                        error = viewModel.nombreError
                     )
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
+                    // Campo 2: Correo electrónico
                     CampoTextoInput(
                         value = viewModel.email,
                         onValueChange = { viewModel.onEmailChanged(it) },
                         label = "Correo electrónico *",
-                        icon = Icons.Default.Email
+                        icon = Icons.Default.Email,
+                        keyboardType = KeyboardType.Email,
+                        error = viewModel.emailError
                     )
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
+                    // Campo 3: Teléfono
                     CampoTextoInput(
+                        value = viewModel.telefono,
+                        onValueChange = { viewModel.onTelefonoChanged(it) },
+                        label = "Teléfono (9 dígitos) *",
+                        icon = Icons.Default.Phone,
+                        keyboardType = KeyboardType.Number,
+                        error = viewModel.telefonoError
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Campo 4: Asunto mediante menú desplegable
+                    CampoDropdownInput(
                         value = viewModel.asunto,
                         onValueChange = { viewModel.onAsuntoChanged(it) },
-                        label = "Asunto",
-                        icon = Icons.AutoMirrored.Filled.Subject
+                        label = "Asunto *",
+                        opciones = viewModel.opcionesAsunto,
+                        error = viewModel.asuntoError
                     )
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
+                    // Campo 5: Mensaje de área de texto multilínea
                     CampoTextoInput(
                         value = viewModel.mensaje,
                         onValueChange = { viewModel.onMensajeChanged(it) },
                         label = "Mensaje *",
                         singleLine = false,
                         minLines = 4,
-                        maxLines = 6
+                        maxLines = 6,
+                        error = viewModel.mensajeError
                     )
 
+                    // Aviso seguro de red / servicio no disponible si el backend no responde
                     if (errorMessage != null) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = errorMessage!!,
-                            color = MaterialTheme.colorScheme.error,
-                            fontSize = 13.sp,
-                            modifier = Modifier.padding(start = 4.dp)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        BannerEstadoRed(
+                            mensaje = errorMessage!!,
+                            onRetry = { viewModel.enviarFormulario {} }
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
+                    // Botón principal de acción con indicador de carga
                     BotonPrimario(
                         texto = "ENVIAR MENSAJE",
+                        cargando = isLoading,
                         onClick = { viewModel.enviarFormulario {} }
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f, fill = false))
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
+        // Pie de página informativo institucional
         FooterInformativo()
     }
 }

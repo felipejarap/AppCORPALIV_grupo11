@@ -1,34 +1,29 @@
 package com.example.appcorpaliv_grupo11.model
 
 /**
- * Modelo de datos inmutable para representar los mensajes de error de validación
- * en el formulario de contacto.
+ * MODELO DE ERRORES DE VALIDACIÓN (DATA CLASS)
  *
- * Permite gestionar de forma granular la retroalimentación visual en la UI, asignando
- * un mensaje de error específico para cada campo de texto o para fallos generales.
+ * Contiene los mensajes de error para cada campo del formulario.
+ * Si un campo es válido, la propiedad conserva su valor por defecto `null`.
+ * Si el campo falla en la validación, la propiedad recibe el texto explicativo del error.
  */
 data class ContactoErrores(
 
-    /**
-     * Mensaje de error asociado al campo del nombre.
-     * Es `null` cuando la validación del nombre es exitosa o no hay errores.
-     */
+    /** Mensaje de error específico para el campo del nombre completo. */
     val nombreError: String? = null,
 
-    /**
-     * Mensaje de error asociado al campo del correo electrónico
-     * (ej. campo vacío o formato de email inválido).
-     */
+    /** Mensaje de error específico para el campo de correo electrónico. */
     val emailError: String? = null,
 
-    /**
-     * Mensaje de error asociado al cuerpo principal del mensaje.
-     */
+    /** Mensaje de error específico para el campo de teléfono (9 dígitos). */
+    val telefonoError: String? = null,
+
+    /** Mensaje de error específico para el campo o selector de asunto. */
+    val asuntoError: String? = null,
+
+    /** Mensaje de error específico para el cuerpo o contenido del mensaje. */
     val mensajeError: String? = null,
 
-    /**
-     * Mensaje de error global no ligado a un campo específico
-     * (ej. fallos en la base de datos local o falta de conectividad).
-     */
+    /** Mensaje de error de ámbito general (para fallos no ligados a un campo específico). */
     val generalError: String? = null
 )

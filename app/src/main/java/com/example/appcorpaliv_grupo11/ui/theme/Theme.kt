@@ -10,11 +10,13 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
+/**
+ * CONFIGURACIÓN DEL ESQUEMA DE COLORES EN MODO OSCURO (Material 3)
+ */
 private val DarkColorScheme = darkColorScheme(
     primary = DarkPrimary,
     onPrimary = DarkOnPrimary,
@@ -32,6 +34,9 @@ private val DarkColorScheme = darkColorScheme(
     onError = DarkOnError
 )
 
+/**
+ * CONFIGURACIÓN DEL ESQUEMA DE COLORES EN MODO CLARO (Material 3)
+ */
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryAzulCorpaliv,
     onPrimary = OnPrimaryWhite,
@@ -49,12 +54,16 @@ private val LightColorScheme = lightColorScheme(
     onError = OnErrorWhite
 )
 
+/**
+ * COMPOSABLE CONTENEDOR DEL TEMA GLOBAL DE LA APLICACIÓN
+ */
 @Composable
 fun AppCORPALIV_grupo11Theme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
+    // Selección del esquema de colores según el tema activo
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
@@ -64,11 +73,13 @@ fun AppCORPALIV_grupo11Theme(
         else -> LightColorScheme
     }
 
+    // Configuración del contraste de íconos en la barra del sistema (Status Bar)
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.background.toArgb()
+            // Ajusta el contraste de los íconos (oscuros en modo claro, claros en modo oscuro)
+            // eliminando el uso directo de statusBarColor para evitar la advertencia de obsolescencia.
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
