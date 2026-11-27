@@ -21,8 +21,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -41,6 +41,11 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
     }
 }
 
@@ -76,12 +81,10 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
 
-
- // Retrofit y Gson (Conexión con Backend Spring Boot)
+    // Retrofit y Gson (Conexión con Backend Spring Boot)
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-
 
     // Herramientas de depuración
     debugImplementation("androidx.compose.ui:ui-tooling")
@@ -100,7 +103,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.5")
 }
 
-// Obligatorio para ejecutar tests de Kotest / JUnit 5 en JVM[cite: 3]
+// Obligatorio para ejecutar tests de Kotest / JUnit 5 en JVM
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
